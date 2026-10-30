@@ -8,15 +8,46 @@ import dashboardRoutes from './routes/dashboard';
 import racingRoutes from './routes/racing';
 import feedRoutes from './routes/feed';
 import bettingRoutes from './routes/betting';
+import { supabase } from './lib/supabase';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 4000);
 
-app.use(cors());
+const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim());
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ ok: true, service: 'stayblz-api', time: new Date().toISOString() });
+});
+
+app.get('/api/db-health', async (_req: Request, res: Response) => {
+  try {
+    const { error } = await supabase
+      .from('connection_test')
+      .select('id')
+      .limit(1);
+
+    if (error) {
+      return res.status(500).json({
+        ok: false,
+        error: error.message
+      });
+    }
+
+    return res.json({ ok: true, database: 'connected' });
+  } catch {
+    return res.status(500).json({
+      ok: false,
+      error: 'Database connection failed'
+    });
+  }
 });
 
 app.use('/api/auth', authRoutes);
@@ -32,6 +63,6 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Route not found.' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Stayblz API running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Stayblz API running on port ${PORT}`);
 });
