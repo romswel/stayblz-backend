@@ -23,7 +23,12 @@ Existing application source remains in place; this setup does not rebuild the ap
 Express 4 async handlers must forward rejected promises. Catch database failures without exposing internal details.
 
 ## Next agreed step
-Release this mock-stage bug-fix pass, then choose the next feature with the user.
+2026-11-01: User authorized a production landing release. Added a public racing overview that reads only published, non-future records, projects reviewed fields, and returns a generic unavailable response instead of mock data. Added origin checks and a commit marker in health responses.
+- Backend build and 10 stubbed API tests passed. Existing admin login and shared stable routes are unchanged in this release.
+- `migrations/202611010001_site_racing_records.sql` is tracked for review only; it was not applied remotely and contains no seed rows or legacy changes.
+- Verified-account auth/profile/signup code remains a separate local change until custom SMTP, provider redirects, and the admin invitation are ready.
+
+Verify the deployed public endpoint and unchanged admin session. Activate verified accounts only after email delivery/admin setup works. No force push, schema application, or data deletion is authorized by this release alone.
 
 ## Maintenance
 After meaningful work, update only the sections affected.

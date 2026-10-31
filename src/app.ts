@@ -8,28 +8,53 @@ import dashboardRoutes from './routes/dashboard';
 import racingRoutes from './routes/racing';
 import feedRoutes from './routes/feed';
 import bettingRoutes from './routes/betting';
+import publicRacingRoutes from './routes/publicRacing';
 import { supabase } from './lib/supabase';
 
 export const app = express();
 app.disable('x-powered-by');
+app.set('trust proxy', process.env.RENDER === 'true' ? 1 : false);
 app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Cache-Control', 'no-store');
   next();
 });
 
-const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:5173')
+const allowedOrigins = (
+  process.env.FRONTEND_URL ??
+  (process.env.NODE_ENV === 'production'
+    ? 'https://stayblz-frontend.vercel.app'
+    : 'http://localhost:5173')
+)
   .split(',')
   .map((origin) => origin.trim());
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 app.use(express.json({ limit: '32kb' }));
+app.use('/api', (req, res, next) => {
+  if (
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) &&
+    req.headers.origin &&
+    !allowedOrigins.includes(req.headers.origin)
+  ) {
+    res.status(403).json({ error: 'This request origin is not allowed.' });
+    return;
+  }
+  next();
+});
 
 app.get('/api/health', (_req: Request, res: Response) => {
-  res.json({ ok: true, service: 'stayblz-api', time: new Date().toISOString() });
+  res.json({
+    ok: true,
+    service: 'stayblz-api',
+    version: process.env.RENDER_GIT_COMMIT?.slice(0, 12) ?? 'local',
+    time: new Date().toISOString(),
+  });
 });
 
 app.get('/api/db-health', async (_req: Request, res: Response) => {
@@ -42,7 +67,7 @@ app.get('/api/db-health', async (_req: Request, res: Response) => {
     if (error) {
       return res.status(500).json({
         ok: false,
-        error: 'Database connection failed'
+        error: 'Database connection failed',
       });
     }
 
@@ -50,12 +75,13 @@ app.get('/api/db-health', async (_req: Request, res: Response) => {
   } catch {
     return res.status(500).json({
       ok: false,
-      error: 'Database connection failed'
+      error: 'Database connection failed',
     });
   }
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/public', publicRacingRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/racing', racingRoutes);
 app.use('/api/feed', feedRoutes);
@@ -69,7 +95,21 @@ app.use((_req: Request, res: Response) => {
 });
 
 const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  const status = error?.type === 'entity.too.large' ? 413 : error?.type === 'entity.parse.failed' ? 400 : 500;
-  res.status(status).json({ error: status === 413 ? 'Request body is too large.' : status === 400 ? 'Invalid JSON body.' : 'Something went wrong. Please try again.' });
+  const status =
+    error?.type === 'entity.too.large'
+      ? 413
+      : error?.type === 'entity.parse.failed'
+        ? 400
+        : 500;
+  res
+    .status(status)
+    .json({
+      error:
+        status === 413
+          ? 'Request body is too large.'
+          : status === 400
+            ? 'Invalid JSON body.'
+            : 'Something went wrong. Please try again.',
+    });
 };
 app.use(errorHandler);
