@@ -35,7 +35,11 @@ Express 4 async handlers must forward rejected promises. Catch database failures
 - Prepared a read-only-first admin bootstrap script; an authorized invitation preserves the account, verifies email, and requires strong password setup without accepting/printing passwords or tokens. It has only been dry-run so far.
 - User confirmed SMTP/redirect setup is ready. Next: deploy account code, apply the authorized admin invitation, and verify activation without deleting existing records. No personal email/password is recorded in this notebook. The public-racing migration remains unapplied.
 
-See `docs/auth-release.md` and `docs/public-racing.md`. Distinguish tested code/deployment from actual inbox delivery and authenticated production QA.
+Account release `ecb576d` was pushed and verified through live backend health and the Vercel proxy. The provider-project fingerprint matches the intended local project. Live anonymous checks confirmed 401 for private routes, 400 for malformed signup, and no credential cookies on rejected requests. Final local checks: 24 API tests/build passed; npm audit reported zero vulnerabilities.
+
+The authorized admin invitation was sent successfully and the user confirmed inbox receipt. The admin role is assigned in trusted metadata; email verification/password setup remained pending at the last check. No password, verification link, personal email or token is recorded here. Bootstrap retries now request a setup email for an incomplete existing admin without deleting/resetting that identity.
+
+See `docs/auth-release.md` and `docs/public-racing.md`. Verify owner activation after password setup. Public-racing schema/data remains a separate unapplied migration; no existing stable rows were changed or deleted.
 
 ## Maintenance
 After meaningful work, update only the sections affected.

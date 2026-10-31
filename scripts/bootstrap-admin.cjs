@@ -42,6 +42,7 @@ const supabase = createClient(
     return;
   }
   let user = existing;
+  let setupEmailRequested = false;
   if (!user) {
     const result = await supabase.auth.admin.inviteUserByEmail(email, {
       redirectTo: site + '/auth/confirm',
@@ -49,6 +50,7 @@ const supabase = createClient(
     });
     if (result.error) throw result.error;
     user = result.data.user;
+    setupEmailRequested = true;
   }
   if (!user)
     throw new Error(
@@ -64,11 +66,29 @@ const supabase = createClient(
     });
     if (result.error) throw result.error;
   }
+  if (
+    existing &&
+    (user.app_metadata?.stayblz_role !== 'superadmin' ||
+      user.app_metadata?.stayblz_require_password_setup === true)
+  ) {
+    const result = user.email_confirmed_at
+      ? await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: site + '/auth/confirm',
+        })
+      : await supabase.auth.resend({
+          type: 'signup',
+          email,
+          options: { emailRedirectTo: site + '/auth/confirm' },
+        });
+    if (result.error) throw result.error;
+    setupEmailRequested = true;
+  }
   console.log(
     JSON.stringify({
       ok: true,
       accountPreserved: !!existing,
       adminRoleAssigned: true,
+      setupEmailRequested,
       emailConfirmed: !!user.email_confirmed_at,
       passwordSetupRequired:
         user.app_metadata?.stayblz_require_password_setup !== false,
