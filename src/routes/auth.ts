@@ -1,6 +1,6 @@
-import { Router, type Request, type Response } from 'express';
-import { asyncRoute } from '../middleware/asyncRoute';
-import { authLimit } from '../middleware/authLimits';
+import { Router, type Request, type Response } from "express";
+import { asyncRoute } from "../middleware/asyncRoute";
+import { authLimit } from "../middleware/authLimits";
 import {
   MOCK_PASSWORD,
   MOCK_USERNAME,
@@ -11,7 +11,7 @@ import {
   mockUser,
   requireAuth,
   type AuthenticatedRequest,
-} from '../middleware/auth';
+} from "../middleware/auth";
 import {
   identity,
   profile,
@@ -21,36 +21,37 @@ import {
   cookie,
   accessToken,
   providerUnavailable,
-} from '../lib/identity';
-import { supabase } from '../lib/supabase';
-import type { User } from '../types';
+} from "../lib/identity";
+import { supabase } from "../lib/supabase";
+import type { User } from "../types";
+import { sendAuthEmailError, isUnknownRecipient } from "../lib/authEmailErrors";
 
 const router = Router();
 const emailValid = (value: unknown): value is string =>
-  typeof value === 'string' &&
+  typeof value === "string" &&
   value.length <= 254 &&
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const strongPassword = (value: unknown): value is string =>
-  typeof value === 'string' &&
+  typeof value === "string" &&
   value.length >= 12 &&
   value.length <= 128 &&
   /[a-z]/.test(value) &&
   /[A-Z]/.test(value) &&
   /[0-9]/.test(value);
 const shortName = (value: unknown): value is string =>
-  typeof value === 'string' &&
+  typeof value === "string" &&
   value.trim().length >= 1 &&
   value.trim().length <= 60 &&
   !/[\u0000-\u001f<>]/.test(value);
 const countryValid = (value: unknown): value is string =>
-  typeof value === 'string' && /^[A-Z]{2}$/.test(value);
-const roles = ['owner', 'trainer', 'jockey', 'staff', 'fan', 'other'];
+  typeof value === "string" && /^[A-Z]{2}$/.test(value);
+const roles = ["owner", "trainer", "jockey", "staff", "fan", "other"];
 function profileInput(body: Record<string, unknown>) {
   if (
     !shortName(body.firstName) ||
     !shortName(body.lastName) ||
     !countryValid(body.country) ||
-    typeof body.racingRole !== 'string' ||
+    typeof body.racingRole !== "string" ||
     !roles.includes(body.racingRole)
   )
     return null;
@@ -64,39 +65,39 @@ function profileInput(body: Record<string, unknown>) {
 const appOrigin = () =>
   (
     process.env.AUTH_SITE_URL ||
-    process.env.FRONTEND_URL?.split(',')[0] ||
-    (process.env.NODE_ENV === 'production'
-      ? 'https://stayblz-frontend.vercel.app'
-      : 'http://localhost:5173')
-  ).replace(/\/$/, '');
+    process.env.FRONTEND_URL?.split(",")[0] ||
+    (process.env.NODE_ENV === "production"
+      ? "https://stayblz-frontend.vercel.app"
+      : "http://localhost:5173")
+  ).replace(/\/$/, "");
 const confirmationUrl = () => `${appOrigin()}/auth/confirm`;
 const genericMail = {
   ok: true,
   message:
-    'If the address can receive this request, an email will arrive shortly.',
+    "If the address can receive this request, an email will arrive shortly.",
 };
 
 router.use((req, res, next) => {
-  if (req.method !== 'GET' && !req.is('application/json')) {
-    res.status(415).json({ error: 'Send account requests as JSON.' });
+  if (req.method !== "GET" && !req.is("application/json")) {
+    res.status(415).json({ error: "Send account requests as JSON." });
     return;
   }
   next();
 });
 
 router.post(
-  '/login',
-  authLimit('login', 20, 60_000),
+  "/login",
+  authLimit("login", 20, 60_000),
   asyncRoute(async (req, res) => {
     const { username, password } = req.body ?? {};
     if (
-      typeof username !== 'string' ||
-      typeof password !== 'string' ||
+      typeof username !== "string" ||
+      typeof password !== "string" ||
       !username.trim() ||
       username.length > 254 ||
       password.length > 128
     ) {
-      res.status(400).json({ error: 'Enter your email and password.' });
+      res.status(400).json({ error: "Enter your email and password." });
       return;
     }
     if (
@@ -110,17 +111,43 @@ router.post(
     try {
       const email = await resolveEmail(username.trim());
       if (!email) {
-        res.status(401).json({ error: 'Incorrect email or password.' });
+        res.status(401).json({ error: "Incorrect email or password." });
         return;
       }
       const { data, error } = await identity
         .client()
         .auth.signInWithPassword({ email, password });
-      if(providerUnavailable(error)){res.status(503).json({error:'Sign-in is unavailable. Try again shortly.'});return;}
+      if (providerUnavailable(error)) {
+        res
+          .status(503)
+          .json({ error: "Sign-in is unavailable. Try again shortly." });
+        return;
+      }
+      if (
+        error?.status === 429 ||
+        ["over_email_send_rate_limit", "over_request_rate_limit"].includes(
+          error?.code ?? "",
+        )
+      ) {
+        sendAuthEmailError(
+          res,
+          error,
+          "Sign-in is temporarily limited. Please try again later.",
+        );
+        return;
+      }
       if (error || !data.session || !data.user?.email_confirmed_at) {
+        if (error?.code === "email_not_confirmed") {
+          res.status(403).json({
+            code: "email_not_confirmed",
+            error:
+              "Verify your email before logging in. You can resend the confirmation email.",
+          });
+          return;
+        }
         res
           .status(401)
-          .json({ error: 'Incorrect credentials or email not verified.' });
+          .json({ error: "Incorrect credentials or email not verified." });
         return;
       }
       sessionCookies(res, data.session);
@@ -128,14 +155,14 @@ router.post(
     } catch {
       res
         .status(503)
-        .json({ error: 'Sign-in is unavailable. Try again shortly.' });
+        .json({ error: "Sign-in is unavailable. Try again shortly." });
     }
   }),
 );
 
 router.post(
-  '/signup',
-  authLimit('signup', 5, 60 * 60_000),
+  "/signup",
+  authLimit("signup", 5, 60 * 60_000),
   asyncRoute(async (req, res) => {
     const body = req.body ?? {};
     const details = profileInput(body);
@@ -145,12 +172,10 @@ router.post(
       !strongPassword(body.password) ||
       body.password !== body.confirmPassword
     ) {
-      res
-        .status(400)
-        .json({
-          error:
-            'Enter your name, country, racing role, valid email, and matching passwords of 12–128 characters with uppercase, lowercase, and a number.',
-        });
+      res.status(400).json({
+        error:
+          "Enter your name, country, racing role, valid email, and matching passwords of 12–128 characters with uppercase, lowercase, and a number.",
+      });
       return;
     }
     if (
@@ -158,11 +183,9 @@ router.post(
       body.app_metadata !== undefined ||
       body.user_metadata !== undefined
     ) {
-      res
-        .status(400)
-        .json({
-          error: 'Account permissions cannot be supplied during sign-up.',
-        });
+      res.status(400).json({
+        error: "Account permissions cannot be supplied during sign-up.",
+      });
       return;
     }
     try {
@@ -184,93 +207,120 @@ router.post(
       if (!settings.ok || config.mailer_autoconfirm !== false) {
         res
           .status(503)
-          .json({ error: 'Verified registration is not available right now.' });
+          .json({ error: "Verified registration is not available right now." });
         return;
       }
-      const { error } = await identity
-        .client()
-        .auth.signUp({
-          email: body.email.trim().toLowerCase(),
-          password: body.password,
-          options: { data: details, emailRedirectTo: confirmationUrl() },
-        });
+      const { error } = await identity.client().auth.signUp({
+        email: body.email.trim().toLowerCase(),
+        password: body.password,
+        options: { data: details, emailRedirectTo: confirmationUrl() },
+      });
       if (
         error &&
-        !['user_already_exists', 'email_exists'].includes(error.code ?? '')
+        !["user_already_exists", "email_exists"].includes(error.code ?? "")
       ) {
-        res
-          .status(error.status === 429 ? 429 : 503)
-          .json({
-            error:
-              'Registration could not be completed. Please try again later.',
-          });
+        sendAuthEmailError(
+          res,
+          error,
+          "Registration could not be completed. Please try again later.",
+        );
         return;
       }
-      res
-        .status(202)
-        .json({
-          ok: true,
-          requiresVerification: true,
-          message:
-            'Check your email for a confirmation link. Verify it before logging in.',
-        });
-    } catch {
-      res
-        .status(503)
-        .json({
-          error: 'Registration is unavailable. Please try again later.',
-        });
+      res.status(202).json({
+        ok: true,
+        requiresVerification: true,
+        message:
+          "Check your email for a confirmation link. Verify it before logging in.",
+      });
+    } catch (error) {
+      sendAuthEmailError(
+        res,
+        error,
+        "Registration is unavailable. Please try again later.",
+      );
     }
   }),
 );
 
 router.post(
-  '/resend',
-  authLimit('email', 3, 15 * 60_000),
+  "/resend",
+  authLimit("email", 3, 15 * 60_000),
   asyncRoute(async (req, res) => {
-    if (!emailValid(req.body?.email)) {
-      res.status(400).json({ error: 'Enter a valid email address.' });
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    if (!emailValid(email)) {
+      res.status(400).json({ error: "Enter a valid email address." });
       return;
     }
     try {
-      await identity
-        .client()
-        .auth.resend({
-          type: 'signup',
-          email: req.body.email.toLowerCase(),
-          options: { emailRedirectTo: confirmationUrl() },
-        });
-    } catch {
-      /* Generic response prevents account enumeration. */
+      const { error } = await identity.client().auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: confirmationUrl() },
+      });
+      if (error && !isUnknownRecipient(error)) {
+        sendAuthEmailError(
+          res,
+          error,
+          "The confirmation email could not be requested. Please try again later.",
+        );
+        return;
+      }
+    } catch (error) {
+      sendAuthEmailError(
+        res,
+        error,
+        "The confirmation email service is unavailable. Please try again later.",
+      );
+      return;
     }
     res.status(202).json(genericMail);
   }),
 );
 
 router.post(
-  '/forgot-password',
-  authLimit('email', 3, 15 * 60_000),
+  "/forgot-password",
+  authLimit("email", 3, 15 * 60_000),
   asyncRoute(async (req, res) => {
-    if (!emailValid(req.body?.email)) {
-      res.status(400).json({ error: 'Enter a valid email address.' });
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    if (!emailValid(email)) {
+      res.status(400).json({ error: "Enter a valid email address." });
       return;
     }
     try {
-      await identity
+      const { error } = await identity
         .client()
-        .auth.resetPasswordForEmail(req.body.email.toLowerCase(), {
+        .auth.resetPasswordForEmail(email, {
           redirectTo: confirmationUrl(),
         });
-    } catch {
-      /* Do not reveal whether an account exists. */
+      if (error && !isUnknownRecipient(error)) {
+        sendAuthEmailError(
+          res,
+          error,
+          "The password reset email could not be requested. Please try again later.",
+        );
+        return;
+      }
+    } catch (error) {
+      sendAuthEmailError(
+        res,
+        error,
+        "The password reset email service is unavailable. Please try again later.",
+      );
+      return;
     }
     res.status(202).json(genericMail);
   }),
 );
 
 router.post(
-  '/confirm',
-  authLimit('confirm', 10, 10 * 60_000),
+  "/confirm",
+  authLimit("confirm", 10, 10 * 60_000),
   asyncRoute(async (req, res) => {
     const {
       tokenHash,
@@ -282,16 +332,16 @@ router.post(
     try {
       let result;
       if (
-        typeof tokenHash === 'string' &&
+        typeof tokenHash === "string" &&
         tokenHash.length >= 16 &&
         tokenHash.length <= 512 &&
-        ['email', 'signup', 'invite', 'recovery'].includes(type)
+        ["email", "signup", "invite", "recovery"].includes(type)
       ) {
         result = await client.auth.verifyOtp({ token_hash: tokenHash, type });
       } else if (
-        typeof providedAccess === 'string' &&
+        typeof providedAccess === "string" &&
         providedAccess.length < 16384 &&
-        typeof refreshToken === 'string' &&
+        typeof refreshToken === "string" &&
         refreshToken.length < 2048
       ) {
         result = await client.auth.setSession({
@@ -299,58 +349,75 @@ router.post(
           refresh_token: refreshToken,
         });
       } else {
-        res
-          .status(400)
-          .json({
-            error: 'The confirmation link is incomplete. Request a new email.',
-          });
+        res.status(400).json({
+          error: "The confirmation link is incomplete. Request a new email.",
+        });
         return;
       }
-      if(providerUnavailable(result.error)){res.status(503).json({error:'Email confirmation is unavailable. Try again shortly.'});return;}
+      if (providerUnavailable(result.error)) {
+        res.status(503).json({
+          error: "Email confirmation is unavailable. Try again shortly.",
+        });
+        return;
+      }
+      if (
+        result.error?.status === 429 ||
+        ["over_email_send_rate_limit", "over_request_rate_limit"].includes(
+          result.error?.code ?? "",
+        )
+      ) {
+        sendAuthEmailError(
+          res,
+          result.error,
+          "Confirmation is temporarily limited. Please try again later.",
+        );
+        return;
+      }
       if (
         result.error ||
         !result.data.session ||
         !result.data.user?.email_confirmed_at
       ) {
-        res
-          .status(400)
-          .json({
-            error:
-              'The confirmation link has expired or was already used. Request a new email.',
-          });
+        res.status(400).json({
+          error:
+            "The confirmation link has expired or was already used. Request a new email.",
+        });
         return;
       }
       sessionCookies(res, result.data.session);
       res.json({ user: profile(result.data.user) });
     } catch {
-      res
-        .status(503)
-        .json({
-          error: 'Email confirmation is unavailable. Try again shortly.',
-        });
+      res.status(503).json({
+        error: "Email confirmation is unavailable. Try again shortly.",
+      });
     }
   }),
 );
 
 router.post(
-  '/refresh',
-  authLimit('refresh', 60, 60_000),
+  "/refresh",
+  authLimit("refresh", 60, 60_000),
   asyncRoute(async (req, res) => {
-    const refreshToken = cookie(req, 'stayblz_refresh');
+    const refreshToken = cookie(req, "stayblz_refresh");
     if (!refreshToken) {
-      res.status(401).json({ error: 'Sign in to continue.' });
+      res.status(401).json({ error: "Sign in to continue." });
       return;
     }
     try {
       const { data, error } = await identity
         .client()
         .auth.refreshSession({ refresh_token: refreshToken });
-      if(providerUnavailable(error)){res.status(503).json({error:'Session renewal is unavailable. Try again shortly.'});return;}
+      if (providerUnavailable(error)) {
+        res.status(503).json({
+          error: "Session renewal is unavailable. Try again shortly.",
+        });
+        return;
+      }
       if (error || !data.session || !data.user?.email_confirmed_at) {
         clearSession(res);
         res
           .status(401)
-          .json({ error: 'Your session expired. Please log in again.' });
+          .json({ error: "Your session expired. Please log in again." });
         return;
       }
       sessionCookies(res, data.session);
@@ -358,30 +425,30 @@ router.post(
     } catch {
       res
         .status(503)
-        .json({ error: 'Session renewal is unavailable. Try again shortly.' });
+        .json({ error: "Session renewal is unavailable. Try again shortly." });
     }
   }),
 );
 
-router.get('/me', requireAuth, (req: Request, res: Response) =>
+router.get("/me", requireAuth, (req: Request, res: Response) =>
   res.json({ user: (req as Request & { user: User }).user }),
 );
 
 router.patch(
-  '/profile',
-  authLimit('profile', 15, 60_000),
+  "/profile",
+  authLimit("profile", 15, 60_000),
   requireAuth,
   asyncRoute(async (req, res) => {
     const details = profileInput(req.body ?? {});
     if (!details) {
       res
         .status(400)
-        .json({ error: 'Check your name, country, and racing role.' });
+        .json({ error: "Check your name, country, and racing role." });
       return;
     }
     const user = (req as Request & { user: User }).user;
-    if (user.id === 'u1') {
-      res.status(409).json({ error: 'Development profiles are read-only.' });
+    if (user.id === "u1") {
+      res.status(409).json({ error: "Development profiles are read-only." });
       return;
     }
     const { data, error } = await supabase.auth.admin.updateUserById(user.id, {
@@ -390,7 +457,7 @@ router.patch(
     if (error || !data.user) {
       res
         .status(503)
-        .json({ error: 'Profile could not be saved. Try again later.' });
+        .json({ error: "Profile could not be saved. Try again later." });
       return;
     }
     res.json({ user: profile(data.user) });
@@ -398,8 +465,8 @@ router.patch(
 );
 
 router.post(
-  '/password',
-  authLimit('password', 5, 15 * 60_000),
+  "/password",
+  authLimit("password", 5, 15 * 60_000),
   requireAuth,
   asyncRoute(async (req, res) => {
     const body = req.body ?? {};
@@ -407,48 +474,45 @@ router.post(
       !strongPassword(body.password) ||
       body.password !== body.confirmPassword
     ) {
-      res
-        .status(400)
-        .json({
-          error:
-            'Use matching passwords of 12–128 characters with uppercase, lowercase, and a number.',
-        });
+      res.status(400).json({
+        error:
+          "Use matching passwords of 12–128 characters with uppercase, lowercase, and a number.",
+      });
       return;
     }
     // Provider validates the current session. It also invalidates refresh tokens on password change.
     const response = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
         apikey:
           process.env.SUPABASE_PUBLISHABLE_KEY ||
           process.env.SUPABASE_SECRET_KEY!,
         Authorization: `Bearer ${accessToken(req)}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ password: body.password }),
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) {
-      res
-        .status(400)
-        .json({
-          error:
-            'The password could not be changed. Request a new reset email.',
-        });
+      res.status(400).json({
+        error: "The password could not be changed. Request a new reset email.",
+      });
       return;
     }
     const user = (req as Request & { user: User }).user;
     if (user.passwordSetupRequired) {
       const result = await supabase.auth.admin.updateUserById(user.id, {
-        app_metadata: {...(req as AuthenticatedRequest).providerUser?.app_metadata,stayblz_role:user.role,stayblz_require_password_setup:false},
+        app_metadata: {
+          ...(req as AuthenticatedRequest).providerUser?.app_metadata,
+          stayblz_role: user.role,
+          stayblz_require_password_setup: false,
+        },
       });
       if (result.error) {
-        res
-          .status(503)
-          .json({
-            error:
-              'Password saved, but account setup could not be completed. Please log in again and retry.',
-          });
+        res.status(503).json({
+          error:
+            "Password saved, but account setup could not be completed. Please log in again and retry.",
+        });
         return;
       }
     }
@@ -458,7 +522,7 @@ router.post(
 );
 
 router.post(
-  '/logout',
+  "/logout",
   asyncRoute(async (req, res) => {
     const token = accessToken(req);
     clearSession(res);
@@ -467,15 +531,13 @@ router.post(
       destroySession(token);
       if (!demo)
         try {
-          const result = await supabase.auth.admin.signOut(token, 'global');
+          const result = await supabase.auth.admin.signOut(token, "global");
           if (result.error) throw result.error;
         } catch {
-          res
-            .status(503)
-            .json({
-              error:
-                'Signed out here. Server session revocation could not be confirmed.',
-            });
+          res.status(503).json({
+            error:
+              "Signed out here. Server session revocation could not be confirmed.",
+          });
           return;
         }
     }

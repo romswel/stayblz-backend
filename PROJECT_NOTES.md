@@ -42,6 +42,15 @@ The authorized admin invitation was sent successfully and the user confirmed inb
 See `docs/auth-release.md` and `docs/public-racing.md`. Verify owner activation after password setup. Public-racing schema/data remains a separate unapplied migration; no existing stable rows were changed or deleted.
 
 ## Maintenance
+2026-11-01: User authorized review and production push from the original repositories without backups/worktrees. Reviewed every changed/untracked file and preserved safe classification for thrown signup/resend/recovery provider errors. Release validation: 30 API tests including TypeScript build, diff checks, and npm audit (zero vulnerabilities) passed. Credential-pattern scan found no embedded credentials in release files. No schema/provider configuration changes, account resets, or additional test emails are part of this release. Verify the live health commit marker after pushing. The built-in sender still limits public signup/recovery; completed live recovery and verified password login/logout remain unverified.
+
+2026-11-01: Removed the obsolete .release/backend Git worktree after verifying it was clean, had no unique commits, and was already an ancestor of main. All local auth/email changes remain in the original stayblz-backend repository. Fetch confirmed main matches origin/main; no pull/merge was needed. No backend behavior changes, commits, pushes, or deployments in this cleanup.
+
+2026-11-01: Local-only email verification follow-up. The latest user instruction supersedes the earlier SMTP-ready assumption: use the existing Supabase built-in sender for authorized organization testing; no provider configuration, schema, or deployment changes.
+- Signup, resend, and recovery now report safe recipient restrictions and provider rate limits; failed email requests no longer return false success. Unknown-account responses remain generic. Local throttles return matching Retry-After header/body values; unverified login has a clear confirmation-required code.
+- Added an opt-in isolated loopback integration helper that keeps its test password in memory, stops for existing accounts, waits for actual owner confirmation, and never generates verification tokens or auto-confirms users.
+- Validation: all 29 API tests and TypeScript build passed. Provider responses are stubbed in automated tests. Real authorized signup returned 202; unverified login returned 403 and private access 401. The owner subsequently completed the emailed link; a read-only provider lookup confirmed verified email and no superadmin role. One real recovery request returned 429 over_email_send_rate_limit; no retries. Live password login/logout and completed recovery remain unverified. The temporary test password was discarded when its process closed; no admin password/profile changes or verification bypass occurred. No commits or pushes in this pass. See docs/auth-email-testing.md.
+
 After meaningful work, update only the sections affected.
 Record actual checks and their limits. Do not mark proposals as completed work.
 Never include secrets, private data, or copied historical plans.

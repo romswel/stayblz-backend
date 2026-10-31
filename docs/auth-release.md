@@ -4,7 +4,11 @@ Production authentication uses Supabase Auth, not the local demo password. Norma
 
 New members can edit their own profile and read published racing records. The current legacy stable tables have no tenant ownership model, so shared inventory, messages, feed, dashboard, wagering and legacy mock racing APIs remain superadmin-only. No existing stable rows are migrated or deleted. The existing username `superadmin` remains an alias for the authorized, verified admin identity. A production demo-password fallback is deliberately disabled.
 
-## Required provider configuration
+## Current local verification test
+
+Verification testing uses the existing built-in Supabase email service, with no custom SMTP provider or sending domain. Keep email confirmation enabled and use only an authorized organization test address. No SMTP configuration is needed for that limited test. See `auth-email-testing.md` for local checks, rate limits, the opt-in helper, and the distinction between accepted email requests and observed delivery. The subsequent authorized code release does not change provider settings or remove sender restrictions.
+
+## Later public rollout configuration
 
 1. Configure custom SMTP in Supabase Authentication Email/SMTP. Verify a domain with your email provider and add its DNS records. Store its credentials in Supabase, never in this repository or chat.
 2. Keep Confirm Email enabled. Signup checks provider settings and refuses to create a session when email verification is disabled or cannot be checked.
@@ -28,4 +32,4 @@ Confirm credentials are captured once before React mounts and stripped from the 
 
 Automated tests stub provider/database calls and cover verified/unverified users, cookie flags, permission injection, private-data denial, confirmation, refresh, profile persistence, form validation, URL cleanup, StrictMode, logo theme switching, and responsive layouts. These tests do not prove SMTP delivery, remote table/RLS setup, provider redirect configuration, real-device behavior, or production deployment.
 
-The prepared public-racing migration is separate from user profile storage. Missing public data has no mock fallback. An unconfigured SMTP sender or missing admin invitation is a release blocker for switching the existing production admin to verified-account auth.
+The prepared public-racing migration is separate from user profile storage. Missing public data has no mock fallback. Public registration beyond authorized organization addresses needs an appropriate email provider. The current error-handling/design release preserves the existing verified-account authentication and admin identity; it does not complete public email delivery setup or the pending human recovery/login checks.
