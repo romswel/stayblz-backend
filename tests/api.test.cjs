@@ -4,6 +4,8 @@ const assert = require('node:assert/strict');
 // Never connect to a real database during this suite.
 process.env.SUPABASE_URL = 'http://127.0.0.1:1';
 process.env.SUPABASE_SECRET_KEY = 'test-only-placeholder';
+process.env.NODE_ENV = 'test';
+process.env.ENABLE_PUBLIC_DEMO = 'true';
 const { app } = require('../dist/app');
 const auth = require('../dist/middleware/auth');
 const { supabase } = require('../dist/lib/supabase');
@@ -42,7 +44,7 @@ test('demo sign-in restores session and logout revokes it', async () => {
   const { token } = await login.json();
   const headers = { Authorization: 'Bearer ' + token };
   assert.equal((await fetch(origin + '/api/auth/me', { headers })).status, 200);
-  await fetch(origin + '/api/auth/logout', { method: 'POST', headers });
+  await fetch(origin + '/api/auth/logout', { method: 'POST', headers: {...headers,'Content-Type':'application/json'} });
   assert.equal((await fetch(origin + '/api/auth/me', { headers })).status, 401);
 });
 test('sessions expire after one hour', () => {

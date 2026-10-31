@@ -1,11 +1,11 @@
 
 import { Request, Response, Router } from 'express';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireWorkspaceAdmin } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use(requireAuth, requireWorkspaceAdmin);
 
 function formatConversation(row: any) {
   return {

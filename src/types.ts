@@ -2,7 +2,11 @@ export interface User {
   id: string;
   username: string;
   displayName: string;
-  role: 'superadmin' | 'admin' | 'staff';
+  role: 'superadmin' | 'admin' | 'staff' | 'member';
+  email?: string;
+  emailVerified?: boolean;
+  passwordSetupRequired?: boolean;
+  profile?: {firstName: string; lastName: string; country: string; racingRole: string};
 }
 
 export interface Message {

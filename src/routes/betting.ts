@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import crypto from 'crypto';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireWorkspaceAdmin } from '../middleware/auth';
 import { entries } from '../data/racing';
 
 /**
@@ -74,7 +74,7 @@ const transactions: Txn[] = [
 const bets: Bet[] = [];
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, requireWorkspaceAdmin);
 
 // GET /api/betting/markets — upcoming league races with odds.
 router.get('/markets', (_req: Request, res: Response) => {

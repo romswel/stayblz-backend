@@ -1,9 +1,9 @@
 import { Request, Response, Router } from 'express';
 import { conversations, horses, inventory } from '../data/mock';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireWorkspaceAdmin } from '../middleware/auth';
 
 const router = Router();
-router.use(requireAuth);
+router.use(requireAuth, requireWorkspaceAdmin);
 
 // GET /api/dashboard — aggregated overview for the landing page.
 router.get('/', (_req: Request, res: Response) => {

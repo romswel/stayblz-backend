@@ -9,6 +9,7 @@ if (!url || !key) {
 }
 
 export const supabase = createClient(url, key, {
+  global: {fetch:(input,init)=>fetch(input,{...init,signal:init?.signal??AbortSignal.timeout(15000)})},
   auth: {
     persistSession: false,
     autoRefreshToken: false

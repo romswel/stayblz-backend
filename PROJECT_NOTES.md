@@ -22,13 +22,20 @@ Existing application source remains in place; this setup does not rebuild the ap
 ## Lessons
 Express 4 async handlers must forward rejected promises. Catch database failures without exposing internal details.
 
-## Next agreed step
-2026-11-01: User authorized a production landing release. Added a public racing overview that reads only published, non-future records, projects reviewed fields, and returns a generic unavailable response instead of mock data. Added origin checks and a commit marker in health responses.
-- Backend build and 10 stubbed API tests passed. Existing admin login and shared stable routes are unchanged in this release.
-- `migrations/202611010001_site_racing_records.sql` is tracked for review only; it was not applied remotely and contains no seed rows or legacy changes.
-- Verified-account auth/profile/signup code remains a separate local change until custom SMTP, provider redirects, and the admin invitation are ready.
+2026-11-01: Added `GET /api/public/racing-overview` for the redesigned landing.
+- Reads only published, non-future records from `site_racing_records`, limited to 30 per section, with public-field projections and malformed-record exclusion. Never reads private tables or mock arrays.
+- Prepared local-only migration `migrations/202611010001_site_racing_records.sql`: dedicated curated public content, draft default, RLS, no browser table grants, no seed records or legacy changes. NOT applied remotely. No public publishing UI is implemented yet.
+- Missing schema/database failures return generic HTTP 503, never mock data. Existing authenticated racing endpoints remain unchanged and mock-backed.
+- Backend build and 10 database-stubbed API tests passed. No remote database queries, migrations, writes, or production verification occurred.
 
-Verify the deployed public endpoint and unchanged admin session. Activate verified accounts only after email delivery/admin setup works. No force push, schema application, or data deletion is authorized by this release alone.
+## Next agreed step
+2026-11-01: User explicitly authorized audit/fixes and production release. Public-API commit `bfe7f77` was pushed and verified through the live health commit marker. The initial release preserved current admin auth while SMTP was pending.
+- Implemented Supabase confirmed-email auth, isolated provider clients, bounded provider requests, rotating HttpOnly cookies, CSRF origin/JSON checks, profile validation/editing, and limited auth actions. Provider outages return 503 without clearing otherwise valid refresh cookies. Development sessions are disabled on Render/production.
+- New members can read only published racing records and their own profile. Shared legacy tables and mock workspace endpoints are superadmin-only until tenant membership is modeled. Server-managed metadata controls admin permission; profile role inputs cannot grant access.
+- Prepared a read-only-first admin bootstrap script; an authorized invitation preserves the account, verifies email, and requires strong password setup without accepting/printing passwords or tokens. It has only been dry-run so far.
+- User confirmed SMTP/redirect setup is ready. Next: deploy account code, apply the authorized admin invitation, and verify activation without deleting existing records. No personal email/password is recorded in this notebook. The public-racing migration remains unapplied.
+
+See `docs/auth-release.md` and `docs/public-racing.md`. Distinguish tested code/deployment from actual inbox delivery and authenticated production QA.
 
 ## Maintenance
 After meaningful work, update only the sections affected.

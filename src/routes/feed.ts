@@ -1,13 +1,13 @@
 import { asyncRoute } from '../middleware/asyncRoute';
 import { Request, Response, Router } from 'express';
 import crypto from 'crypto';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireWorkspaceAdmin } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
 import { User } from '../types';
 
 const router = Router();
 
-router.use(requireAuth);
+router.use(requireAuth, requireWorkspaceAdmin);
 
 function formatPost(row: any) {
   return {

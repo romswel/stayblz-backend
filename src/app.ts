@@ -10,6 +10,7 @@ import feedRoutes from './routes/feed';
 import bettingRoutes from './routes/betting';
 import publicRacingRoutes from './routes/publicRacing';
 import { supabase } from './lib/supabase';
+import { createHash } from 'node:crypto';
 
 export const app = express();
 app.disable('x-powered-by');
@@ -53,6 +54,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
     ok: true,
     service: 'stayblz-api',
     version: process.env.RENDER_GIT_COMMIT?.slice(0, 12) ?? 'local',
+    authProvider: createHash('sha256').update(process.env.SUPABASE_URL ?? '').digest('hex').slice(0,12),
     time: new Date().toISOString(),
   });
 });
