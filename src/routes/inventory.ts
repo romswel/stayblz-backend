@@ -1,3 +1,4 @@
+import { asyncRoute } from '../middleware/asyncRoute';
 import { Request, Response, Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
@@ -25,7 +26,7 @@ function formatHorse(row: any) {
   };
 }
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', asyncRoute(async (_req: Request, res: Response) => {
   const { data, error } = await supabase
     .from('horse_inventory')
     .select('*')
@@ -40,9 +41,9 @@ router.get('/', async (_req: Request, res: Response) => {
   return res.json({
     items: (data ?? []).map(formatHorse)
   });
-});
+}));
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', asyncRoute(async (req: Request, res: Response) => {
   const id = String(req.params.id);
 
   const { data, error } = await supabase
@@ -66,6 +67,6 @@ router.get('/:id', async (req: Request, res: Response) => {
   return res.json({
     item: formatHorse(data)
   });
-});
+}));
 
 export default router;

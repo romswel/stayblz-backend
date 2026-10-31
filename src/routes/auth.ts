@@ -9,9 +9,25 @@ import {
 } from '../middleware/auth';
 
 const router = Router();
+const attempts = new Map<string, { count: number; expiresAt: number }>();
 
 // POST /api/auth/login — mock credentials for development only.
 router.post('/login', (req: Request, res: Response) => {
+  const now = Date.now();
+  for (const [key, attempt] of attempts) {
+    if (attempt.expiresAt <= now) attempts.delete(key);
+  }
+  const key = req.ip ?? 'unknown';
+  const attempt = attempts.get(key) ?? { count: 0, expiresAt: now + 60_000 };
+  if (attempt.count >= 20) {
+    res.setHeader('Retry-After', Math.max(1, Math.ceil((attempt.expiresAt - now) / 1000)));
+    return res.status(429).json({ error: 'Too many sign-in attempts. Try again shortly.' });
+  }
+  if (attempts.size >= 1000 && !attempts.has(key)) {
+    return res.status(429).json({ error: 'Sign-in is busy. Try again shortly.' });
+  }
+  attempt.count++;
+  attempts.set(key, attempt);
   const { username, password } = req.body ?? {};
   if (typeof username !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ error: 'Enter a username and password.' });

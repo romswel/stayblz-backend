@@ -1,3 +1,4 @@
+import { asyncRoute } from '../middleware/asyncRoute';
 import { Request, Response, Router } from 'express';
 import crypto from 'crypto';
 import { requireAuth } from '../middleware/auth';
@@ -18,7 +19,7 @@ function formatPost(row: any) {
   };
 }
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', asyncRoute(async (_req: Request, res: Response) => {
   const { data, error } = await supabase
     .from('feed_posts')
     .select('*')
@@ -33,9 +34,9 @@ router.get('/', async (_req: Request, res: Response) => {
   return res.json({
     posts: (data ?? []).map(formatPost)
   });
-});
+}));
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', asyncRoute(async (req: Request, res: Response) => {
   const body =
     typeof req.body?.body === 'string'
       ? req.body.body.trim()
@@ -75,6 +76,6 @@ router.post('/', async (req: Request, res: Response) => {
   return res.status(201).json({
     post: formatPost(data)
   });
-});
+}));
 
 export default router;

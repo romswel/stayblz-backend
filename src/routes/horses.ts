@@ -1,3 +1,4 @@
+import { asyncRoute } from '../middleware/asyncRoute';
 import { Request, Response, Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { supabase } from '../lib/supabase';
@@ -30,6 +31,7 @@ const fields = `
 
 function formatHorse(row: any) {
   const horse = row.horse_inventory;
+  if (!horse) return null;
 
   return {
     id: row.id,
@@ -52,7 +54,7 @@ function formatHorse(row: any) {
   };
 }
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', asyncRoute(async (_req: Request, res: Response) => {
   const { data, error } = await supabase
     .from('horse_tracking')
     .select(fields);
@@ -64,11 +66,11 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 
   return res.json({
-    horses: (data ?? []).map(formatHorse)
+    horses: (data ?? []).map(formatHorse).filter(Boolean)
   });
-});
+}));
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', asyncRoute(async (req: Request, res: Response) => {
   const { data, error } = await supabase
     .from('horse_tracking')
     .select(fields)
@@ -81,7 +83,7 @@ router.get('/:id', async (req: Request, res: Response) => {
     });
   }
 
-  if (!data) {
+  if (!data || !data.horse_inventory) {
     return res.status(404).json({
       error: 'Horse not found.'
     });
@@ -90,6 +92,6 @@ router.get('/:id', async (req: Request, res: Response) => {
   return res.json({
     horse: formatHorse(data)
   });
-});
+}));
 
 export default router;
