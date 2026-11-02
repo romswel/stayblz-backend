@@ -2,7 +2,7 @@
 
 The workspace is now optional alongside personal racing accounts. Personal messaging uses `/api/messages`; the stable conversations described here use `/api/team-messages`. See `racing-accounts.md` for that boundary and the additional migration. No stable or legacy message history was moved into personal accounts.
 
-Implemented locally, not deployed or applied to the hosted database.
+Released on 2026-11-03 after the user applied the reviewed activation SQL. Read-only hosted checks confirmed the tables and service functions; live anonymous API/proxy checks passed. Authenticated multi-account writes remain covered locally, not verified against real customer accounts.
 
 Platform permissions and stable membership are independent. A verified regular account can create up to ten owned stables. Owners and managers maintain horse inventory and tracking and invite ordinary members. Only owners assign manager roles. All current members can view stable horses, read/write the stable feed, and create private conversations with current teammates. Conversation participants alone can read/send its messages. Platform superadmin status does not bypass these checks.
 
