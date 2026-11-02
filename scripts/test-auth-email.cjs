@@ -156,8 +156,8 @@ async function main() {
   await new Promise((resolve) => server.once('listening', resolve));
   origin = 'http://127.0.0.1:' + server.address().port;
   let response = await call('/api/auth/signup', {
-    firstName: 'Email',
-    lastName: 'Verification Test',
+    firstName: 'Test',
+    lastName: 'Account',
     country: 'PH',
     racingRole: 'fan',
     email,

@@ -21,6 +21,7 @@ import {
   cookie,
   accessToken,
   providerUnavailable,
+  AdminSetupRequiredError,
 } from "../lib/identity";
 import { supabase } from "../lib/supabase";
 import type { User } from "../types";
@@ -152,7 +153,13 @@ router.post(
       }
       sessionCookies(res, data.session);
       res.json({ user: profile(data.user) });
-    } catch {
+    } catch (error) {
+      if (error instanceof AdminSetupRequiredError) {
+        res
+          .status(403)
+          .json({ code: "admin_setup_required", error: error.message });
+        return;
+      }
       res
         .status(503)
         .json({ error: "Sign-in is unavailable. Try again shortly." });
