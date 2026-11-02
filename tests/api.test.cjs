@@ -60,7 +60,7 @@ test('rejected database operations are caught and internals stay private', async
   const token = auth.createSession(auth.mockUser);
   supabase.from = () => { throw new Error('private database detail'); };
   try {
-    for (const path of ['/api/inventory', '/api/horses', '/api/feed', '/api/db-health']) {
+    for (const path of ['/api/admin/legacy/inventory', '/api/admin/legacy/horses', '/api/admin/legacy/feed', '/api/db-health']) {
       const res = await fetch(origin + path, { headers: { Authorization: 'Bearer ' + token } });
       assert.equal(res.status, 500);
       assert.equal((await res.text()).includes('private database detail'), false);
@@ -73,7 +73,7 @@ test('tracking handles a missing inventory relationship without crashing', async
   const token = auth.createSession(auth.mockUser);
   supabase.from = () => ({ select: async () => ({ data: [{ id: 'orphan', horse_inventory: null }], error: null }) });
   try {
-    const res = await fetch(origin + '/api/horses', { headers: { Authorization: 'Bearer ' + token } });
+    const res = await fetch(origin + '/api/admin/legacy/horses', { headers: { Authorization: 'Bearer ' + token } });
     assert.equal(res.status, 200);
     assert.deepEqual((await res.json()).horses, []);
   } finally { supabase.from = original; auth.destroySession(token); }

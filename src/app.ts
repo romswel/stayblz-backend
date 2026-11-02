@@ -1,33 +1,44 @@
-import express, { Request, Response, ErrorRequestHandler } from 'express';
-import cors from 'cors';
-import authRoutes from './routes/auth';
-import messageRoutes from './routes/messages';
-import inventoryRoutes from './routes/inventory';
-import horseRoutes from './routes/horses';
-import dashboardRoutes from './routes/dashboard';
-import racingRoutes from './routes/racing';
-import feedRoutes from './routes/feed';
-import bettingRoutes from './routes/betting';
-import publicRacingRoutes from './routes/publicRacing';
-import { supabase } from './lib/supabase';
-import { createHash } from 'node:crypto';
+import express, { Request, Response, ErrorRequestHandler } from "express";
+import cors from "cors";
+import authRoutes from "./routes/auth";
+import messageRoutes from "./routes/messages";
+import inventoryRoutes from "./routes/inventory";
+import horseRoutes from "./routes/horses";
+import dashboardRoutes from "./routes/dashboard";
+import racingRoutes from "./routes/racing";
+import feedRoutes from "./routes/feed";
+import bettingRoutes from "./routes/betting";
+import publicRacingRoutes from "./routes/publicRacing";
+import workspaceRoutes from "./routes/workspaces";
+import {
+  memberInventory,
+  memberHorses,
+  memberFeed,
+} from "./routes/memberStable";
+import memberMessages from "./routes/memberMessages";
+import watchlistRoutes from "./routes/watchlist";
+import adminRoutes from "./routes/admin";
+import personalMessages from "./routes/personalMessages";
+import myRacingRoutes from "./routes/myRacing";
+import { supabase } from "./lib/supabase";
+import { createHash } from "node:crypto";
 
 export const app = express();
-app.disable('x-powered-by');
-app.set('trust proxy', process.env.RENDER === 'true' ? 1 : false);
+app.disable("x-powered-by");
+app.set("trust proxy", process.env.RENDER === "true" ? 1 : false);
 app.use((_req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Cache-Control", "no-store");
   next();
 });
 
 const allowedOrigins = (
   process.env.FRONTEND_URL ??
-  (process.env.NODE_ENV === 'production'
-    ? 'https://stayblz-frontend.vercel.app'
-    : 'http://localhost:5173')
+  (process.env.NODE_ENV === "production"
+    ? "https://stayblz-frontend.vercel.app"
+    : "http://localhost:5173")
 )
-  .split(',')
+  .split(",")
   .map((origin) => origin.trim());
 
 app.use(
@@ -36,82 +47,93 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json({ limit: '32kb' }));
-app.use('/api', (req, res, next) => {
+app.use(express.json({ limit: "32kb" }));
+app.use("/api", (req, res, next) => {
   if (
-    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method) &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(req.method) &&
     req.headers.origin &&
     !allowedOrigins.includes(req.headers.origin)
   ) {
-    res.status(403).json({ error: 'This request origin is not allowed.' });
+    res.status(403).json({ error: "This request origin is not allowed." });
     return;
   }
   next();
 });
 
-app.get('/api/health', (_req: Request, res: Response) => {
+app.get("/api/health", (_req: Request, res: Response) => {
   res.json({
     ok: true,
-    service: 'stayblz-api',
-    version: process.env.RENDER_GIT_COMMIT?.slice(0, 12) ?? 'local',
-    authProvider: createHash('sha256').update(process.env.SUPABASE_URL ?? '').digest('hex').slice(0,12),
+    service: "stayblz-api",
+    version: process.env.RENDER_GIT_COMMIT?.slice(0, 12) ?? "local",
+    authProvider: createHash("sha256")
+      .update(process.env.SUPABASE_URL ?? "")
+      .digest("hex")
+      .slice(0, 12),
     time: new Date().toISOString(),
   });
 });
 
-app.get('/api/db-health', async (_req: Request, res: Response) => {
+app.get("/api/db-health", async (_req: Request, res: Response) => {
   try {
     const { error } = await supabase
-      .from('connection_test')
-      .select('id')
+      .from("connection_test")
+      .select("id")
       .limit(1);
 
     if (error) {
       return res.status(500).json({
         ok: false,
-        error: 'Database connection failed',
+        error: "Database connection failed",
       });
     }
 
-    return res.json({ ok: true, database: 'connected' });
+    return res.json({ ok: true, database: "connected" });
   } catch {
     return res.status(500).json({
       ok: false,
-      error: 'Database connection failed',
+      error: "Database connection failed",
     });
   }
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/public', publicRacingRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/racing', racingRoutes);
-app.use('/api/feed', feedRoutes);
-app.use('/api/betting', bettingRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/horses', horseRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/public", publicRacingRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/racing", racingRoutes);
+app.use("/api/workspaces", workspaceRoutes);
+app.use("/api/feed", memberFeed);
+app.use("/api/betting", bettingRoutes);
+app.use("/api/messages", personalMessages);
+app.use("/api/team-messages", memberMessages);
+app.use("/api/my-racing", myRacingRoutes);
+app.use("/api/inventory", memberInventory);
+app.use("/api/horses", memberHorses);
+app.use("/api/watchlist", watchlistRoutes);
+app.use("/api/admin", adminRoutes);
+// Unmapped pre-membership data remains intact and explicitly admin-only.
+app.use("/api/admin/legacy/feed", feedRoutes);
+app.use("/api/admin/legacy/messages", messageRoutes);
+app.use("/api/admin/legacy/inventory", inventoryRoutes);
+app.use("/api/admin/legacy/horses", horseRoutes);
 
 app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: 'Route not found.' });
+  res.status(404).json({ error: "Route not found." });
 });
 
 const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   const status =
-    error?.type === 'entity.too.large'
+    error?.type === "entity.too.large"
       ? 413
-      : error?.type === 'entity.parse.failed'
+      : error?.type === "entity.parse.failed"
         ? 400
         : 500;
-  res
-    .status(status)
-    .json({
-      error:
-        status === 413
-          ? 'Request body is too large.'
-          : status === 400
-            ? 'Invalid JSON body.'
-            : 'Something went wrong. Please try again.',
-    });
+  res.status(status).json({
+    error:
+      status === 413
+        ? "Request body is too large."
+        : status === 400
+          ? "Invalid JSON body."
+          : "Something went wrong. Please try again.",
+  });
 };
 app.use(errorHandler);

@@ -118,7 +118,8 @@ test('member sessions cannot query any shared stable data or legacy racing mocks
     for (const path of [
       '/api/inventory',
       '/api/horses',
-      '/api/messages',
+      '/api/team-messages',
+      '/api/admin/legacy/messages',
       '/api/feed',
       '/api/dashboard',
       '/api/betting/wallet',
