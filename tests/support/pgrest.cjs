@@ -188,6 +188,8 @@ const MIGRATIONS = [
   "202611030002_personal_racing.sql",
   "202611090001_account_foundation.sql",
   "202611090002_rls_guard.sql",
+  "202611100001_community_profiles.sql",
+  "202611100002_site_updates.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */

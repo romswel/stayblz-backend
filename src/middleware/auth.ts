@@ -144,3 +144,24 @@ export function requireRole(minimum: Exclude<ApiRole, 'member'>) {
     next();
   };
 }
+
+/**
+ * Attaches the signed-in account when there is a valid session, and otherwise carries on
+ * as a guest. Used by public pages that show a little more to members.
+ */
+export function optionalAuth(req: Request, res: Response, next: NextFunction): void {
+  if (!accessToken(req)) {
+    next();
+    return;
+  }
+  // Any refusal from the full check simply means "guest" here.
+  const guest = {
+    status: () => guest,
+    json: () => {
+      next();
+      return guest;
+    },
+    setHeader: () => guest,
+  } as unknown as Response;
+  void authenticate(false)(req, guest, next);
+}

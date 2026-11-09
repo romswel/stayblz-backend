@@ -23,6 +23,9 @@ const profile = {
   email: "authorized@example.test",
   password: "TestOnlyPassword123",
   confirmPassword: "TestOnlyPassword123",
+  acceptTerms: true,
+  ageConfirmed: true,
+  termsVersion: "2026-11-10",
 };
 const post = (body, ip) => ({
   method: "POST",

@@ -14,6 +14,7 @@ import watchlistRoutes from "./routes/watchlist";
 import adminRoutes from "./routes/admin";
 import personalMessages from "./routes/personalMessages";
 import myRacingRoutes from "./routes/myRacing";
+import updatesRoutes from "./routes/updates";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -60,6 +61,8 @@ app.use(
 app.use("/api", (req, res, next) =>
   req.path === "/health" ? next() : apiLimit(req, res, next),
 );
+// Update posts can be long; every other request stays small.
+app.use("/api/admin/updates", express.json({ limit: "96kb" }));
 app.use(express.json({ limit: "32kb" }));
 app.use("/api", (req, res, next) => {
   if (
@@ -110,6 +113,7 @@ app.get("/api/db-health", async (_req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRacingRoutes);
+app.use("/api/updates", updatesRoutes);
 app.use("/api/racing", racingRoutes);
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/feed", memberFeed);

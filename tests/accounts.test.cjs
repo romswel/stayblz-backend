@@ -218,7 +218,7 @@ test("with 2-step login on, a password-only session can do nothing until the cod
     assert.equal(r.status, 200);
     assert.equal(r.data.user.mfaPending, false);
     assert.equal(r.data.user.mfa.verified, true);
-    assert.equal(r.response.headers.getSetCookie().length, 2);
+    assert.equal(r.response.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).length, 2);
     assert.notEqual((await call(customer, "/api/my-racing/notes", { aal: "aal2" })).status, 403);
     const events = (await db.query("select event from public.account_events where account_id=$1", [customer])).rows.map((e) => e.event);
     assert.ok(events.includes("auth.mfa_failed"));
@@ -310,5 +310,104 @@ test("finishing 2-step set-up reports it as on even if the verify response omits
     user.factors = [];
     identity.gotrue = originals.gotrue;
     supabase.auth.admin.getUserById = originalGet;
+  }
+});
+
+test("sign-up details (community roles, Terms) are copied once into the new account", async () => {
+  const id = "55555555-5555-4555-8555-555555555555";
+  const meta = {
+    first_name: "Fia", last_name: "Farrier", country: "IE", racing_role: "farrier",
+    community_roles: ["vet", "farrier", "wizard", "media", "breeder", "owner"],
+    organisation: "Kildare Forge", city: "Naas",
+    terms_version: "2026-11-10", terms_accepted_at: "2026-11-10T08:00:00Z", marketing_opt_in: true,
+  };
+  await db.query("insert into auth.users(id,email,raw_user_meta_data) values($1,$2,$3)", [id, "fia@example.test", JSON.stringify(meta)]);
+  const { rows } = await db.query("select * from public.accounts where id=$1", [id]);
+  assert.equal(rows[0].racing_role, "farrier");
+  assert.equal(rows[0].community_roles.length, 3, "at most three extra roles, primary and unknown roles dropped");
+  assert.ok(!rows[0].community_roles.includes("farrier") && !rows[0].community_roles.includes("wizard"));
+  assert.equal(rows[0].organisation, "Kildare Forge");
+  assert.equal(rows[0].terms_version, "2026-11-10");
+  assert.ok(rows[0].terms_accepted_at);
+  assert.equal(rows[0].marketing_opt_in, true);
+  assert.equal(rows[0].updates_popup, true);
+  assert.equal(rows[0].updates_seen_at, null);
+});
+
+test("profiles save community roles, organisation, city and bio with validation", async () => {
+  const body = {
+    firstName: "Casey", lastName: "Buyer", country: "PH", racingRole: "owner",
+    communityRoles: ["syndicate", "fan"], organisation: "Manila Racing Club", city: "Manila",
+    bio: "Part-owner of two sprinters.\nAlways at the track on Sundays.",
+  };
+  const r = await call(customer, "/api/auth/profile", { body, method: "PATCH" });
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.data.user.profile.communityRoles, ["syndicate", "fan"]);
+  assert.equal(r.data.user.profile.organisation, "Manila Racing Club");
+  assert.match(r.data.user.profile.bio, /Sundays/);
+  for (const bad of [
+    { ...body, communityRoles: ["owner"] },
+    { ...body, communityRoles: ["fan", "vet", "media", "breeder"] },
+    { ...body, bio: "<script>" },
+    { ...body, bio: "x".repeat(281) },
+  ])
+    assert.equal((await call(customer, "/api/auth/profile", { body: bad, method: "PATCH" })).status, 400);
+});
+
+test("preferences save per account and reject bad values", async () => {
+  let r = await call(customer, "/api/auth/me");
+  const firstSeen = r.data.user.preferences.updatesSeenAt;
+  assert.ok(Date.parse(firstSeen) < Date.now() - 6 * 864e5, "unread counts start a week before sign-up");
+  r = await call(customer, "/api/auth/preferences", { body: { updatesSeen: true, updatesPopup: false }, method: "PATCH" });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.user.preferences.updatesPopup, false);
+  assert.ok(Date.parse(r.data.user.preferences.updatesSeenAt) > Date.now() - 60_000, "seen time is the server's now");
+  r = await call(customer, "/api/auth/preferences", { body: { marketingOptIn: true }, method: "PATCH" });
+  assert.equal(r.data.user.preferences.marketingOptIn, true);
+  assert.equal(r.data.user.preferences.updatesPopup, false);
+  for (const bad of [{ updatesSeen: "2030-01-01T00:00:00Z" }, { updatesSeen: false }, { updatesPopup: "no" }, { marketingOptIn: 1 }])
+    assert.equal((await call(customer, "/api/auth/preferences", { body: bad, method: "PATCH" })).status, 400);
+});
+
+test("'This wasn't me' removes a brand-new customer sign-up but never staff accounts", async () => {
+  const id = "66666666-6666-4666-8666-666666666666";
+  await db.query("insert into auth.users(id,email) values($1,$2)", [id, "victim@example.test"]);
+  const originalClient = identity.client;
+  const originalDelete = supabase.auth.admin.deleteUser;
+  const originalSignOut = supabase.auth.admin.signOut;
+  const deleted = [];
+  let verifiedUser;
+  identity.client = () => ({
+    auth: {
+      verifyOtp: async ({ token_hash }) =>
+        token_hash === "used-token-hash-0000"
+          ? { data: {}, error: { status: 403, code: "otp_expired" } }
+          : { data: { user: verifiedUser, session: { access_token: "a.b.c" } }, error: null },
+    },
+  });
+  supabase.auth.admin.deleteUser = async (userId) => { deleted.push(userId); return { error: null }; };
+  supabase.auth.admin.signOut = async () => ({ error: null });
+  const notMe = (tokenHash) =>
+    fetch(origin + "/api/auth/not-me", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tokenHash }) });
+  try {
+    verifiedUser = { id, created_at: new Date().toISOString() };
+    let r = await notMe("fresh-token-hash-0000");
+    assert.equal(r.status, 200);
+    assert.equal(r.headers.getSetCookie().length, 0, "never signs the person in");
+    assert.deepEqual(deleted, [id]);
+    const events = await db.query("select event from public.account_events where account_id=$1", [id]);
+    assert.ok(events.rows.some((e) => e.event === "account.disowned"));
+    verifiedUser = { id: admin, created_at: new Date().toISOString() };
+    r = await notMe("fresh-token-hash-0001");
+    assert.equal(r.status, 409);
+    verifiedUser = { id: customer, created_at: "2026-01-01T00:00:00Z" };
+    assert.equal((await notMe("fresh-token-hash-0002")).status, 409, "old accounts are not removed");
+    assert.equal((await notMe("used-token-hash-0000")).status, 400);
+    assert.equal((await notMe("short")).status, 400);
+    assert.deepEqual(deleted, [id]);
+  } finally {
+    identity.client = originalClient;
+    supabase.auth.admin.deleteUser = originalDelete;
+    supabase.auth.admin.signOut = originalSignOut;
   }
 });

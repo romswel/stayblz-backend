@@ -9,6 +9,7 @@ import { authLimit } from "../middleware/authLimits";
 import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { AccountError, accountStore, toApiRole } from "../lib/accounts";
+import { UpdateError, updateInput, updateStore } from "../lib/updates";
 
 const router = Router();
 router.use(requireAuth);
@@ -29,6 +30,87 @@ router.get(
         .status(503)
         .json({ error: "The stable directory is unavailable." });
     res.json({ stables: data ?? [] });
+  }),
+);
+
+// Updates (release notes, announcements, news): admins and superadmins write them.
+const updateFailure = (error: unknown) => {
+  const code = error instanceof UpdateError ? error.code : "unavailable";
+  return {
+    status: code === "not_allowed" ? 403 : code === "unknown_update" ? 404 : code === "slug_taken" ? 409 : 503,
+    error:
+      code === "not_allowed"
+        ? "Only admins can manage Updates."
+        : code === "unknown_update"
+          ? "That post no longer exists."
+          : code === "slug_taken"
+            ? "Another post already uses that web address. Change it and try again."
+            : "The post could not be saved. Try again.",
+  };
+};
+
+router.get(
+  "/updates",
+  requireRole("admin"),
+  asyncRoute(async (_req, res) => {
+    try {
+      res.json({ updates: await updateStore.adminList() });
+    } catch {
+      res.status(503).json({ error: "Updates are unavailable right now." });
+    }
+  }),
+);
+
+router.post(
+  "/updates",
+  authLimit("admin-updates", 60, 60_000),
+  requireRole("admin"),
+  asyncRoute(async (req, res) => {
+    const parsed = updateInput(req.body);
+    if ("error" in parsed) return res.status(400).json({ error: parsed.error });
+    try {
+      const saved = await updateStore.save((req as AuthenticatedRequest).user.id, null, parsed.value);
+      res.status(201).json({ update: saved });
+    } catch (error) {
+      const failure = updateFailure(error);
+      res.status(failure.status).json({ error: failure.error });
+    }
+  }),
+);
+
+router.put(
+  "/updates/:id",
+  authLimit("admin-updates", 60, 60_000),
+  requireRole("admin"),
+  asyncRoute(async (req, res) => {
+    const id = String(req.params.id);
+    if (!isUuid(id)) return res.status(404).json({ error: "That post no longer exists." });
+    const parsed = updateInput(req.body);
+    if ("error" in parsed) return res.status(400).json({ error: parsed.error });
+    try {
+      const saved = await updateStore.save((req as AuthenticatedRequest).user.id, id, parsed.value);
+      res.json({ update: saved });
+    } catch (error) {
+      const failure = updateFailure(error);
+      res.status(failure.status).json({ error: failure.error });
+    }
+  }),
+);
+
+router.delete(
+  "/updates/:id",
+  authLimit("admin-updates", 60, 60_000),
+  requireRole("admin"),
+  asyncRoute(async (req, res) => {
+    const id = String(req.params.id);
+    if (!isUuid(id)) return res.status(404).json({ error: "That post no longer exists." });
+    try {
+      await updateStore.remove((req as AuthenticatedRequest).user.id, id);
+      res.json({ deleted: true });
+    } catch (error) {
+      const failure = updateFailure(error);
+      res.status(failure.status).json({ error: failure.error.replace("saved", "deleted") });
+    }
   }),
 );
 
