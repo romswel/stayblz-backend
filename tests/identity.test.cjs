@@ -7,13 +7,36 @@ process.env.ENABLE_PUBLIC_DEMO = 'true';
 const { app } = require('../dist/app');
 const { identity } = require('../dist/lib/identity');
 const { supabase } = require('../dist/lib/supabase');
+const { accountStore } = require('../dist/lib/accounts');
 let server, origin;
+const originalStore = { ...accountStore };
+const accountRow = (id, extra = {}) => ({
+  id,
+  email: 'member@example.test',
+  first_name: 'Member',
+  last_name: 'User',
+  country: 'PH',
+  racing_role: 'trainer',
+  platform_role: 'customer',
+  acting_role: null,
+  status: 'active',
+  status_reason: '',
+  created_at: '2026-11-01T00:00:00Z',
+  updated_at: '2026-11-01T00:00:00Z',
+  ...extra,
+});
 before(async () => {
+  // Account rows come from the database in production; these tests stub them.
+  accountStore.load = async (id) => accountRow(id);
+  accountStore.record = async () => {};
   server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
   origin = 'http://127.0.0.1:' + server.address().port;
 });
-after(() => new Promise((resolve) => server.close(resolve)));
+after(() => {
+  Object.assign(accountStore, originalStore);
+  return new Promise((resolve) => server.close(resolve));
+});
 const member = {
   id: '11111111-1111-4111-8111-111111111111',
   email: 'member@example.test',
@@ -119,11 +142,10 @@ test('member sessions cannot query any shared stable data or legacy racing mocks
       '/api/inventory',
       '/api/horses',
       '/api/team-messages',
-      '/api/admin/legacy/messages',
       '/api/feed',
-      '/api/dashboard',
-      '/api/betting/wallet',
-      '/api/racing/entries',
+      '/api/admin/stables',
+      '/api/admin/accounts',
+      '/api/admin/events',
     ]) {
       const r = await fetch(origin + path, {
         headers: { Cookie: 'stayblz_access=fixture.payload.signature' },
@@ -216,12 +238,12 @@ test('signup fails closed if provider email confirmation is disabled', async () 
 });
 test('profile writes are tied to the verified user and ignore permissions in the request', async () => {
   const originalUser = identity.user,
-    originalUpdate = supabase.auth.admin.updateUserById;
+    originalUpdate = accountStore.updateProfile;
   let saved;
   identity.user = async () => ({ data: { user: member }, error: null });
-  supabase.auth.admin.updateUserById = async (id, input) => {
+  accountStore.updateProfile = async (id, input) => {
     saved = { id, input };
-    return { data: { user: member }, error: null };
+    return accountRow(id, input);
   };
   try {
     const r = await fetch(origin + '/api/auth/profile', {
@@ -234,12 +256,13 @@ test('profile writes are tied to the verified user and ignore permissions in the
     });
     assert.equal(r.status, 200);
     assert.equal(saved.id, member.id);
-    assert.deepEqual(Object.keys(saved.input), ['user_metadata']);
-    assert.equal(saved.input.user_metadata.role, undefined);
-    assert.equal((await r.json()).user.role, 'member');
+    assert.deepEqual(Object.keys(saved.input).sort(), ['country', 'first_name', 'last_name', 'racing_role']);
+    const body = await r.json();
+    assert.equal(body.user.role, 'member');
+    assert.equal(body.user.platformRole, 'member');
   } finally {
     identity.user = originalUser;
-    supabase.auth.admin.updateUserById = originalUpdate;
+    accountStore.updateProfile = originalUpdate;
   }
 });
 test('confirmation consumes provider verification and returns only the verified profile', async () => {
@@ -338,12 +361,13 @@ test('production never accepts the old demo session or publishes insecure cookie
 });
 
 test('admin password setup preserves its server role and unrelated provider metadata',async()=>{
- const originalUser=identity.user,originalUpdate=supabase.auth.admin.updateUserById,originalFetch=global.fetch;let saved;
+ const originalUser=identity.user,originalUpdate=supabase.auth.admin.updateUserById,originalFetch=global.fetch,originalLoad=accountStore.load;let saved;
+ accountStore.load=async(id)=>accountRow(id,{platform_role:'superadmin'});
  identity.user=async()=>({data:{user:{...member,app_metadata:{stayblz_role:'superadmin',stayblz_require_password_setup:true,provider:'email'}}},error:null});
  supabase.auth.admin.updateUserById=async(id,details)=>{saved={id,details};return{data:{user:member},error:null};};
  global.fetch=(url,options)=>String(url).endsWith('/auth/v1/user')&&options?.method==='PUT'?Promise.resolve(new Response('{}',{status:200})):originalFetch(url,options);
  try{
-   const before=await fetch(origin+'/api/dashboard',{headers:{Cookie:'stayblz_access=fixture.payload.signature'}});assert.equal(before.status,403);
+   const before=await fetch(origin+'/api/admin/stables',{headers:{Cookie:'stayblz_access=fixture.payload.signature'}});assert.equal(before.status,403);
    const response=await fetch(origin+'/api/auth/password',{...post({password:'NewTestOnlyPassword123',confirmPassword:'NewTestOnlyPassword123'}),headers:{'Content-Type':'application/json',Cookie:'stayblz_access=fixture.payload.signature'}});assert.equal(response.status,200);assert.equal(saved.id,member.id);assert.deepEqual(saved.details.app_metadata,{stayblz_role:'superadmin',stayblz_require_password_setup:false,provider:'email'});assert.equal(response.headers.getSetCookie().length,2);
- }finally{identity.user=originalUser;supabase.auth.admin.updateUserById=originalUpdate;global.fetch=originalFetch;}
+ }finally{identity.user=originalUser;supabase.auth.admin.updateUserById=originalUpdate;global.fetch=originalFetch;accountStore.load=originalLoad;}
 });

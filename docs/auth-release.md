@@ -1,6 +1,6 @@
 # Account rollout
 
-Production authentication uses Supabase Auth, not the local demo password. Normal signup stores only first name, last name, country, and self-described racing role in the provider's account metadata. Passwords are handled by Supabase. Self-described roles never assign permissions: the backend grants membership by default and trusts only server-managed `app_metadata.stayblz_role` for the superadmin.
+Production authentication uses Supabase Auth, not the local demo password. Passwords are handled by Supabase. Since 2026-11-09 roles and profiles live in the `accounts` table (see `docs/accounts-and-security.md`); sign-up details are copied there once. Self-described racing roles never assign permissions, and `app_metadata.stayblz_role` is no longer read.
 
 New members can edit their own profile and read published racing records. The current legacy stable tables have no tenant ownership model, so shared inventory, messages, feed, dashboard, wagering and legacy mock racing APIs remain superadmin-only. No existing stable rows are migrated or deleted. The existing username `superadmin` remains an alias for the authorized, verified admin identity. A production demo-password fallback is deliberately disabled.
 
@@ -13,12 +13,12 @@ Verification testing uses the existing built-in Supabase email service, with no 
 1. Configure custom SMTP in Supabase Authentication Email/SMTP. Verify a domain with your email provider and add its DNS records. Store its credentials in Supabase, never in this repository or chat.
 2. Keep Confirm Email enabled. Signup checks provider settings and refuses to create a session when email verification is disabled or cannot be checked.
 3. Set the provider Site URL to your production frontend origin. Add the exact `/auth/confirm` and `/auth/confirm?recovery=1` redirect URLs. The default confirmation template can stay enabled; the app also supports token-hash confirmation templates.
-4. In the backend deployment, set `NODE_ENV=production`, `FRONTEND_URL` to the exact production frontend origin, and `AUTH_SITE_URL` to that origin. Existing server-only Supabase credentials remain on the server. `SUPERADMIN_EMAIL` is an optional exact alias mapping.
+4. In the backend deployment, set `NODE_ENV=production`, `FRONTEND_URL` to the exact production frontend origin, and `AUTH_SITE_URL` to that origin. Existing server-only Supabase credentials remain on the server. `SUPERADMIN_EMAIL` is no longer used: sign-in is by email only.
 5. Keep the Vercel `/api` rewrite pointed to the deployed backend. Production browser API calls use this same-origin proxy instead of cross-site third-party cookies.
 
 ## Preserve the admin
 
-Run `node scripts/bootstrap-admin.cjs <authorized-email>` first. This is a read-only dry run. After SMTP and redirects are ready, `--apply` sends an invitation for a missing account or preserves an existing account and assigns the server-owned admin role. It never accepts a password on the command line, deletes accounts, auto-confirms email, or prints verification links/tokens.
+Admin roles are granted only in the Supabase SQL editor: `select public.set_platform_role('person@example.com', 'admin');` (or `'superadmin'`). The old `scripts/bootstrap-admin.cjs` and the shared `superadmin` username were removed on 2026-11-09.
 
 The invite opens `/auth/confirm`, verifies email ownership, and asks the admin to set a strong password. Shared stable access is blocked until that setup is complete. The old public demo password is not copied to production. Test the admin login, restore, logout, and its stable workspace before calling a rollout complete.
 

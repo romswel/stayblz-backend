@@ -6,6 +6,7 @@ import {
 import type { Request, Response } from "express";
 import { supabase } from "./supabase";
 import type { User } from "../types";
+import { effectiveRole, toApiRole, type AccountRow } from "./accounts";
 
 export const identity = {
   client: () =>
@@ -28,6 +29,31 @@ export const identity = {
       },
     ),
   user: (token: string) => supabase.auth.getUser(token),
+  /** Calls the provider's user-scoped auth API (2-step login) with the caller's own token. */
+  async gotrue(
+    path: string,
+    token: string,
+    method: "GET" | "POST" | "DELETE",
+    body?: unknown,
+  ): Promise<{ ok: boolean; status: number; data: Record<string, unknown> }> {
+    const response = await fetch(`${process.env.SUPABASE_URL}/auth/v1${path}`, {
+      method,
+      headers: {
+        apikey:
+          process.env.SUPABASE_PUBLISHABLE_KEY ||
+          process.env.SUPABASE_SECRET_KEY!,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
+    });
+    const data = (await response.json().catch(() => ({}))) as Record<
+      string,
+      unknown
+    >;
+    return { ok: response.ok, status: response.status, data };
+  },
 };
 export function providerUnavailable(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
@@ -41,32 +67,57 @@ export function providerUnavailable(error: unknown): boolean {
   );
 }
 
-export function profile(user: ProviderUser): User {
-  const info = user.user_metadata ?? {};
-  const firstName =
-    typeof info.first_name === "string" ? info.first_name.slice(0, 60) : "";
-  const lastName =
-    typeof info.last_name === "string" ? info.last_name.slice(0, 60) : "";
-  const admin = user.app_metadata?.stayblz_role === "superadmin";
+export function tokenAal(token: string | undefined): "aal1" | "aal2" {
+  // Only read after the provider verified this token.
+  try {
+    const claims = JSON.parse(
+      Buffer.from(token?.split(".")[1] ?? "", "base64url").toString("utf8"),
+    );
+    return claims?.aal === "aal2" ? "aal2" : "aal1";
+  } catch {
+    return "aal1";
+  }
+}
+
+export const verifiedTotp = (user: ProviderUser) =>
+  (user.factors ?? []).filter(
+    (factor) => factor.factor_type === "totp" && factor.status === "verified",
+  );
+
+/** The browser-facing account. Roles and profile come from `accounts`, never from the token. */
+export function profile(
+  user: ProviderUser,
+  account: AccountRow,
+  aal: "aal1" | "aal2" = "aal1",
+): User {
+  const role = toApiRole(effectiveRole(account));
+  const platformRole = toApiRole(account.platform_role);
+  const mfaEnabled = verifiedTotp(user).length > 0;
   return {
     id: user.id,
-    username: admin ? "superadmin" : (user.email ?? ""),
+    username: user.email ?? account.email,
     displayName:
-      `${firstName} ${lastName}`.trim() || (admin ? "Super Admin" : "Member"),
-    role: admin ? "superadmin" : "member",
+      `${account.first_name} ${account.last_name}`.trim() ||
+      (platformRole === "superadmin"
+        ? "Super Admin"
+        : platformRole === "admin"
+          ? "Admin"
+          : "Member"),
+    role,
+    platformRole,
+    actingRole: role === platformRole ? null : (role as "admin" | "member"),
+    accountStatus: account.status,
     email: user.email,
     emailVerified: !!user.email_confirmed_at,
     passwordSetupRequired:
       user.app_metadata?.stayblz_require_password_setup === true,
+    mfa: { enabled: mfaEnabled, verified: aal === "aal2" },
+    mfaPending: mfaEnabled && aal !== "aal2",
     profile: {
-      firstName,
-      lastName,
-      country:
-        typeof info.country === "string" ? info.country.slice(0, 80) : "",
-      racingRole:
-        typeof info.racing_role === "string"
-          ? info.racing_role.slice(0, 40)
-          : "",
+      firstName: account.first_name,
+      lastName: account.last_name,
+      country: account.country,
+      racingRole: account.racing_role,
     },
   };
 }
@@ -115,49 +166,10 @@ export function clearSession(res: Response) {
   res.clearCookie("stayblz_refresh", { ...baseCookie(), path: "/api/auth" });
 }
 
-let adminAlias: { email: string; expires: number } | null = null;
-export class AdminSetupRequiredError extends Error {
-  constructor() {
-    super(
-      "Finish your admin email invitation and set a password before logging in.",
-    );
-  }
-}
-export async function resolveEmail(value: string): Promise<string | null> {
-  if (value.includes("@")) return value.toLowerCase();
-  if (value.toLowerCase() !== "superadmin") return null;
-  if (process.env.SUPERADMIN_EMAIL)
-    return process.env.SUPERADMIN_EMAIL.trim().toLowerCase();
-  if (adminAlias && adminAlias.expires > Date.now()) return adminAlias.email;
-  let pendingAdmin = false;
-  // Compatibility for the existing admin username. Only a server-assigned role qualifies.
-  for (let page = 1; page <= 10; page++) {
-    const { data, error } = await supabase.auth.admin.listUsers({
-      page,
-      perPage: 100,
-    });
-    if (error) throw error;
-    if (
-      data.users.some(
-        (user) =>
-          user.app_metadata?.stayblz_role === "superadmin" &&
-          !user.email_confirmed_at &&
-          user.email,
-      )
-    )
-      pendingAdmin = true;
-    const admin = data.users.find(
-      (user) =>
-        user.app_metadata?.stayblz_role === "superadmin" &&
-        user.email_confirmed_at &&
-        user.email,
-    );
-    if (admin?.email) {
-      adminAlias = { email: admin.email, expires: Date.now() + 60_000 };
-      return admin.email;
-    }
-    if (data.users.length < 100) break;
-  }
-  if (pendingAdmin) throw new AdminSetupRequiredError();
-  return null;
+/** Sign-in is by email only. There is no shared admin username. */
+export function resolveEmail(value: string): string | null {
+  const email = value.trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254
+    ? email
+    : null;
 }
