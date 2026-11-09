@@ -1,7 +1,6 @@
 const { test, before, after } = require("node:test");
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const { PGlite } = require("@electric-sql/pglite");
+const { installDatabase } = require("./support/pgrest.cjs");
 process.env.SUPABASE_URL = "http://127.0.0.1:1";
 process.env.SUPABASE_SECRET_KEY = "test-only";
 process.env.NODE_ENV = "test";
@@ -20,199 +19,14 @@ let db,
   stableB,
   horseA,
   conversation,
-  originalFrom,
-  originalRpc;
+  database;
 const tokens = new Map();
 let personalConversation;
-const identifier = (v) => {
-  assert.match(v, /^[a-z_]+$/);
-  return '"' + v + '"';
-};
-const param = (v) =>
-  Array.isArray(v)
-    ? "{" + v.join(",") + "}"
-    : v && typeof v === "object"
-      ? JSON.stringify(v)
-      : v;
-// A small test-only PostgREST adapter runs the application's real queries against
-// an isolated PostgreSQL engine. No provider or remote database is contacted.
-class Query {
-  constructor(table) {
-    this.table = table;
-    this.filters = [];
-    this.orders = [];
-    this.max = null;
-    this.mode = "select";
-    this.one = false;
-  }
-  select(fields = "*", options = {}) {
-    this.count = options.count;
-    this.fields = fields;
-    return this;
-  }
-  eq(k, v) {
-    this.filters.push([k, "=", v]);
-    return this;
-  }
-  neq(k, v) {
-    this.filters.push([k, "<>", v]);
-    return this;
-  }
-  gt(k, v) {
-    this.filters.push([k, ">", v]);
-    return this;
-  }
-  lte(k, v) {
-    this.filters.push([k, "<=", v]);
-    return this;
-  }
-  lt(k, v) {
-    this.filters.push([k, "<", v]);
-    return this;
-  }
-  is(k, v) {
-    assert.equal(v, null);
-    this.filters.push([k, "is", null]);
-    return this;
-  }
-  in(k, v) {
-    this.filters.push([k, "in", v]);
-    return this;
-  }
-  contains(k, v) {
-    this.filters.push([k, "@>", v]);
-    return this;
-  }
-  order(k, o = {}) {
-    this.orders.push(
-      identifier(k) + (o.ascending === false ? " desc" : " asc"),
-    );
-    return this;
-  }
-  limit(n) {
-    this.max = n;
-    return this;
-  }
-  maybeSingle() {
-    this.one = true;
-    return this;
-  }
-  single() {
-    this.one = true;
-    return this;
-  }
-  insert(data) {
-    this.mode = "insert";
-    this.input = data;
-    return this;
-  }
-  update(data) {
-    this.mode = "update";
-    this.input = data;
-    return this;
-  }
-  delete() {
-    this.mode = "delete";
-    return this;
-  }
-  upsert(data, options) {
-    this.mode = "upsert";
-    this.input = data;
-    this.conflict = options.onConflict;
-    return this;
-  }
-  or(value) {
-    const match = value.match(
-      /^sent_at.lt.(.+),and\(sent_at.eq.(.+),id.lt.([0-9a-f-]+)\)$/,
-    );
-    assert.ok(match);
-    this.cursor = [match[1], match[3]];
-    return this;
-  }
-  async execute() {
-    try {
-      const values = [];
-      const bind = (value) => {
-        values.push(param(value));
-        return "$" + values.length;
-      };
-      const table = "public." + identifier(this.table);
-      let sql;
-      if (this.mode === "insert" || this.mode === "upsert") {
-        const columns = Object.keys(this.input);
-        sql = `insert into ${table} (${columns.map(identifier)}) values (${columns.map((k) => bind(this.input[k]))})`;
-        if (this.mode === "upsert")
-          sql +=
-            ` on conflict (${this.conflict.split(",").map(identifier)}) do update set ` +
-            columns
-              .filter((k) => !this.conflict.split(",").includes(k))
-              .map((k) => `${identifier(k)}=excluded.${identifier(k)}`)
-              .join(",");
-      } else if (this.mode === "update")
-        sql =
-          `update ${table} set ` +
-          Object.entries(this.input)
-            .map(([k, v]) => `${identifier(k)}=${bind(v)}`)
-            .join(",");
-      else
-        sql =
-          this.mode === "delete"
-            ? `delete from ${table}`
-            : `select * from ${table}`;
-      const where = this.filters.map(([key, op, value]) =>
-        op === "in"
-          ? `${identifier(key)} = any(${bind(value)}::text[])`
-          : op === "is"
-            ? `${identifier(key)} is null`
-            : `${identifier(key)} ${op} ${bind(value)}`,
-      );
-      if (this.cursor) {
-        const time = bind(this.cursor[0]),
-          id = bind(this.cursor[1]);
-        where.push(`(sent_at<${time} or (sent_at=${time} and id<${id}))`);
-      }
-      if (where.length) sql += " where " + where.join(" and ");
-      if (this.mode === "select") {
-        if (this.orders.length) sql += " order by " + this.orders.join(",");
-        if (this.max !== null) sql += " limit " + this.max;
-      } else sql += " returning *";
-      let { rows } = await db.query(sql, values);
-      // PostgREST returns timestamps as ISO strings rather than JS Date objects.
-      rows = JSON.parse(JSON.stringify(rows));
-      if (this.fields?.includes("member_stables("))
-        for (const row of rows) {
-          row.member_stables = (
-            await db.query("select id,name from member_stables where id=$1", [
-              row.stable_id,
-            ])
-          ).rows[0];
-        }
-      return {
-        data: this.one ? (rows[0] ?? null) : rows,
-        error: null,
-        count: rows.length,
-      };
-    } catch (error) {
-      return { data: null, error };
-    }
-  }
-  then(resolve, reject) {
-    return this.execute().then(resolve, reject);
-  }
-}
 before(async () => {
-  db = new PGlite();
-  await db.exec(
-    "create schema auth;create table auth.users(id uuid primary key);create role anon;create role authenticated;create role service_role bypassrls;",
-  );
-  for (const file of [
-    "202611010001_site_racing_records.sql",
-    "202611030001_member_workspaces.sql",
-    "202611030002_personal_racing.sql",
-  ])
-    await db.exec(fs.readFileSync("migrations/" + file, "utf8"));
+  database = await installDatabase(supabase);
+  db = database.db;
   for (const id of [alice, bob, carol, admin]) {
-    await db.query("insert into auth.users values($1)", [id]);
+    await db.query("insert into auth.users(id,email) values($1,$2)", [id, id + "@example.test"]);
     tokens.set(
       id,
       auth.createSession({
@@ -224,31 +38,14 @@ before(async () => {
       }),
     );
   }
-  originalFrom = supabase.from;
-  originalRpc = supabase.rpc;
-  supabase.from = (table) => new Query(table);
-  supabase.rpc = async (name, args) => {
-    try {
-      const values = Object.values(args).map(param);
-      const { rows } = await db.query(
-        `select * from public.${identifier(name)}(${values.map((_, i) => "$" + (i + 1))})`,
-        values,
-      );
-      return { data: rows[0]?.[name] ?? rows[0], error: null };
-    } catch (error) {
-      return { data: null, error };
-    }
-  };
   server = app.listen(0, "127.0.0.1");
   await new Promise((resolve) => server.once("listening", resolve));
   origin = "http://127.0.0.1:" + server.address().port;
 });
 after(async () => {
-  supabase.from = originalFrom;
-  supabase.rpc = originalRpc;
   for (const token of tokens.values()) auth.destroySession(token);
   await new Promise((resolve) => server.close(resolve));
-  await db.close();
+  await database.close();
 });
 async function call(user, path, { stable, body, method } = {}) {
   const response = await fetch(origin + path, {

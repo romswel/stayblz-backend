@@ -10,19 +10,23 @@ import {
   demoEnabled,
   mockUser,
   requireAuth,
+  requireSession,
+  suspendedMessage,
   type AuthenticatedRequest,
 } from "../middleware/auth";
 import {
   identity,
   profile,
   resolveEmail,
-  sessionCookies,
   clearSession,
   cookie,
   accessToken,
   providerUnavailable,
-  AdminSetupRequiredError,
+  tokenAal,
 } from "../lib/identity";
+import { accountStore } from "../lib/accounts";
+import { startSession } from "../lib/session";
+import accountSecurity from "./accountSecurity";
 import { supabase } from "../lib/supabase";
 import type { User } from "../types";
 import { sendAuthEmailError, isUnknownRecipient } from "../lib/authEmailErrors";
@@ -110,7 +114,7 @@ router.post(
       return;
     }
     try {
-      const email = await resolveEmail(username.trim());
+      const email = resolveEmail(username);
       if (!email) {
         res.status(401).json({ error: "Incorrect email or password." });
         return;
@@ -137,6 +141,12 @@ router.post(
         );
         return;
       }
+      if (error?.code === "user_banned") {
+        res
+          .status(403)
+          .json({ code: "account_suspended", error: suspendedMessage });
+        return;
+      }
       if (error || !data.session || !data.user?.email_confirmed_at) {
         if (error?.code === "email_not_confirmed") {
           res.status(403).json({
@@ -151,15 +161,13 @@ router.post(
           .json({ error: "Incorrect credentials or email not verified." });
         return;
       }
-      sessionCookies(res, data.session);
-      res.json({ user: profile(data.user) });
-    } catch (error) {
-      if (error instanceof AdminSetupRequiredError) {
-        res
-          .status(403)
-          .json({ code: "admin_setup_required", error: error.message });
-        return;
-      }
+      const user = await startSession(res, data.user, data.session);
+      if (!user) return;
+      await accountStore.record("auth.signed_in", user.id, user.id, {
+        mfaPending: !!user.mfaPending,
+      });
+      res.json({ user });
+    } catch {
       res
         .status(503)
         .json({ error: "Sign-in is unavailable. Try again shortly." });
@@ -391,8 +399,12 @@ router.post(
         });
         return;
       }
-      sessionCookies(res, result.data.session);
-      res.json({ user: profile(result.data.user) });
+      const user = await startSession(
+        res,
+        result.data.user,
+        result.data.session,
+      );
+      if (user) res.json({ user });
     } catch {
       res.status(503).json({
         error: "Email confirmation is unavailable. Try again shortly.",
@@ -427,8 +439,8 @@ router.post(
           .json({ error: "Your session expired. Please log in again." });
         return;
       }
-      sessionCookies(res, data.session);
-      res.json({ user: profile(data.user) });
+      const user = await startSession(res, data.user, data.session);
+      if (user) res.json({ user });
     } catch {
       res
         .status(503)
@@ -437,7 +449,7 @@ router.post(
   }),
 );
 
-router.get("/me", requireAuth, (req: Request, res: Response) =>
+router.get("/me", requireSession, (req: Request, res: Response) =>
   res.json({ user: (req as Request & { user: User }).user }),
 );
 
@@ -458,16 +470,27 @@ router.patch(
       res.status(409).json({ error: "Development profiles are read-only." });
       return;
     }
-    const { data, error } = await supabase.auth.admin.updateUserById(user.id, {
-      user_metadata: details,
-    });
-    if (error || !data.user) {
+    const provider = (req as AuthenticatedRequest).providerUser;
+    // The superadmin identity is fixed so a shared or stolen login cannot rename it.
+    // Checked against the real role, so "View as: Customer" does not unlock it.
+    if ((req as AuthenticatedRequest).account?.platform_role === "superadmin") {
+      res.status(403).json({
+        code: "profile_locked",
+        error: "The superadmin profile is locked and cannot be edited here.",
+      });
+      return;
+    }
+    try {
+      if (!provider) throw new Error("no provider identity");
+      const account = await accountStore.updateProfile(user.id, details);
+      res.json({
+        user: profile(provider, account, tokenAal(accessToken(req))),
+      });
+    } catch {
       res
         .status(503)
         .json({ error: "Profile could not be saved. Try again later." });
-      return;
     }
-    res.json({ user: profile(data.user) });
   }),
 );
 
@@ -511,7 +534,6 @@ router.post(
       const result = await supabase.auth.admin.updateUserById(user.id, {
         app_metadata: {
           ...(req as AuthenticatedRequest).providerUser?.app_metadata,
-          stayblz_role: user.role,
           stayblz_require_password_setup: false,
         },
       });
@@ -523,10 +545,13 @@ router.post(
         return;
       }
     }
+    await accountStore.record("auth.password_changed", user.id, user.id);
     clearSession(res);
     res.json({ ok: true });
   }),
 );
+
+router.use(accountSecurity);
 
 router.post(
   "/logout",

@@ -1,13 +1,7 @@
 import express, { Request, Response, ErrorRequestHandler } from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth";
-import messageRoutes from "./routes/messages";
-import inventoryRoutes from "./routes/inventory";
-import horseRoutes from "./routes/horses";
-import dashboardRoutes from "./routes/dashboard";
 import racingRoutes from "./routes/racing";
-import feedRoutes from "./routes/feed";
-import bettingRoutes from "./routes/betting";
 import publicRacingRoutes from "./routes/publicRacing";
 import workspaceRoutes from "./routes/workspaces";
 import {
@@ -22,13 +16,29 @@ import personalMessages from "./routes/personalMessages";
 import myRacingRoutes from "./routes/myRacing";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
+import { apiLimit } from "./middleware/authLimits";
 
 export const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", process.env.RENDER === "true" ? 1 : false);
+const production =
+  process.env.NODE_ENV === "production" || process.env.RENDER === "true";
 app.use((_req, res, next) => {
+  // The API only ever returns JSON: nothing here may be framed, cached or run as a page.
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Cross-Origin-Resource-Policy", "same-site");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+  );
+  if (production)
+    res.setHeader(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains",
+    );
   next();
 });
 
@@ -46,6 +56,9 @@ app.use(
     origin: allowedOrigins,
     credentials: true,
   }),
+);
+app.use("/api", (req, res, next) =>
+  req.path === "/health" ? next() : apiLimit(req, res, next),
 );
 app.use(express.json({ limit: "32kb" }));
 app.use("/api", (req, res, next) => {
@@ -76,9 +89,8 @@ app.get("/api/health", (_req: Request, res: Response) => {
 app.get("/api/db-health", async (_req: Request, res: Response) => {
   try {
     const { error } = await supabase
-      .from("connection_test")
-      .select("id")
-      .limit(1);
+      .from("accounts")
+      .select("id", { count: "exact", head: true });
 
     if (error) {
       return res.status(500).json({
@@ -98,11 +110,9 @@ app.get("/api/db-health", async (_req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRacingRoutes);
-app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/racing", racingRoutes);
 app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/feed", memberFeed);
-app.use("/api/betting", bettingRoutes);
 app.use("/api/messages", personalMessages);
 app.use("/api/team-messages", memberMessages);
 app.use("/api/my-racing", myRacingRoutes);
@@ -110,11 +120,6 @@ app.use("/api/inventory", memberInventory);
 app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/admin", adminRoutes);
-// Unmapped pre-membership data remains intact and explicitly admin-only.
-app.use("/api/admin/legacy/feed", feedRoutes);
-app.use("/api/admin/legacy/messages", messageRoutes);
-app.use("/api/admin/legacy/inventory", inventoryRoutes);
-app.use("/api/admin/legacy/horses", horseRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Route not found." });

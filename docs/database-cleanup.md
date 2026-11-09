@@ -1,5 +1,10 @@
 # Database cleanup review
 
+> **Update 2026-11-09:** the user approved retiring all six legacy tables and wiping test content.
+> Their backend routes were removed and `/api/db-health` now checks `accounts`. The one-time SQL is
+> `artifacts/release/20261109-account-reset/01_reset_test_data.sql`; a full row backup was exported first
+> to `artifacts/backups/20261109-pre-reset/`. The review below is kept for history.
+
 Read-only review on 2026-11-05. The configured provider fingerprint matched the live backend. PostgREST metadata and HEAD-only counts confirmed 20 API-visible public tables. No customer records were fetched, and no schema or data was changed. This inventory does not cover private schemas, external consumers, or SQL-only dependencies.
 
 ## Keep the current tables

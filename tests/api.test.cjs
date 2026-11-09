@@ -27,9 +27,32 @@ test('health responds without caching or framework disclosure', async () => {
   assert.equal(res.headers.get('x-powered-by'), null);
 });
 test('private routes reject unauthenticated requests', async () => {
-  for (const path of ['/api/inventory', '/api/horses', '/api/feed', '/api/messages', '/api/betting/wallet']) {
+  for (const path of ['/api/inventory', '/api/horses', '/api/feed', '/api/messages', '/api/admin/accounts', '/api/auth/mfa']) {
     assert.equal((await fetch(origin + path)).status, 401);
   }
+});
+test('retired mock and legacy endpoints no longer exist', async () => {
+  const token = auth.createSession(auth.mockUser);
+  try {
+    for (const path of ['/api/betting/wallet', '/api/dashboard', '/api/racing/entries', '/api/admin/legacy/inventory', '/api/admin/legacy/messages'])
+      assert.equal((await fetch(origin + path, { headers: { Authorization: 'Bearer ' + token } })).status, 404, path);
+  } finally { auth.destroySession(token); }
+});
+test('API responses carry defensive security headers', async () => {
+  const res = await fetch(origin + '/api/health');
+  assert.equal(res.headers.get('x-frame-options'), 'DENY');
+  assert.equal(res.headers.get('referrer-policy'), 'no-referrer');
+  assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
+});
+test('the whole API has a per-client request ceiling', async () => {
+  process.env.API_RATE_LIMIT_PER_MINUTE = '3';
+  try {
+    const statuses = [];
+    for (let i = 0; i < 5; i++) statuses.push((await fetch(origin + '/api/public/missing-' + i)).status);
+    assert.deepEqual(statuses.slice(0, 3).map((s) => s === 429), [false, false, false]);
+    assert.equal(statuses[3], 429);
+    assert.equal((await fetch(origin + '/api/health')).status, 200);
+  } finally { delete process.env.API_RATE_LIMIT_PER_MINUTE; }
 });
 test('malformed and oversized JSON return safe JSON errors', async () => {
   let res = await fetch(origin + '/api/auth/login', { ...post({}), body: '{' });
@@ -60,22 +83,12 @@ test('rejected database operations are caught and internals stay private', async
   const token = auth.createSession(auth.mockUser);
   supabase.from = () => { throw new Error('private database detail'); };
   try {
-    for (const path of ['/api/admin/legacy/inventory', '/api/admin/legacy/horses', '/api/admin/legacy/feed', '/api/db-health']) {
+    for (const path of ['/api/db-health']) {
       const res = await fetch(origin + path, { headers: { Authorization: 'Bearer ' + token } });
       assert.equal(res.status, 500);
       assert.equal((await res.text()).includes('private database detail'), false);
     }
     assert.equal((await fetch(origin + '/api/health')).status, 200);
-  } finally { supabase.from = original; auth.destroySession(token); }
-});
-test('tracking handles a missing inventory relationship without crashing', async () => {
-  const original = supabase.from;
-  const token = auth.createSession(auth.mockUser);
-  supabase.from = () => ({ select: async () => ({ data: [{ id: 'orphan', horse_inventory: null }], error: null }) });
-  try {
-    const res = await fetch(origin + '/api/admin/legacy/horses', { headers: { Authorization: 'Bearer ' + token } });
-    assert.equal(res.status, 200);
-    assert.deepEqual((await res.json()).horses, []);
   } finally { supabase.from = original; auth.destroySession(token); }
 });
 test('login attempts are bounded', async () => {
