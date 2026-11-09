@@ -11,6 +11,7 @@ import {
   accessToken,
   clearSession,
   identity,
+  persistentSession,
   profile,
   tokenAal,
   verifiedTotp,
@@ -175,7 +176,7 @@ router.post(
     } catch {
       /* keep the verify response */
     }
-    const user = await startSession(res, fresh, outcome.session);
+    const user = await startSession(res, fresh, outcome.session, persistentSession(req));
     if (!user) return;
     await accountStore.record(
       factor.status === "verified" ? "auth.mfa_passed" : "auth.mfa_enabled",

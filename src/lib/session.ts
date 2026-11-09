@@ -15,6 +15,7 @@ export async function startSession(
   res: Response,
   user: ProviderUser,
   session: Session,
+  persistent = true,
 ): Promise<User | null> {
   let account;
   try {
@@ -31,6 +32,6 @@ export async function startSession(
     res.status(403).json({ code: "account_suspended", error: suspendedMessage });
     return null;
   }
-  sessionCookies(res, session);
+  sessionCookies(res, session, persistent);
   return profile(user, account, tokenAal(session.access_token));
 }

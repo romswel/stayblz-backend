@@ -21,10 +21,12 @@ import {
   clearSession,
   cookie,
   accessToken,
+  persistentSession,
   providerUnavailable,
   tokenAal,
 } from "../lib/identity";
-import { accountStore } from "../lib/accounts";
+import { accountStore, AccountError } from "../lib/accounts";
+import { profileInput, TERMS_VERSION } from "../lib/profileInput";
 import { startSession } from "../lib/session";
 import accountSecurity from "./accountSecurity";
 import { supabase } from "../lib/supabase";
@@ -43,30 +45,6 @@ const strongPassword = (value: unknown): value is string =>
   /[a-z]/.test(value) &&
   /[A-Z]/.test(value) &&
   /[0-9]/.test(value);
-const shortName = (value: unknown): value is string =>
-  typeof value === "string" &&
-  value.trim().length >= 1 &&
-  value.trim().length <= 60 &&
-  !/[\u0000-\u001f<>]/.test(value);
-const countryValid = (value: unknown): value is string =>
-  typeof value === "string" && /^[A-Z]{2}$/.test(value);
-const roles = ["owner", "trainer", "jockey", "staff", "fan", "other"];
-function profileInput(body: Record<string, unknown>) {
-  if (
-    !shortName(body.firstName) ||
-    !shortName(body.lastName) ||
-    !countryValid(body.country) ||
-    typeof body.racingRole !== "string" ||
-    !roles.includes(body.racingRole)
-  )
-    return null;
-  return {
-    first_name: body.firstName.trim(),
-    last_name: body.lastName.trim(),
-    country: body.country,
-    racing_role: body.racingRole,
-  };
-}
 const appOrigin = () =>
   (
     process.env.AUTH_SITE_URL ||
@@ -95,6 +73,8 @@ router.post(
   authLimit("login", 20, 60_000),
   asyncRoute(async (req, res) => {
     const { username, password } = req.body ?? {};
+    // "Keep me signed in" is on unless the person turns it off.
+    const remember = req.body?.remember !== false;
     if (
       typeof username !== "string" ||
       typeof password !== "string" ||
@@ -161,10 +141,11 @@ router.post(
           .json({ error: "Incorrect credentials or email not verified." });
         return;
       }
-      const user = await startSession(res, data.user, data.session);
+      const user = await startSession(res, data.user, data.session, remember);
       if (!user) return;
       await accountStore.record("auth.signed_in", user.id, user.id, {
         mfaPending: !!user.mfaPending,
+        remember,
       });
       res.json({ user });
     } catch {
@@ -189,7 +170,19 @@ router.post(
     ) {
       res.status(400).json({
         error:
-          "Enter your name, country, racing role, valid email, and matching passwords of 12–128 characters with uppercase, lowercase, and a number.",
+          "Enter your name, country, role in racing, valid email, and matching passwords of 12–128 characters with uppercase, lowercase, and a number.",
+      });
+      return;
+    }
+    if (
+      body.acceptTerms !== true ||
+      body.ageConfirmed !== true ||
+      body.termsVersion !== TERMS_VERSION
+    ) {
+      res.status(400).json({
+        code: "terms_required",
+        error:
+          "Confirm you are 18 or older and accept the Terms of Use and Privacy Notice to create an account.",
       });
       return;
     }
@@ -228,7 +221,16 @@ router.post(
       const { error } = await identity.client().auth.signUp({
         email: body.email.trim().toLowerCase(),
         password: body.password,
-        options: { data: details, emailRedirectTo: confirmationUrl() },
+        options: {
+          data: {
+            ...details,
+            terms_version: TERMS_VERSION,
+            terms_accepted_at: new Date().toISOString(),
+            age_confirmed: true,
+            marketing_opt_in: body.marketingOptIn === true,
+          },
+          emailRedirectTo: confirmationUrl(),
+        },
       });
       if (
         error &&
@@ -342,15 +344,35 @@ router.post(
       type,
       accessToken: providedAccess,
       refreshToken,
+      email,
+      code,
     } = req.body ?? {};
     const client = identity.client();
     try {
       let result;
       if (
+        emailValid(email) &&
+        typeof code === "string" &&
+        /^\d{6}$/.test(code) &&
+        ["signup", "recovery"].includes(type)
+      ) {
+        // The 6-digit code from the email, typed on the "Check your email" screen.
+        result = await client.auth.verifyOtp({
+          email: email.trim().toLowerCase(),
+          token: code,
+          type: type === "recovery" ? "recovery" : "email",
+        });
+        if (result.error && type === "signup" && !providerUnavailable(result.error))
+          result = await client.auth.verifyOtp({
+            email: email.trim().toLowerCase(),
+            token: code,
+            type: "signup",
+          });
+      } else if (
         typeof tokenHash === "string" &&
         tokenHash.length >= 16 &&
         tokenHash.length <= 512 &&
-        ["email", "signup", "invite", "recovery"].includes(type)
+        ["email", "signup", "invite", "recovery", "email_change"].includes(type)
       ) {
         result = await client.auth.verifyOtp({ token_hash: tokenHash, type });
       } else if (
@@ -393,10 +415,18 @@ router.post(
         !result.data.session ||
         !result.data.user?.email_confirmed_at
       ) {
-        res.status(400).json({
-          error:
-            "The confirmation link has expired or was already used. Request a new email.",
-        });
+        res.status(400).json(
+          typeof code === "string"
+            ? {
+                code: "code_invalid",
+                error:
+                  "That code is wrong or has expired. Check the latest email or request a new one.",
+              }
+            : {
+                error:
+                  "The confirmation link has expired or was already used. Request a new email.",
+              },
+        );
         return;
       }
       const user = await startSession(
@@ -439,7 +469,12 @@ router.post(
           .json({ error: "Your session expired. Please log in again." });
         return;
       }
-      const user = await startSession(res, data.user, data.session);
+      const user = await startSession(
+        res,
+        data.user,
+        data.session,
+        persistentSession(req),
+      );
       if (user) res.json({ user });
     } catch {
       res
@@ -486,7 +521,14 @@ router.patch(
       res.json({
         user: profile(provider, account, tokenAal(accessToken(req))),
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof AccountError && error.code === "not_allowed") {
+        res.status(403).json({
+          code: "profile_locked",
+          error: "This profile can't be edited here.",
+        });
+        return;
+      }
       res
         .status(503)
         .json({ error: "Profile could not be saved. Try again later." });
@@ -553,17 +595,120 @@ router.post(
 
 router.use(accountSecurity);
 
+/** Settings that only affect the signed-in person. */
+router.patch(
+  "/preferences",
+  authLimit("preferences", 30, 60_000),
+  requireAuth,
+  asyncRoute(async (req, res) => {
+    const { marketingOptIn, updatesSeen, updatesPopup } = req.body ?? {};
+    const request = req as AuthenticatedRequest;
+    if (
+      (marketingOptIn !== undefined && typeof marketingOptIn !== "boolean") ||
+      (updatesPopup !== undefined && typeof updatesPopup !== "boolean") ||
+      (updatesSeen !== undefined && updatesSeen !== true)
+    ) {
+      res.status(400).json({ error: "Those settings could not be saved." });
+      return;
+    }
+    if (!request.providerUser) {
+      res.status(409).json({ error: "Development profiles cannot save settings." });
+      return;
+    }
+    try {
+      const account = await accountStore.updatePreferences(request.user.id, {
+        marketingOptIn,
+        updatesSeen,
+        updatesPopup,
+      });
+      res.json({
+        user: profile(request.providerUser, account, tokenAal(accessToken(req))),
+      });
+    } catch {
+      res.status(503).json({ error: "Settings could not be saved. Try again later." });
+    }
+  }),
+);
+
+/**
+ * "This wasn't me" from a sign-up email. Using the email's one-time token proves the
+ * person controls that inbox; the unconfirmed sign-up made with their address is then
+ * removed so nobody else can use it. Only brand-new customer sign-ups qualify.
+ */
+router.post(
+  "/not-me",
+  authLimit("confirm", 10, 10 * 60_000),
+  asyncRoute(async (req, res) => {
+    const { tokenHash } = req.body ?? {};
+    if (typeof tokenHash !== "string" || tokenHash.length < 16 || tokenHash.length > 512) {
+      res.status(400).json({ error: "This link is incomplete. Open the latest email again." });
+      return;
+    }
+    try {
+      const result = await identity
+        .client()
+        .auth.verifyOtp({ token_hash: tokenHash, type: "email" });
+      if (providerUnavailable(result.error)) {
+        res.status(503).json({ error: "This is unavailable right now. Try again shortly." });
+        return;
+      }
+      const user = result.data?.user;
+      if (result.error || !user) {
+        res.status(400).json({
+          code: "link_used",
+          error:
+            "This link has expired or was already used. If someone is using your email, reset the password with “Forgot password” or contact Stayblz.",
+        });
+        return;
+      }
+      const account = await accountStore.load(user.id).catch(() => null);
+      const ageDays = (Date.now() - Date.parse(user.created_at)) / 86_400_000;
+      if (!account || account.platform_role !== "customer" || !(ageDays < 14)) {
+        if (result.data.session)
+          await supabase.auth.admin
+            .signOut(result.data.session.access_token, "global")
+            .catch(() => undefined);
+        res.status(409).json({
+          error:
+            "This account can't be removed automatically. Reset its password with “Forgot password”, or contact Stayblz.",
+        });
+        return;
+      }
+      await accountStore.record("account.disowned", user.id, null, {
+        createdAt: user.created_at,
+      });
+      const removed = await supabase.auth.admin.deleteUser(user.id);
+      if (removed.error) {
+        res.status(503).json({ error: "The sign-up could not be removed. Try again shortly." });
+        return;
+      }
+      res.json({ ok: true });
+    } catch {
+      res.status(503).json({ error: "This is unavailable right now. Try again shortly." });
+    }
+  }),
+);
+
+/** Signs out this device; `{ everywhere: true }` signs out every device. */
 router.post(
   "/logout",
   asyncRoute(async (req, res) => {
     const token = accessToken(req);
+    const everywhere = req.body?.everywhere === true;
     clearSession(res);
+    let signedOutId: string | undefined;
     if (token) {
       const demo = !!getSessionUser(token);
+      // Look the person up before their sessions are revoked, for the activity log.
+      if (everywhere && !demo)
+        signedOutId = (await identity.user(token).catch(() => null))?.data?.user?.id;
       destroySession(token);
       if (!demo)
         try {
-          const result = await supabase.auth.admin.signOut(token, "global");
+          const result = await supabase.auth.admin.signOut(
+            token,
+            everywhere ? "global" : "local",
+          );
           if (result.error) throw result.error;
         } catch {
           res.status(503).json({
@@ -573,6 +718,8 @@ router.post(
           return;
         }
     }
+    if (signedOutId)
+      await accountStore.record("auth.signed_out_everywhere", signedOutId, signedOutId);
     res.json({ ok: true });
   }),
 );

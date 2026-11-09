@@ -14,5 +14,15 @@ export interface User {
   mfa?: { enabled: boolean; verified: boolean };
   /** 2-step login is on but this session has not passed it yet. */
   mfaPending?: boolean;
-  profile?: {firstName: string; lastName: string; country: string; racingRole: string};
+  profile?: {
+    firstName: string;
+    lastName: string;
+    country: string;
+    racingRole: string;
+    communityRoles?: string[];
+    organisation?: string;
+    city?: string;
+    bio?: string;
+  };
+  preferences?: { marketingOptIn: boolean; updatesSeenAt: string; updatesPopup: boolean };
 }

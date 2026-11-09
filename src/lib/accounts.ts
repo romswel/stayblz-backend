@@ -15,8 +15,28 @@ export interface AccountRow {
   acting_role: "customer" | "admin" | null;
   status: "active" | "suspended" | "closed";
   status_reason: string;
+  community_roles: string[];
+  organisation: string;
+  city: string;
+  bio: string;
+  terms_version: string;
+  terms_accepted_at: string | null;
+  marketing_opt_in: boolean;
+  updates_seen_at: string | null;
+  updates_popup: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface ProfileDetails {
+  first_name: string;
+  last_name: string;
+  country: string;
+  racing_role: string;
+  community_roles: string[];
+  organisation: string;
+  city: string;
+  bio: string;
 }
 
 const rank: Record<string, number> = {
@@ -66,21 +86,28 @@ async function call(name: string, args: Record<string, unknown>) {
 /** Overridable in tests. Every write goes through a checked database function. */
 export const accountStore = {
   load: (userId: string) => call("ensure_account", { p_user: userId }),
-  updateProfile: (
-    userId: string,
-    details: {
-      first_name: string;
-      last_name: string;
-      country: string;
-      racing_role: string;
-    },
-  ) =>
+  updateProfile: (userId: string, details: ProfileDetails) =>
     call("update_account_profile", {
       p_user: userId,
       p_first: details.first_name,
       p_last: details.last_name,
       p_country: details.country,
       p_racing_role: details.racing_role,
+      p_community_roles: details.community_roles,
+      p_organisation: details.organisation,
+      p_city: details.city,
+      p_bio: details.bio,
+    }),
+  /** Undefined leaves a setting unchanged. */
+  updatePreferences: (
+    userId: string,
+    prefs: { marketingOptIn?: boolean; updatesSeen?: boolean; updatesPopup?: boolean },
+  ) =>
+    call("update_account_preferences", {
+      p_user: userId,
+      p_marketing: prefs.marketingOptIn ?? null,
+      p_updates_seen: prefs.updatesSeen ?? null,
+      p_updates_popup: prefs.updatesPopup ?? null,
     }),
   setActingRole: (userId: string, role: PlatformRole) =>
     call("set_account_acting_role", { p_user: userId, p_role: role }),

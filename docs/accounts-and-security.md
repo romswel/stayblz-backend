@@ -45,6 +45,15 @@ Every customer-owned table (subscriptions, carts, orders, entitlements, saved ho
 - Passwords: 12–128 chars with upper, lower and a number. Supabase hashes them; we never see them.
 - Sessions in HttpOnly, Secure, SameSite=Lax cookies; access token ≤ 1 h, refresh token scoped to `/api/auth`.
 - Every request re-reads the account row, so a suspension or role change applies immediately.
+- Logging out ends only this device's session; "Sign out of all devices" (Account → Security) ends every session.
+- "Keep me signed in" off → browser-session cookies that end when the browser closes, also after renewals.
+- Sign-up requires accepting the current Terms version and confirming age 18+; both are stored on the account.
+- Email confirmation and password reset accept a 6-digit code as well as the link (rate-limited, single use).
+- "This wasn't me" in the sign-up email removes an unconfirmed sign-up (<14 days old, customer only) after
+  proving control of the inbox with the email's one-time token. It never signs anyone in.
+- Updates posts (`site_updates`) are written only by active admins/superadmins through `save_site_update` /
+  `delete_site_update` (each write is recorded in `account_events`); readers get published posts via the API, and
+  members-only posts need a signed-in account. Post text is plain text (no `<`), rendered without HTML.
 - Suspension also bans the identity at Supabase, so no new session can start.
 - Optional 2-step login (TOTP authenticator apps). When it's on, a password-only session can only enter the
   code or sign out. Turning it off requires a fresh code and signs out every session.

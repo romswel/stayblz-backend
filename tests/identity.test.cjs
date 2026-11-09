@@ -68,6 +68,9 @@ const signup = {
   email: 'new@example.test',
   password: 'TestOnlyPassword123',
   confirmPassword: 'TestOnlyPassword123',
+  acceptTerms: true,
+  ageConfirmed: true,
+  termsVersion: '2026-11-10',
 };
 function mockClient(auth) {
   const original = identity.client;
@@ -203,11 +206,20 @@ test('signup saves only profile fields and requires a confirmation before any se
     assert.equal(r.status, 202);
     assert.equal((await r.json()).requiresVerification, true);
     assert.equal(r.headers.getSetCookie().length, 0);
-    assert.deepEqual(saved.options.data, {
+    const { terms_accepted_at, ...data } = saved.options.data;
+    assert.match(terms_accepted_at, /^\d{4}-\d{2}-\d{2}T/);
+    assert.deepEqual(data, {
       first_name: 'Member',
       last_name: 'User',
       country: 'PH',
       racing_role: 'fan',
+      community_roles: [],
+      organisation: '',
+      city: '',
+      bio: '',
+      terms_version: '2026-11-10',
+      age_confirmed: true,
+      marketing_opt_in: false,
     });
     assert.equal(
       saved.options.emailRedirectTo,
@@ -256,7 +268,7 @@ test('profile writes are tied to the verified user and ignore permissions in the
     });
     assert.equal(r.status, 200);
     assert.equal(saved.id, member.id);
-    assert.deepEqual(Object.keys(saved.input).sort(), ['country', 'first_name', 'last_name', 'racing_role']);
+    assert.deepEqual(Object.keys(saved.input).sort(), ['bio', 'city', 'community_roles', 'country', 'first_name', 'last_name', 'organisation', 'racing_role']);
     const body = await r.json();
     assert.equal(body.user.role, 'member');
     assert.equal(body.user.platformRole, 'member');
@@ -276,7 +288,7 @@ test('confirmation consumes provider verification and returns only the verified 
     );
     assert.equal(r.status, 200);
     assert.equal((await r.json()).user.emailVerified, true);
-    assert.ok(r.headers.getSetCookie().length === 2);
+    assert.ok(r.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).length === 2);
   } finally {
     restore();
   }
@@ -299,7 +311,7 @@ test('refresh rotates cookies, and expired tokens clear cookies without a mock f
     };
     let r = await fetch(origin + '/api/auth/refresh', options);
     assert.equal(r.status, 200);
-    assert.ok(r.headers.getSetCookie().length === 2);
+    assert.ok(r.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).length === 2);
     fail = true;
     r = await fetch(origin + '/api/auth/refresh', options);
     assert.equal(r.status, 401);
@@ -368,6 +380,90 @@ test('admin password setup preserves its server role and unrelated provider meta
  global.fetch=(url,options)=>String(url).endsWith('/auth/v1/user')&&options?.method==='PUT'?Promise.resolve(new Response('{}',{status:200})):originalFetch(url,options);
  try{
    const before=await fetch(origin+'/api/admin/stables',{headers:{Cookie:'stayblz_access=fixture.payload.signature'}});assert.equal(before.status,403);
-   const response=await fetch(origin+'/api/auth/password',{...post({password:'NewTestOnlyPassword123',confirmPassword:'NewTestOnlyPassword123'}),headers:{'Content-Type':'application/json',Cookie:'stayblz_access=fixture.payload.signature'}});assert.equal(response.status,200);assert.equal(saved.id,member.id);assert.deepEqual(saved.details.app_metadata,{stayblz_role:'superadmin',stayblz_require_password_setup:false,provider:'email'});assert.equal(response.headers.getSetCookie().length,2);
+   const response=await fetch(origin+'/api/auth/password',{...post({password:'NewTestOnlyPassword123',confirmPassword:'NewTestOnlyPassword123'}),headers:{'Content-Type':'application/json',Cookie:'stayblz_access=fixture.payload.signature'}});assert.equal(response.status,200);assert.equal(saved.id,member.id);assert.deepEqual(saved.details.app_metadata,{stayblz_role:'superadmin',stayblz_require_password_setup:false,provider:'email'});assert.equal(response.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).length,2);
  }finally{identity.user=originalUser;supabase.auth.admin.updateUserById=originalUpdate;global.fetch=originalFetch;accountStore.load=originalLoad;}
+});
+
+test('sign-up requires the current Terms, the age confirmation and valid community roles', async () => {
+  // One HTTP call: the sign-up limiter allows only a few per hour from one address.
+  const r = await fetch(origin + '/api/auth/signup', post({ ...signup, acceptTerms: false }));
+  assert.equal(r.status, 400);
+  assert.equal((await r.json()).code, 'terms_required');
+  const { profileInput } = require('../dist/lib/profileInput');
+  assert.ok(profileInput({ ...signup, communityRoles: ['vet', 'media'], organisation: 'Ridge Farm', city: 'Lexington' }));
+  for (const body of [
+    { ...signup, communityRoles: ['vet', 'vet'] },
+    { ...signup, communityRoles: ['vet', 'media', 'breeder', 'farrier'] },
+    { ...signup, communityRoles: ['fan'] },
+    { ...signup, communityRoles: ['wizard'] },
+    { ...signup, communityRoles: 'vet' },
+    { ...signup, racingRole: 'superadmin' },
+    { ...signup, organisation: '<b>Stable</b>' },
+    { ...signup, city: 'a'.repeat(81) },
+    { ...signup, firstName: 'Line' + String.fromCharCode(10) + 'break' },
+  ]) assert.equal(profileInput(body), null, JSON.stringify(body).slice(0, 90));
+});
+test('a 6-digit email code confirms an account and a wrong code is refused', async () => {
+  let calls = [];
+  const restore = mockClient({
+    verifyOtp: async (input) => {
+      calls.push(input);
+      return input.token === '123456'
+        ? { data: { user: member, session }, error: null }
+        : { data: {}, error: { status: 403, code: 'otp_expired', message: 'expired' } };
+    },
+  });
+  try {
+    let r = await fetch(origin + '/api/auth/confirm', post({ email: 'Member@Example.test', code: '000000', type: 'signup' }));
+    assert.equal(r.status, 400);
+    assert.equal((await r.json()).code, 'code_invalid');
+    assert.equal(r.headers.getSetCookie().length, 0);
+    assert.deepEqual(calls[0], { email: 'member@example.test', token: '000000', type: 'email' });
+    calls = [];
+    r = await fetch(origin + '/api/auth/confirm', post({ email: 'member@example.test', code: '123456', type: 'signup' }));
+    assert.equal(r.status, 200);
+    assert.equal(r.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).length, 2);
+    r = await fetch(origin + '/api/auth/confirm', post({ email: 'member@example.test', code: '12345', type: 'signup' }));
+    assert.equal(r.status, 400);
+  } finally {
+    restore();
+  }
+});
+test('Keep me signed in off issues browser-session cookies that stay session-only on renewal', async () => {
+  const restore = mockClient({
+    signInWithPassword: async () => ({ data: { user: member, session }, error: null }),
+    refreshSession: async () => ({ data: { user: member, session }, error: null }),
+  });
+  try {
+    let r = await fetch(origin + '/api/auth/login', post({ username: member.email, password: 'unused', remember: false }));
+    assert.equal(r.status, 200);
+    let cookies = r.headers.getSetCookie();
+    const auth = cookies.filter((c) => /^stayblz_(access|refresh)=/.test(c));
+    assert.equal(auth.length, 2);
+    assert.ok(auth.every((c) => !/Max-Age|Expires/i.test(c)), 'session cookies have no lifetime');
+    assert.ok(cookies.some((c) => c.startsWith('stayblz_session_only=1')));
+    r = await fetch(origin + '/api/auth/refresh', { ...post({}), headers: { 'Content-Type': 'application/json', Cookie: 'stayblz_refresh=x; stayblz_session_only=1' } });
+    cookies = r.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c));
+    assert.ok(cookies.every((c) => !/Max-Age|Expires/i.test(c)));
+    r = await fetch(origin + '/api/auth/login', post({ username: member.email, password: 'unused' }));
+    assert.ok(r.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).every((c) => /Max-Age/i.test(c)));
+  } finally {
+    restore();
+  }
+});
+test('logging out signs out only this device unless every device is asked for', async () => {
+  const originalSignOut = supabase.auth.admin.signOut;
+  const originalUser = identity.user;
+  const scopes = [];
+  supabase.auth.admin.signOut = async (_token, scope) => { scopes.push(scope); return { error: null }; };
+  identity.user = async () => ({ data: { user: member }, error: null });
+  try {
+    const headers = { 'Content-Type': 'application/json', Cookie: 'stayblz_access=a.b.c' };
+    assert.equal((await fetch(origin + '/api/auth/logout', { method: 'POST', headers, body: '{}' })).status, 200);
+    assert.equal((await fetch(origin + '/api/auth/logout', { method: 'POST', headers, body: JSON.stringify({ everywhere: true }) })).status, 200);
+    assert.deepEqual(scopes, ['local', 'global']);
+  } finally {
+    supabase.auth.admin.signOut = originalSignOut;
+    identity.user = originalUser;
+  }
 });

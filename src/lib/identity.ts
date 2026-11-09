@@ -118,6 +118,18 @@ export function profile(
       lastName: account.last_name,
       country: account.country,
       racingRole: account.racing_role,
+      communityRoles: account.community_roles ?? [],
+      organisation: account.organisation ?? "",
+      city: account.city ?? "",
+      bio: account.bio ?? "",
+    },
+    preferences: {
+      marketingOptIn: !!account.marketing_opt_in,
+      // Never marked as read: count posts from a week before the account was made.
+      updatesSeenAt:
+        account.updates_seen_at ??
+        new Date(Date.parse(account.created_at || "2026-11-01T00:00:00Z") - 7 * 864e5).toISOString(),
+      updatesPopup: account.updates_popup !== false,
     },
   };
 }
@@ -149,21 +161,35 @@ export function accessToken(req: Request): string | undefined {
       : undefined
     : cookie(req, "stayblz_access");
 }
-export function sessionCookies(res: Response, session: Session) {
+/**
+ * "Keep me signed in" (persistent, default): cookies survive closing the browser and the
+ * refresh cookie lasts 30 days from the last visit. Otherwise both are browser-session
+ * cookies, and a marker keeps renewals session-only too.
+ */
+export function sessionCookies(res: Response, session: Session, persistent = true) {
   res.cookie("stayblz_access", session.access_token, {
     ...baseCookie(),
     path: "/api",
-    maxAge: Math.min(session.expires_in || 3600, 3600) * 1000,
+    ...(persistent
+      ? { maxAge: Math.min(session.expires_in || 3600, 3600) * 1000 }
+      : {}),
   });
   res.cookie("stayblz_refresh", session.refresh_token, {
     ...baseCookie(),
     path: "/api/auth",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    ...(persistent ? { maxAge: 30 * 24 * 60 * 60 * 1000 } : {}),
   });
+  if (persistent)
+    res.clearCookie("stayblz_session_only", { ...baseCookie(), path: "/api/auth" });
+  else
+    res.cookie("stayblz_session_only", "1", { ...baseCookie(), path: "/api/auth" });
 }
+export const persistentSession = (req: Request) =>
+  cookie(req, "stayblz_session_only") !== "1";
 export function clearSession(res: Response) {
   res.clearCookie("stayblz_access", { ...baseCookie(), path: "/api" });
   res.clearCookie("stayblz_refresh", { ...baseCookie(), path: "/api/auth" });
+  res.clearCookie("stayblz_session_only", { ...baseCookie(), path: "/api/auth" });
 }
 
 /** Sign-in is by email only. There is no shared admin username. */
