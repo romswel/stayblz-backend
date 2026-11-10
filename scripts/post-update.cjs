@@ -24,7 +24,7 @@ if (flag === "--dry-run") {
 (async () => {
   const { supabase } = require(path.join(__dirname, "../dist/lib/supabase"));
   const existing = await supabase.from("site_updates").select("id").eq("slug", value.slug).maybeSingle();
-  if (existing.error) throw new Error("Could not read Updates (is migration 202611100002 applied?)");
+  if (existing.error) throw new Error("Could not read Updates (is migration 202611100003 applied?)");
   const { data, error } = await supabase.rpc("save_site_update", {
     p_actor: null,
     p_id: existing.data?.id ?? null,

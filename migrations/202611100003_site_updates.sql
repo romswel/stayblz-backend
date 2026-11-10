@@ -1,9 +1,9 @@
--- LOCAL: apply after 202611100001_community_profiles.sql. Non-destructive.
+-- LOCAL: apply after 202611100002_updates_preferences.sql. Non-destructive and safe to re-run.
 -- Stayblz Updates: release notes, announcements, news, maintenance and event posts.
 -- Admins write through checked functions; readers get published posts through the API only.
 begin;
 
-create table public.site_updates (
+create table if not exists public.site_updates (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and length(slug) <= 80),
   kind text not null default 'update'
@@ -28,14 +28,14 @@ create table public.site_updates (
   updated_at timestamptz not null default now(),
   constraint site_updates_published_has_date check (status = 'draft' or published_at is not null)
 );
-create index site_updates_feed on public.site_updates (status, published_at desc, id desc);
+create index if not exists site_updates_feed on public.site_updates (status, published_at desc, id desc);
 
 alter table public.site_updates enable row level security;
 revoke all on public.site_updates from public, anon, authenticated, service_role;
 grant select on public.site_updates to service_role;
 
 -- One post as the API shows it. Drafts and archived posts are never returned to readers.
-create function public.site_update_json(u public.site_updates, p_full boolean) returns jsonb
+create or replace function public.site_update_json(u public.site_updates, p_full boolean) returns jsonb
 language sql stable set search_path = '' as $$
   select jsonb_build_object(
     'id', u.id, 'slug', u.slug, 'kind', u.kind, 'title', u.title, 'summary', u.summary,
@@ -49,7 +49,7 @@ $$;
 
 -- Reader feed: newest first, optional kind / search / cursor. Pinned posts come back
 -- separately on the first page so they stay on top.
-create function public.list_site_updates(p_members boolean, p_kind text, p_query text,
+create or replace function public.list_site_updates(p_members boolean, p_kind text, p_query text,
   p_before timestamptz, p_limit integer)
 returns jsonb
 language plpgsql stable security definer set search_path = '' as $$
@@ -88,7 +88,7 @@ begin
 end $$;
 
 -- One published post with its neighbours for "newer / older" links.
-create function public.get_site_update(p_slug text, p_members boolean) returns jsonb
+create or replace function public.get_site_update(p_slug text, p_members boolean) returns jsonb
 language plpgsql stable security definer set search_path = '' as $$
 declare u public.site_updates; newer jsonb; older jsonb;
 begin
@@ -108,7 +108,7 @@ begin
 end $$;
 
 -- Staff view: every post, any status.
-create function public.admin_list_site_updates() returns jsonb
+create or replace function public.admin_list_site_updates() returns jsonb
 language sql stable security definer set search_path = '' as $$
   select coalesce(jsonb_agg(public.site_update_json(u, true)
     || jsonb_build_object('createdAt', u.created_at) order by u.status = 'published' desc,
@@ -119,7 +119,7 @@ $$;
 
 -- Create (p_id null) or edit a post. p_actor null is the release script (service key);
 -- otherwise the actor must be an active admin or superadmin. Publishing stamps the time once.
-create function public.save_site_update(p_actor uuid, p_id uuid, p_data jsonb) returns jsonb
+create or replace function public.save_site_update(p_actor uuid, p_id uuid, p_data jsonb) returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
   result public.site_updates;
@@ -166,7 +166,7 @@ begin
   return public.site_update_json(result, true) || jsonb_build_object('createdAt', result.created_at);
 end $$;
 
-create function public.delete_site_update(p_actor uuid, p_id uuid) returns boolean
+create or replace function public.delete_site_update(p_actor uuid, p_id uuid) returns boolean
 language plpgsql security definer set search_path = '' as $$
 declare gone public.site_updates;
 begin
