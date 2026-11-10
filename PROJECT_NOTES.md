@@ -106,3 +106,5 @@ Never include secrets, private data, or copied historical plans.
   `bulletin_seen` left unused). Both new migrations are re-runnable.
 - Checks: `npm test` 74/74, audit 0.
 - Not verified: real Supabase OTP code verification and token_hash `not-me` round trip, template rendering in real mail clients, custom SMTP.
+
+2026-11-10 RELEASED: SQL `release.sql` applied by the user (verified read-only: `updates_*` columns, `site_updates`, 5 posts, members-only log hidden from guests). Backend pushed on `main` (`8b9a4f2`); `/api/health` reports it. Live guest checks: `/api/updates` 200, members-only post 404 for guests, `/api/auth/me`, `/api/admin/updates`, `/api/my-racing/follows` 401, racing overview 200. Checks before push: `npm test` 74/74, audit 0. Not verified live: signed-in flows, admin posting, real email codes (custom SMTP not set up).
