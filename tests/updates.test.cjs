@@ -145,6 +145,8 @@ test("posts are validated, editing keeps the date, and changes are audited", asy
     post({ kind: "gossip" }),
     post({ items: [{ tag: "hype", text: "x" }] }),
     post({ slug: "Bad Slug" }),
+    post({ slug: "manage" }),
+    post({ slug: "", title: "Manage" }),
     post({ summary: "", body: "", items: [] }),
   ])
     assert.equal((await call(admin, "/api/admin/updates", { body: bad })).status, 400, JSON.stringify(bad).slice(0, 60));
