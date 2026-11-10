@@ -114,3 +114,5 @@ Never include secrets, private data, or copied historical plans.
 - Not verified: real Supabase/PostgREST behaviour of the new RPCs, real data volumes.
 
 2026-11-11 RELEASED racing data: SQL applied by Claude via DATABASE_URL (before/after checked: 7 racing tables, 29 functions, bulletin_seen removed, 3 accounts and 5 posts untouched, RLS on, no browser grants). Backend `fe3da7d` live; live checks: all public racing endpoints 200, unpublished horse 404, admin/member routes 401, anonymous 60 KB import 401. Updates post `racing-cards-results-and-publishing` published via `npm run post-update`. Checks before push: npm test 83/83, audit 0. Not verified live: admin publishing with real data, signed-in racing pages.
+
+2026-11-11 RELEASED `247e784`: Updates posts can no longer use the reserved web address `manage` (`RESERVED_SLUGS` in `lib/updateInput.ts`; it is the admin page `/updates/manage` in the app). npm test 83/83, audit 0; `/api/health` reports it; guest checks 200/401 as expected. Posted Updates post `back-buttons-saved-forms-and-app-install` for the frontend UX release.
