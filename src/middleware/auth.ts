@@ -149,7 +149,7 @@ export function requireRole(minimum: Exclude<ApiRole, 'member'>) {
  * Attaches the signed-in account when there is a valid session, and otherwise carries on
  * as a guest. Used by public pages that show a little more to members.
  */
-export function optionalAuth(req: Request, res: Response, next: NextFunction): void {
+export function optionalAuth(req: Request, _res: Response, next: NextFunction): void {
   if (!accessToken(req)) {
     next();
     return;
