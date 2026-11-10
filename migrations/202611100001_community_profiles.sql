@@ -1,4 +1,4 @@
--- LOCAL: apply after 202611090001_account_foundation.sql. Non-destructive.
+-- APPLIED to production (2026-11-10, this exact version). Never edit; later changes go in new migrations.
 -- Community profile (who you are in racing), Terms acceptance and personal preferences.
 begin;
 
@@ -29,8 +29,8 @@ alter table public.accounts
   add column terms_version text not null default '' check (length(terms_version) <= 20),
   add column terms_accepted_at timestamptz,
   add column marketing_opt_in boolean not null default false,
-  add column updates_seen_at timestamptz,
-  add column updates_popup boolean not null default true;
+  add column bulletin_seen text not null default '' check (length(bulletin_seen) <= 40),
+  add column bulletin_popup boolean not null default true;
 
 -- Same signature as before; now also copies the new sign-up details (cleaned) once.
 create or replace function public.ensure_account(p_user uuid) returns public.accounts
@@ -87,17 +87,16 @@ begin
 end $$;
 
 -- Null leaves a setting unchanged.
--- p_updates_seen = true records "read every Update up to now" (server time, never the client's).
 create function public.update_account_preferences(p_user uuid, p_marketing boolean,
-  p_updates_seen boolean, p_updates_popup boolean)
+  p_bulletin_seen text, p_bulletin_popup boolean)
 returns public.accounts
 language plpgsql security definer set search_path = '' as $$
 declare result public.accounts;
 begin
   update public.accounts set
     marketing_opt_in = coalesce(p_marketing, marketing_opt_in),
-    updates_seen_at = case when p_updates_seen then now() else updates_seen_at end,
-    updates_popup = coalesce(p_updates_popup, updates_popup),
+    bulletin_seen = coalesce(left(p_bulletin_seen, 40), bulletin_seen),
+    bulletin_popup = coalesce(p_bulletin_popup, bulletin_popup),
     updated_at = now()
   where id = p_user and status = 'active' returning * into result;
   if not found then raise exception 'unknown_account'; end if;
@@ -106,11 +105,11 @@ end $$;
 
 revoke all on function public.stayblz_community_roles(),
   public.update_account_profile(uuid, text, text, text, text, text[], text, text, text),
-  public.update_account_preferences(uuid, boolean, boolean, boolean)
+  public.update_account_preferences(uuid, boolean, text, boolean)
   from public, anon, authenticated, service_role;
 grant execute on function public.stayblz_community_roles(),
   public.update_account_profile(uuid, text, text, text, text, text[], text, text, text),
-  public.update_account_preferences(uuid, boolean, boolean, boolean) to service_role;
+  public.update_account_preferences(uuid, boolean, text, boolean) to service_role;
 
 notify pgrst, 'reload schema';
 commit;
