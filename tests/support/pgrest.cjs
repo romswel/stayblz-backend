@@ -9,8 +9,9 @@ const identifier = (v) => {
   assert.match(v, /^[a-z_]+$/);
   return '"' + v + '"';
 };
+// Lists of plain values become Postgres arrays; lists of objects stay JSON (like PostgREST).
 const param = (v) =>
-  Array.isArray(v)
+  Array.isArray(v) && v.every((item) => item === null || typeof item !== "object")
     ? "{" + v.join(",") + "}"
     : v && typeof v === "object"
       ? JSON.stringify(v)
@@ -142,7 +143,7 @@ class Query {
             : `select * from ${table}`;
       const where = this.filters.map(([key, op, value]) =>
         op === "in"
-          ? `${identifier(key)} = any(${bind(value)}::text[])`
+          ? `${identifier(key)}::text = any(${bind(value)}::text[])`
           : op === "is"
             ? `${identifier(key)} is null`
             : `${identifier(key)} ${op} ${bind(value)}`,
@@ -191,6 +192,8 @@ const MIGRATIONS = [
   "202611100001_community_profiles.sql",
   "202611100002_updates_preferences.sql",
   "202611100003_site_updates.sql",
+  "202611100004_drop_bulletin_seen.sql",
+  "202611100005_racing_core.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */

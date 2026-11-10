@@ -15,6 +15,7 @@ import adminRoutes from "./routes/admin";
 import personalMessages from "./routes/personalMessages";
 import myRacingRoutes from "./routes/myRacing";
 import updatesRoutes from "./routes/updates";
+import adminRacingRoutes from "./routes/adminRacing";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -61,9 +62,14 @@ app.use(
 app.use("/api", (req, res, next) =>
   req.path === "/health" ? next() : apiLimit(req, res, next),
 );
-// Update posts can be long; every other request stays small.
-app.use("/api/admin/updates", express.json({ limit: "96kb" }));
-app.use(express.json({ limit: "32kb" }));
+// Request bodies stay small. The two admin endpoints that need more room (Update posts and
+// race-card imports) read their body inside their routes, only after sign-in and the admin check,
+// so nobody can make the server read a large body anonymously.
+const smallJson = express.json({ limit: "32kb" });
+const largeBodyPath = /^\/api\/admin\/(updates(\/[^/]+)?|racing\/days\/[^/]+\/import)$/;
+app.use((req, res, next) =>
+  largeBodyPath.test(req.path) && req.method !== "GET" ? next() : smallJson(req, res, next),
+);
 app.use("/api", (req, res, next) => {
   if (
     ["POST", "PUT", "PATCH", "DELETE"].includes(req.method) &&
@@ -123,6 +129,7 @@ app.use("/api/my-racing", myRacingRoutes);
 app.use("/api/inventory", memberInventory);
 app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);
+app.use("/api/admin/racing", adminRacingRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use((_req: Request, res: Response) => {

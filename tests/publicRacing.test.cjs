@@ -12,9 +12,19 @@ before(async () => {
 });
 after(() => new Promise((resolve) => server.close(resolve)));
 
-test('public overview reads published database records with bounds and safe projections', async () => {
-  const original = supabase.from;
+test('public overview builds racing sections from published race days and projects notes safely', async () => {
+  const originalFrom = supabase.from;
+  const originalRpc = supabase.rpc;
   const queries = [];
+  const rpcCalls = [];
+  supabase.rpc = async (name, args) => {
+    rpcCalls.push([name, args]);
+    assert.equal(name, 'racing_section');
+    return {
+      data: args.p_kind === 'racecards' ? [{ id: 'r1', name: 'Race 1', track: 'Test Park', runners: 3 }] : [],
+      error: null,
+    };
+  };
   supabase.from = (table) => {
     assert.equal(table, 'site_racing_records');
     const query = { filters: [], orders: [] };
@@ -38,34 +48,14 @@ test('public overview reads published database records with bounds and safe proj
       },
       limit(count) {
         query.limit = count;
-        const kind = query.filters.find(([key]) => key === 'kind')[1];
         return Promise.resolve({
-          data:
-            kind === 'horses'
-              ? [
-                  {
-                    id: 'h1',
-                    payload: {
-                      name: 'Database horse',
-                      starts: 8,
-                      wins: 3,
-                      figure: 100,
-                      private_cost: 999,
-                      owner_email: 'private@example.test',
-                      body: 'private notes',
-                    },
-                  },
-                  {
-                    id: 'invalid',
-                    payload: {
-                      name: 'Invalid',
-                      starts: -1,
-                      wins: 2,
-                      figure: 90,
-                    },
-                  },
-                ]
-              : [],
+          data: [
+            {
+              id: 'n1',
+              payload: { name: 'Track note', category: 'News', summary: 'Short', body: 'Long', owner_email: 'private@example.test' },
+            },
+            { id: 'bad', payload: { name: 'Missing fields' } },
+          ],
           error: null,
         });
       },
@@ -76,23 +66,21 @@ test('public overview reads published database records with bounds and safe proj
     const response = await fetch(origin + '/api/public/racing-overview');
     assert.equal(response.status, 200);
     const data = await response.json();
-    assert.deepEqual(data.sections.horses, [
-      { id: 'h1', name: 'Database horse', starts: 8, wins: 3, figure: 100 },
-    ]);
     assert.equal(Object.keys(data.sections).length, 8);
+    assert.deepEqual(data.sections.racecards, [{ id: 'r1', name: 'Race 1', track: 'Test Park', runners: 3 }]);
+    assert.deepEqual(data.sections.notes, [{ id: 'n1', name: 'Track note', category: 'News', summary: 'Short', body: 'Long' }]);
     assert.ok(!JSON.stringify(data).includes('private'));
-    for (const query of queries) {
-      assert.ok(
-        query.filters.some(
-          ([k, v]) => k === 'publication_status' && v === 'published',
-        ),
-      );
-      assert.equal(query.before[0], 'published_at');
-      assert.ok(Number.isFinite(Date.parse(query.before[1])));
-      assert.equal(query.limit, 30);
-    }
+    assert.deepEqual(
+      rpcCalls.map(([, args]) => args.p_kind).sort(),
+      ['horses', 'jockeys', 'racecards', 'results', 'stakes', 'trainers', 'workouts'],
+    );
+    assert.ok(rpcCalls.every(([, args]) => args.p_offset === 0 && args.p_limit === 30));
+    assert.equal(queries.length, 1, 'only racing notes still come from site records');
+    assert.ok(queries[0].filters.some(([k, v]) => k === 'publication_status' && v === 'published'));
+    assert.equal(queries[0].before[0], 'published_at');
   } finally {
-    supabase.from = original;
+    supabase.from = originalFrom;
+    supabase.rpc = originalRpc;
   }
 });
 

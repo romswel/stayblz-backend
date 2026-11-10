@@ -108,3 +108,7 @@ Never include secrets, private data, or copied historical plans.
 - Not verified: real Supabase OTP code verification and token_hash `not-me` round trip, template rendering in real mail clients, custom SMTP.
 
 2026-11-10 RELEASED: SQL `release.sql` applied by the user (verified read-only: `updates_*` columns, `site_updates`, 5 posts, members-only log hidden from guests). Backend pushed on `main` (`8b9a4f2`); `/api/health` reports it. Live guest checks: `/api/updates` 200, members-only post 404 for guests, `/api/auth/me`, `/api/admin/updates`, `/api/my-racing/follows` 401, racing overview 200. Checks before push: `npm test` 74/74, audit 0. Not verified live: signed-in flows, admin posting, real email codes (custom SMTP not set up).
+
+2026-11-10 racing data model + publishing API (LOCAL): `202611100004_drop_bulletin_seen.sql` (approved by the user) and `202611100005_racing_core.sql` (tracks, people, horses, days, races, runners, workouts; RLS on, service-role only; JSON read functions `racing_*`; `racing_section()` feeds the old overview contract; atomic `racing_import_card` and `racing_save_results` with admin check + audit). Routes: `/api/public/racing/*`, `/api/admin/racing/*` (`routes/adminRacing.ts`, validation in `lib/racingInput.ts`). Test adapter: IN filters cast to text; arrays of objects pass as JSON (as PostgREST does).
+- Checks: `npm test` 82/82 (new `tests/racing.test.cjs`), audit 0; release SQL dry-run on production-like state passed.
+- Not verified: real Supabase/PostgREST behaviour of the new RPCs, real data volumes.
