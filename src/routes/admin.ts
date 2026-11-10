@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import {
   requireAuth,
   requireRole,
@@ -12,6 +12,8 @@ import { AccountError, accountStore, toApiRole } from "../lib/accounts";
 import { UpdateError, updateInput, updateStore } from "../lib/updates";
 
 const router = Router();
+// Update posts can be long; read them only once the admin check has passed.
+const postBody = express.json({ limit: "96kb" });
 router.use(requireAuth);
 
 // Admins and superadmins: directory metadata only. Private conversations still
@@ -65,6 +67,7 @@ router.post(
   "/updates",
   authLimit("admin-updates", 60, 60_000),
   requireRole("admin"),
+  postBody,
   asyncRoute(async (req, res) => {
     const parsed = updateInput(req.body);
     if ("error" in parsed) return res.status(400).json({ error: parsed.error });
@@ -82,6 +85,7 @@ router.put(
   "/updates/:id",
   authLimit("admin-updates", 60, 60_000),
   requireRole("admin"),
+  postBody,
   asyncRoute(async (req, res) => {
     const id = String(req.params.id);
     if (!isUuid(id)) return res.status(404).json({ error: "That post no longer exists." });
@@ -101,6 +105,7 @@ router.delete(
   "/updates/:id",
   authLimit("admin-updates", 60, 60_000),
   requireRole("admin"),
+  postBody,
   asyncRoute(async (req, res) => {
     const id = String(req.params.id);
     if (!isUuid(id)) return res.status(404).json({ error: "That post no longer exists." });

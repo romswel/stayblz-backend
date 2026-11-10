@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
-import { kinds, publicRecord, type Kind } from './publicRacing';
-import { supabase } from '../lib/supabase';
+import { kinds, racingSection, type Kind } from './publicRacing';
 import { asyncRoute } from '../middleware/asyncRoute';
 
 const router = Router();
@@ -22,29 +21,17 @@ router.get(
       res.status(400).json({ error: 'Invalid records request.' });
       return;
     }
-    const { data, error } = await supabase
-      .from('site_racing_records')
-      .select('id,payload')
-      .eq('kind', kind)
-      .eq('publication_status', 'published')
-      .lte('published_at', new Date().toISOString())
-      .order('sort_order', { ascending: true })
-      .order('id', { ascending: true })
-      .range(offset, offset + 50);
-    if (error) {
-      res
-        .status(503)
-        .json({
-          error: 'Racing records are unavailable. Please try again later.',
-        });
+    let source: unknown[];
+    try {
+      source = await racingSection(kind, offset, 51);
+    } catch {
+      res.status(503).json({
+        error: 'Racing records are unavailable. Please try again later.',
+      });
       return;
     }
-    const source = data ?? [];
     res.json({
-      records: source
-        .slice(0, 50)
-        .map((row) => publicRecord(row, kind))
-        .filter(Boolean),
+      records: source.slice(0, 50),
       nextOffset: source.length > 50 ? offset + 50 : null,
     });
   }),
