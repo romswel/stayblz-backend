@@ -101,13 +101,6 @@ export const postRecord = (row: any) => ({
   body: row.body,
   createdAt: row.created_at,
 });
-export const messageRecord = (row: any, userId: string) => ({
-  id: row.id,
-  from: row.sender,
-  body: row.body,
-  sentAt: row.sent_at,
-  mine: row.sender_id === userId,
-});
 export function participantIds(value: unknown): string[] {
   if (!Array.isArray(value) || value.length > 29 || !value.every(isUuid))
     throw new Error("invalid_input");

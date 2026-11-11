@@ -4,7 +4,8 @@ import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { isUuid } from "../middleware/stable";
 import { asyncRoute } from "../middleware/asyncRoute";
 import { supabase } from "../lib/supabase";
-import { text, messageRecord, messageCursor } from "../lib/workspace";
+import { text } from "../lib/workspace";
+import { chatError, chatRoutes, loadThread } from "./chat";
 const router = Router();
 router.use(requireAuth);
 router.use((req, res, next) => {
@@ -17,36 +18,78 @@ router.use((req, res, next) => {
   next();
 });
 const user = (req: any) => (req as AuthenticatedRequest).user;
-const preview = (row: any, id: string) => ({
-  id: row.id,
-  title: row.title,
-  participants: row.member_ids.map(
-    (i: string) => row.member_names[i] ?? "Participant",
-  ),
-  lastMessage: row.last_message,
-  lastMessageAt: row.last_message_at,
-  unread: 0,
-  canInvite: row.created_by === id,
-});
 const unavailable = (res: any) =>
   res
     .status(503)
     .json({ error: "Messages are temporarily unavailable. Please try again." });
+
+// Starting chats by email can reveal whether an address has an account, so keep it slow.
+const DIRECT_LIMIT = 15;
+const DIRECT_WINDOW_MS = 10 * 60 * 1000;
+const directAttempts = new Map<string, number[]>();
+function directAllowed(id: string) {
+  const now = Date.now();
+  const recent = (directAttempts.get(id) ?? []).filter((t) => now - t < DIRECT_WINDOW_MS);
+  if (recent.length >= DIRECT_LIMIT) {
+    directAttempts.set(id, recent);
+    return false;
+  }
+  recent.push(now);
+  directAttempts.set(id, recent);
+  if (directAttempts.size > 5000) directAttempts.delete(directAttempts.keys().next().value!);
+  return true;
+}
+
+/** Menu badge: unread personal chats, message requests, and unread team chats. */
 router.get(
-  "/",
+  "/unread",
   asyncRoute(async (req, res) => {
-    const { data, error } = await supabase
-      .from("personal_conversations")
-      .select("*")
-      .contains("member_ids", [user(req).id])
-      .order("last_message_at", { ascending: false })
-      .limit(100);
+    const { data, error } = await supabase.rpc("chat_unread", { p_user: user(req).id });
     if (error) return unavailable(res);
-    res.json({
-      conversations: (data ?? []).map((r) => preview(r, user(req).id)),
-    });
+    res.set("Cache-Control", "no-store");
+    res.json(data);
   }),
 );
+
+/** Start (or reopen) a one-to-one chat with the account that uses this email. */
+router.post(
+  "/direct",
+  asyncRoute(async (req, res) => {
+    let email;
+    try {
+      email = text(req.body?.email, 254).toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw Error();
+    } catch {
+      return res.status(400).json({ error: "Enter the person’s account email." });
+    }
+    const identity = user(req);
+    if (!directAllowed(identity.id))
+      return res.status(429).json({
+        error: "You’ve started a lot of chats. Wait a few minutes and try again.",
+        retryAfterSeconds: 600,
+      });
+    const { data, error } = await supabase.rpc("chat_start_direct", {
+      p_user: identity.id,
+      p_display: identity.displayName,
+      p_email: email,
+    });
+    if (error) {
+      if (error.message?.includes("no_account"))
+        return res.status(404).json({
+          code: "no_account",
+          error: "No Stayblz account uses that email. Check the spelling, or start a group and send them an invite link.",
+        });
+      if (error.message?.includes("self"))
+        return res.status(400).json({ error: "That’s your own email. Enter someone else’s." });
+      return unavailable(res);
+    }
+    const thread = await loadThread(req, "personal", data);
+    if (thread.error) return chatError(res, thread.error);
+    res.status(201).json(thread.data);
+  }),
+);
+
+/** New group chat (people join with an invite link). */
 router.post(
   "/",
   asyncRoute(async (req, res) => {
@@ -54,7 +97,7 @@ router.post(
     try {
       title = text(req.body?.title, 120);
     } catch {
-      return res.status(400).json({ error: "Enter a conversation title." });
+      return res.status(400).json({ error: "Enter a group name." });
     }
     const identity = user(req);
     const { data, error } = await supabase
@@ -65,12 +108,12 @@ router.post(
         member_ids: [identity.id],
         member_names: { [identity.id]: identity.displayName },
       })
-      .select("*")
+      .select("id")
       .single();
     if (error) return unavailable(res);
-    res
-      .status(201)
-      .json({ conversation: { ...preview(data, identity.id), messages: [] } });
+    const thread = await loadThread(req, "personal", data.id);
+    if (thread.error) return chatError(res, thread.error);
+    res.status(201).json(thread.data);
   }),
 );
 router.post(
@@ -109,85 +152,6 @@ router.post(
       return unavailable(res);
     }
     res.json({ conversationId: data });
-  }),
-);
-router.get(
-  "/:id",
-  asyncRoute(async (req, res) => {
-    if (!isUuid(req.params.id))
-      return res.status(404).json({ error: "Conversation not found." });
-    const { data, error } = await supabase
-      .from("personal_conversations")
-      .select("*")
-      .eq("id", req.params.id)
-      .contains("member_ids", [user(req).id])
-      .maybeSingle();
-    if (error) return unavailable(res);
-    if (!data)
-      return res.status(404).json({ error: "Conversation not found." });
-    const before = req.query.before;
-    const cursor = messageCursor(before);
-    if (before !== undefined && !cursor)
-      return res.status(400).json({ error: "Invalid history request." });
-    let query = supabase
-      .from("personal_messages")
-      .select("*")
-      .eq("conversation_id", data.id)
-      .order("sent_at", { ascending: false })
-      .order("id", { ascending: false })
-      .limit(101);
-    if (cursor)
-      query = query.or(
-        `sent_at.lt.${cursor.time},and(sent_at.eq.${cursor.time},id.lt.${cursor.id})`,
-      );
-    const response = await query;
-    if (response.error) return unavailable(res);
-    const page = (response.data ?? []).slice(0, 100);
-    const last = page[page.length - 1];
-    res.json({
-      conversation: {
-        ...preview(data, user(req).id),
-        messages: page.reverse().map((r) => messageRecord(r, user(req).id)),
-      },
-      before:
-        (response.data ?? []).length > 100
-          ? `${last.sent_at}|${last.id}`
-          : null,
-    });
-  }),
-);
-router.post(
-  "/:id/messages",
-  asyncRoute(async (req, res) => {
-    if (!isUuid(req.params.id))
-      return res.status(404).json({ error: "Conversation not found." });
-    let body;
-    try {
-      body = text(req.body?.body, 4000);
-      if (!isUuid(req.body?.clientId)) throw Error();
-    } catch {
-      return res
-        .status(400)
-        .json({ error: "Use 1–4,000 characters and try again." });
-    }
-    const identity = user(req);
-    const { data, error } = await supabase.rpc("send_personal_message", {
-      p_user: identity.id,
-      p_conversation: req.params.id,
-      p_display: identity.displayName,
-      p_body: body,
-      p_client: req.body.clientId,
-    });
-    if (error) {
-      if (error.message?.includes("not_a_participant"))
-        return res.status(404).json({ error: "Conversation not found." });
-      return res
-        .status(503)
-        .json({
-          error: "Message could not be saved. Your draft has been kept.",
-        });
-    }
-    res.status(201).json({ message: messageRecord(data, identity.id) });
   }),
 );
 router.use("/:id/invitations", (req, res, next) => {
@@ -264,4 +228,18 @@ router.post(
     res.json({ ok: true });
   }),
 );
+router.post(
+  "/:id/accept",
+  asyncRoute(async (req, res) => {
+    if (!isUuid(req.params.id))
+      return res.status(404).json({ error: "Conversation not found." });
+    const { error } = await supabase.rpc("chat_accept", {
+      p_user: user(req).id,
+      p_conversation: req.params.id,
+    });
+    if (error) return chatError(res, error);
+    res.json({ ok: true });
+  }),
+);
+router.use(chatRoutes("personal"));
 export default router;
