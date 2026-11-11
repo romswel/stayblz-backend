@@ -430,26 +430,23 @@ test("message pagination preserves every message when timestamps are equal", asy
     "insert into member_messages(conversation_id,sender_id,sender,body,client_id,sent_at) select $1,$2,'Alice','History '||n,gen_random_uuid(),'2020-01-01T00:00:00Z'::timestamptz from generate_series(1,101) n",
     [conversation, alice],
   );
-  const first = await call(alice, "/api/team-messages/" + conversation, {
-    stable: stableA,
-  });
-  assert.equal(first.status, 200);
-  assert.equal(first.data.conversation.messages.length, 100);
-  assert.ok(first.data.before);
-  const second = await call(
-    alice,
-    "/api/team-messages/" +
-      conversation +
-      "?before=" +
-      encodeURIComponent(first.data.before.replace(/Z\|/, "+00:00|")),
-    { stable: stableA },
-  );
-  assert.equal(second.status, 200);
-  assert.equal(second.data.before, null);
-  const ids = [
-    ...first.data.conversation.messages,
-    ...second.data.conversation.messages,
-  ].map((m) => m.id);
+  // Pages of 50 (kept small for the free database plan), newest first, walked back with `before`.
+  const ids = [];
+  let before = null;
+  let pages = 0;
+  do {
+    const page = await call(
+      alice,
+      "/api/team-messages/" + conversation + (before ? "?before=" + encodeURIComponent(before) : ""),
+      { stable: stableA },
+    );
+    assert.equal(page.status, 200);
+    assert.ok(page.data.conversation.messages.length <= 50);
+    ids.push(...page.data.conversation.messages.map((m) => m.id));
+    before = page.data.before;
+    pages++;
+  } while (before && pages < 10);
+  assert.equal(pages, 3);
   assert.equal(ids.length, 102);
   assert.equal(new Set(ids).size, 102);
 });
@@ -491,7 +488,9 @@ test("personal messaging works without a stable and ignores forged participant i
   assert.equal(r.status, 201);
   personalConversation = r.data.conversation.id;
   assert.equal(r.data.conversation.canInvite, true);
-  assert.equal(r.data.conversation.participants.length, 1);
+  // participants lists the other people; members includes you.
+  assert.equal(r.data.conversation.participants.length, 0);
+  assert.equal(r.data.conversation.members.length, 1);
   for (const id of [alice, bob, admin])
     assert.equal(
       (await call(id, "/api/messages/" + personalConversation)).status,
