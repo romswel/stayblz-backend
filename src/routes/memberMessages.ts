@@ -8,6 +8,13 @@ import { chatError, chatRoutes, loadThread } from "./chat";
 
 /** Team chats inside the selected stable (X-Stayblz-Stable). Only teammates can be added. */
 const router = Router();
+// Images in <img> tags can't send the stable header, so the file route may name the stable in the query.
+router.use((req, _res, next) => {
+  const stable = req.query.stable;
+  if (req.method === "GET" && /^\/[^/]+\/files\/[^/]+$/.test(req.path) && typeof stable === "string" && !req.get("X-Stayblz-Stable"))
+    req.headers["x-stayblz-stable"] = stable;
+  next();
+});
 router.use(requireAuth, requireStable);
 
 /** Start (or reopen) a one-to-one chat with a teammate. */

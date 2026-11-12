@@ -5,7 +5,10 @@ import { isUuid } from "../middleware/stable";
 import { asyncRoute } from "../middleware/asyncRoute";
 import { supabase } from "../lib/supabase";
 import { text } from "../lib/workspace";
+import { touch } from "../lib/presence";
 import { chatError, chatRoutes, loadThread } from "./chat";
+import chatPeople from "./chatPeople";
+import chatFolders from "./chatFolders";
 const router = Router();
 router.use(requireAuth);
 router.use((req, res, next) => {
@@ -44,6 +47,9 @@ function directAllowed(id: string) {
 router.get(
   "/unread",
   asyncRoute(async (req, res) => {
+    touch(user(req).id);
+    // This poll also marks new messages as "Delivered" to this person (writes only when something is new).
+    await supabase.rpc("chat_mark_delivered", { p_user: user(req).id });
     const { data, error } = await supabase.rpc("chat_unread", { p_user: user(req).id });
     if (error) return unavailable(res);
     res.set("Cache-Control", "no-store");
@@ -241,5 +247,7 @@ router.post(
     res.json({ ok: true });
   }),
 );
+router.use("/people", chatPeople);
+router.use("/folders", chatFolders);
 router.use(chatRoutes("personal"));
 export default router;

@@ -195,6 +195,7 @@ const MIGRATIONS = [
   "202611100004_drop_bulletin_seen.sql",
   "202611100005_racing_core.sql",
   "202611110001_messenger.sql",
+  "202611120001_chat_v2.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */
