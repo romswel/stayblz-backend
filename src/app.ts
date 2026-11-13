@@ -16,6 +16,7 @@ import personalMessages from "./routes/personalMessages";
 import myRacingRoutes from "./routes/myRacing";
 import updatesRoutes from "./routes/updates";
 import adminRacingRoutes from "./routes/adminRacing";
+import marketplaceRoutes from "./routes/marketplace";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -124,6 +125,7 @@ app.use("/api/my-racing", myRacingRoutes);
 app.use("/api/inventory", memberInventory);
 app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);
+app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/admin/racing", adminRacingRoutes);
 app.use("/api/admin", adminRoutes);
 
