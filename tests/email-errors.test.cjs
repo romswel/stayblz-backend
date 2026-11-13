@@ -35,6 +35,9 @@ const post = (body, ip) => ({
   },
   body: JSON.stringify(body),
 });
+// Each email request uses its own address: one address may only get a few emails per
+// 15 minutes (see email-codes.test.cjs), and these tests are about error wording.
+const fresh = () => ({ email: `authorized+${++requestId}@example.test` });
 
 test("signup, resend and reset report recipient restrictions and provider rate limits", async () => {
   const originalClient = identity.client,
@@ -69,7 +72,7 @@ test("signup, resend and reset report recipient restrictions and provider rate l
         };
         const response = await fetch(
           origin + "/api/auth/" + endpoint,
-          post(endpoint === "signup" ? profile : { email: profile.email }),
+          post(endpoint === "signup" ? profile : fresh()),
         );
         const body = await response.json();
         assert.equal(
@@ -105,7 +108,7 @@ test("unknown addresses keep generic responses while delivery failures never cla
       failure = { code: "user_not_found", status: 404 };
       let response = await fetch(
         origin + "/api/auth/" + endpoint,
-        post({ email: profile.email }),
+        post(fresh()),
       );
       assert.equal(response.status, 202);
       assert.match((await response.json()).message, /If the address/);
@@ -116,7 +119,7 @@ test("unknown addresses keep generic responses while delivery failures never cla
       };
       response = await fetch(
         origin + "/api/auth/" + endpoint,
-        post({ email: profile.email }),
+        post(fresh()),
       );
       assert.equal(response.status, 503);
       const body = await response.json();
@@ -159,7 +162,7 @@ test("thrown provider delivery errors retain safe recipient and quota classifica
         };
         const response = await fetch(
           origin + "/api/auth/" + endpoint,
-          post(endpoint === "signup" ? profile : { email: profile.email }),
+          post(endpoint === "signup" ? profile : fresh()),
         );
         const body = await response.json();
         assert.equal(
@@ -184,7 +187,7 @@ test("application email throttling includes a matching Retry-After body and head
     for (let i = 0; i < 4; i++)
       response = await fetch(
         origin + "/api/auth/resend",
-        post({ email: profile.email }, "203.0.113.230"),
+        post(fresh(), "203.0.113.230"),
       );
     assert.equal(response.status, 429);
     const body = await response.json();

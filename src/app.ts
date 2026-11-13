@@ -19,12 +19,12 @@ import adminRacingRoutes from "./routes/adminRacing";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
+import { frontendOrigins, isProduction } from "./lib/site";
 
 export const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", process.env.RENDER === "true" ? 1 : false);
-const production =
-  process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+const production = isProduction();
 app.use((_req, res, next) => {
   // The API only ever returns JSON: nothing here may be framed, cached or run as a page.
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -44,19 +44,14 @@ app.use((_req, res, next) => {
   next();
 });
 
-const allowedOrigins = (
-  process.env.FRONTEND_URL ??
-  (process.env.NODE_ENV === "production"
-    ? "https://stayblz-frontend.vercel.app"
-    : "http://localhost:5173")
-)
-  .split(",")
-  .map((origin) => origin.trim());
+const allowedOrigins = frontendOrigins();
 
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
+    // Lets a cross-origin frontend (local development) read the wait time on "too many attempts".
+    exposedHeaders: ["Retry-After"],
   }),
 );
 app.use("/api", (req, res, next) =>

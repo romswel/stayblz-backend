@@ -2,8 +2,15 @@
 // Run: node scripts/build-email-templates.cjs   (then paste each file into
 // Supabase → Authentication → Emails → Templates; see email-templates/README.md).
 // Email clients ignore most CSS, so everything is table-based with inline styles.
+//
+// Sign-up and password reset are code-only: the email shows the 6-digit code ({{ .Token }}) and
+// no button, so mail scanners that open links can't use up the code. The earlier versions with a
+// button are kept in email-templates/with-links/ to switch back to if needed.
 const fs = require("fs");
 const path = require("path");
+
+// Must match Supabase → Authentication → Providers → Email → "Email OTP Expiration" (3600 seconds).
+const CODE_LIFETIME = "1 hour";
 
 const c = {
   forest: "#142820",
@@ -35,6 +42,8 @@ function layout({ preheader, kicker, title, body, footnote }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <title>${title}</title>
 </head>
 <body style="margin:0;padding:0;background:#ece8dc;">
@@ -67,10 +76,109 @@ function layout({ preheader, kicker, title, body, footnote }) {
 }
 
 const p = (text) => `<p style="margin:0 0 18px;font:15px/1.65 ${sans};color:${c.ink};">${text}</p>`;
+const small = (text) => `<p style="margin:0 0 18px;font:13px/1.6 ${sans};color:${c.muted};">${text}</p>`;
 const site = "{{ .SiteURL }}";
+const notMeUrl = `${site}/auth/not-me?token_hash={{ .TokenHash }}`;
+const expiry = `The code works once and expires in ${CODE_LIFETIME}. If you asked for more than one, use the newest email.`;
+const footer = "Sent to {{ .Email }} by Stayblz. Stayblz staff will never ask for your password or this code.";
 
 const templates = {
-  "confirm-signup.html": {
+  // ── Code-only (current) ──────────────────────────────────────────────────────────────
+  "confirm-signup": {
+    supabase: "Confirm signup",
+    subject: "Your Stayblz code: {{ .Token }}",
+    html: layout({
+      preheader: `Your Stayblz code is {{ .Token }}. It expires in ${CODE_LIFETIME}.`,
+      kicker: "Confirm your email",
+      title: "Welcome to Stayblz",
+      body:
+        p("Enter this code on the Stayblz sign-up screen to confirm your email and finish creating your account.") +
+        codeBox("Your 6-digit code") +
+        p(expiry) +
+        small("Closed the sign-up page? Log in to Stayblz with your email and password and you'll be asked for this code."),
+      footnote:
+        `<strong>Didn't sign up?</strong> Someone may have typed your email by mistake. ` +
+        `<a href="${notMeUrl}" style="color:${c.forest};font-weight:700;">This wasn't me — remove this sign-up</a>. ` +
+        `If you ignore this email, the account stays unconfirmed and can't be used.`,
+    }),
+    text: [
+      "Welcome to Stayblz - confirm your email",
+      "",
+      "Your 6-digit code: {{ .Token }}",
+      "",
+      "Enter this code on the Stayblz sign-up screen to confirm your email and finish creating your account.",
+      expiry,
+      "",
+      "Closed the sign-up page? Log in to Stayblz with your email and password and you'll be asked for this code.",
+      "",
+      "Didn't sign up? Someone may have typed your email by mistake. Remove the sign-up here:",
+      notMeUrl,
+      "If you ignore this email, the account stays unconfirmed and can't be used.",
+      "",
+      footer,
+    ],
+  },
+  "reset-password": {
+    supabase: "Reset password",
+    subject: "Your Stayblz password reset code",
+    html: layout({
+      preheader: `Use this code to choose a new Stayblz password. It expires in ${CODE_LIFETIME}.`,
+      kicker: "Password reset",
+      title: "Reset your password",
+      body:
+        p("We got a request to reset the password for your Stayblz account. Enter this code on the Stayblz “Reset your password” screen, then choose a new password.") +
+        codeBox("Your 6-digit code") +
+        p(expiry),
+      footnote:
+        "<strong>Didn't ask for this?</strong> You can ignore this email. Your password stays the same, " +
+        "and nobody can change it without this code. Never share the code with anyone. " +
+        "If you get these emails often, change your password and turn on 2-step login.",
+    }),
+    text: [
+      "Reset your Stayblz password",
+      "",
+      "Your 6-digit code: {{ .Token }}",
+      "",
+      "We got a request to reset the password for your Stayblz account. Enter this code on the Stayblz \"Reset your password\" screen, then choose a new password.",
+      expiry,
+      "",
+      "Didn't ask for this? You can ignore this email. Your password stays the same, and nobody can change it without this code. Never share the code with anyone.",
+      "",
+      footer,
+    ],
+  },
+  // ── Link-based flows that are not part of the code change ───────────────────────────
+  invite: {
+    supabase: "Invite user",
+    subject: "You're invited to Stayblz",
+    html: layout({
+      preheader: "Accept your invitation and set a password.",
+      kicker: "Invitation",
+      title: "You've been invited to Stayblz",
+      body:
+        p("Accept the invitation to set your password and open your account.") +
+        button(`${site}/auth/confirm?token_hash={{ .TokenHash }}&type=invite`, "Accept invitation") +
+        p("This button works once and expires soon."),
+      footnote: "<strong>Not expecting this?</strong> Ignore this email and no account will be activated.",
+    }),
+  },
+  "change-email": {
+    supabase: "Change email address",
+    subject: "Confirm your new Stayblz email",
+    html: layout({
+      preheader: "Confirm the new email address for your Stayblz account.",
+      kicker: "Email change",
+      title: "Confirm your new email",
+      body:
+        p("Confirm that {{ .NewEmail }} should become the email for your Stayblz account.") +
+        button(`${site}/auth/confirm?token_hash={{ .TokenHash }}&type=email_change`, "Confirm new email"),
+      footnote:
+        "<strong>Didn't ask for this?</strong> Don't click the button. Change your password and turn on 2-step login.",
+    }),
+  },
+  // ── Earlier versions with a button as well as the code (to switch back if needed) ──────
+  "with-links/confirm-signup": {
+    supabase: "Confirm signup (earlier version)",
     subject: "Your Stayblz code: {{ .Token }}",
     html: layout({
       preheader: "Confirm your email to finish creating your Stayblz account.",
@@ -83,11 +191,12 @@ const templates = {
         p("The code and button work once and expire soon."),
       footnote:
         `<strong>Didn't sign up?</strong> Someone may have typed your email by mistake. ` +
-        `<a href="${site}/auth/not-me?token_hash={{ .TokenHash }}" style="color:${c.forest};font-weight:700;">This wasn't me — remove this sign-up</a>. ` +
+        `<a href="${notMeUrl}" style="color:${c.forest};font-weight:700;">This wasn't me — remove this sign-up</a>. ` +
         `If you ignore this email, the account stays unconfirmed and can't be used.`,
     }),
   },
-  "reset-password.html": {
+  "with-links/reset-password": {
+    supabase: "Reset password (earlier version)",
     subject: "Reset your Stayblz password",
     html: layout({
       preheader: "Use this code or button to choose a new Stayblz password.",
@@ -103,40 +212,31 @@ const templates = {
         "and nobody can change it without this code. If you get these emails often, change your password and turn on 2-step login.",
     }),
   },
-  "invite.html": {
-    subject: "You're invited to Stayblz",
-    html: layout({
-      preheader: "Accept your invitation and set a password.",
-      kicker: "Invitation",
-      title: "You've been invited to Stayblz",
-      body:
-        p("Accept the invitation to set your password and open your account.") +
-        button(`${site}/auth/confirm?token_hash={{ .TokenHash }}&type=invite`, "Accept invitation") +
-        p("This button works once and expires soon."),
-      footnote: "<strong>Not expecting this?</strong> Ignore this email and no account will be activated.",
-    }),
-  },
-  "change-email.html": {
-    subject: "Confirm your new Stayblz email",
-    html: layout({
-      preheader: "Confirm the new email address for your Stayblz account.",
-      kicker: "Email change",
-      title: "Confirm your new email",
-      body:
-        p("Confirm that {{ .NewEmail }} should become the email for your Stayblz account.") +
-        button(`${site}/auth/confirm?token_hash={{ .TokenHash }}&type=email_change`, "Confirm new email"),
-      footnote:
-        "<strong>Didn't ask for this?</strong> Don't click the button. Change your password and turn on 2-step login.",
-    }),
-  },
 };
 
-const out = path.join(__dirname, "..", "email-templates");
-fs.mkdirSync(out, { recursive: true });
-const subjects = [];
-for (const [file, { subject, html }] of Object.entries(templates)) {
-  fs.writeFileSync(path.join(out, file), html);
-  subjects.push(`| ${file} | ${subject} |`);
+// Code-only templates must never carry a link that confirms or resets without the code.
+for (const name of ["confirm-signup", "reset-password"]) {
+  const { html, text } = templates[name];
+  if (/auth\/confirm|ConfirmationURL|RedirectTo/.test(html + text.join("\n")))
+    throw new Error(`${name} must not contain a confirm/reset link`);
+  if (!html.includes("{{ .Token }}") || !text.join("\n").includes("{{ .Token }}"))
+    throw new Error(`${name} must show the code`);
 }
-fs.writeFileSync(path.join(out, "subjects.md"), "| Template file | Subject line |\n| --- | --- |\n" + subjects.join("\n") + "\n");
+
+const out = path.join(__dirname, "..", "email-templates");
+const rows = [];
+for (const [name, { supabase, subject, html, text }] of Object.entries(templates)) {
+  const file = path.join(out, name);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(`${file}.html`, html);
+  fs.writeFileSync(`${file}.subject.txt`, subject + "\n");
+  if (text) fs.writeFileSync(`${file}.txt`, text.join("\n") + "\n");
+  rows.push(`| ${supabase} | \`${name}.subject.txt\` | ${subject} | \`${name}.html\` |`);
+}
+fs.writeFileSync(
+  path.join(out, "subjects.md"),
+  "| Supabase template | Subject file | Subject line | Body file |\n| --- | --- | --- | --- |\n" +
+    rows.join("\n") +
+    "\n",
+);
 console.log(`Wrote ${Object.keys(templates).length} templates to ${out}`);
