@@ -32,6 +32,7 @@ import accountSecurity from "./accountSecurity";
 import { supabase } from "../lib/supabase";
 import type { User } from "../types";
 import { sendAuthEmailError, isUnknownRecipient } from "../lib/authEmailErrors";
+import { siteOrigin } from "../lib/site";
 
 const router = Router();
 const emailValid = (value: unknown): value is string =>
@@ -45,15 +46,19 @@ const strongPassword = (value: unknown): value is string =>
   /[a-z]/.test(value) &&
   /[A-Z]/.test(value) &&
   /[0-9]/.test(value);
-const appOrigin = () =>
-  (
-    process.env.AUTH_SITE_URL ||
-    process.env.FRONTEND_URL?.split(",")[0] ||
-    (process.env.NODE_ENV === "production"
-      ? "https://stayblz-frontend.vercel.app"
-      : "http://localhost:5173")
-  ).replace(/\/$/, "");
-const confirmationUrl = () => `${appOrigin()}/auth/confirm`;
+const confirmationUrl = () => `${siteOrigin()}/auth/confirm`;
+/** The address a request is about, for per-address limits; null when there isn't one. */
+const bodyEmail = (req: Request) =>
+  typeof req.body?.email === "string" && req.body.email.length <= 254
+    ? req.body.email.trim().toLowerCase()
+    : null;
+// A 6-digit code has a million values, so guesses are capped per address as well as per network
+// address: someone spreading guesses over many connections still gets only a few per code.
+const codeAttempts = authLimit("code", 5, 15 * 60_000, (req) =>
+  typeof req.body?.code === "string" ? bodyEmail(req) : null,
+);
+// Stops one inbox from being flooded with codes requested from many places.
+const emailsToAddress = authLimit("email-to", 3, 15 * 60_000, bodyEmail);
 const genericMail = {
   ok: true,
   message:
@@ -132,7 +137,7 @@ router.post(
           res.status(403).json({
             code: "email_not_confirmed",
             error:
-              "Verify your email before logging in. You can resend the confirmation email.",
+              "Confirm your email before logging in. Enter the 6-digit code from your sign-up email, or send a new one.",
           });
           return;
         }
@@ -247,7 +252,7 @@ router.post(
         ok: true,
         requiresVerification: true,
         message:
-          "Check your email for a confirmation link. Verify it before logging in.",
+          "We emailed you a 6-digit code. Enter it here to confirm your email.",
       });
     } catch (error) {
       sendAuthEmailError(
@@ -262,6 +267,7 @@ router.post(
 router.post(
   "/resend",
   authLimit("email", 3, 15 * 60_000),
+  emailsToAddress,
   asyncRoute(async (req, res) => {
     const email =
       typeof req.body?.email === "string"
@@ -300,6 +306,7 @@ router.post(
 router.post(
   "/forgot-password",
   authLimit("email", 3, 15 * 60_000),
+  emailsToAddress,
   asyncRoute(async (req, res) => {
     const email =
       typeof req.body?.email === "string"
@@ -338,6 +345,7 @@ router.post(
 router.post(
   "/confirm",
   authLimit("confirm", 10, 10 * 60_000),
+  codeAttempts,
   asyncRoute(async (req, res) => {
     const {
       tokenHash,
@@ -566,9 +574,30 @@ router.post(
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) {
-      res.status(400).json({
-        error: "The password could not be changed. Request a new reset email.",
-      });
+      // Only these known reasons are passed on; provider text is never shown.
+      const failure = (await response.json().catch(() => ({}))) as {
+        error_code?: unknown;
+        code?: unknown;
+      };
+      const reason = [failure.error_code, failure.code].find(
+        (value): value is string => typeof value === "string",
+      );
+      res.status(400).json(
+        reason === "same_password"
+          ? {
+              code: "same_password",
+              error: "Choose a password that is different from your current one.",
+            }
+          : reason === "weak_password"
+            ? {
+                code: "weak_password",
+                error: "That password is too easy to guess. Choose a different one.",
+              }
+            : {
+                error:
+                  "The password could not be changed. Start the reset again to get a new code.",
+              },
+      );
       return;
     }
     const user = (req as Request & { user: User }).user;

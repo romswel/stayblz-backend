@@ -4,10 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <title>Welcome to Stayblz</title>
 </head>
 <body style="margin:0;padding:0;background:#ece8dc;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Confirm your email to finish creating your Stayblz account.</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your Stayblz code is {{ .Token }}. It expires in 1 hour.</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ece8dc">
 <tr><td align="center" style="padding:28px 12px;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
@@ -18,14 +20,9 @@
     <tr><td bgcolor="#ffffff" style="padding:32px 28px 8px;border-left:1px solid #e2dccb;border-right:1px solid #e2dccb;">
       <p style="margin:0 0 10px;font:600 11px 'Helvetica Neue', Arial, sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#5b6b5f;">Confirm your email</p>
       <h1 style="margin:0 0 18px;font:400 28px/1.25 Georgia, 'Times New Roman', serif;color:#1d2a22;">Welcome to Stayblz</h1>
-      <p style="margin:0 0 18px;font:15px/1.65 'Helvetica Neue', Arial, sans-serif;color:#1d2a22;">Enter this code on the sign-up screen, or use the button. Either one confirms your email.</p>
+      <p style="margin:0 0 18px;font:15px/1.65 'Helvetica Neue', Arial, sans-serif;color:#1d2a22;">Enter this code on the Stayblz sign-up screen to confirm your email and finish creating your account.</p>
 <p style="margin:0 0 8px;font:600 12px 'Helvetica Neue', Arial, sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#5b6b5f;">Your 6-digit code</p>
-<p style="margin:0 0 24px;padding:16px 20px;background:#f4f0e6;border:1px solid #e2dccb;border-radius:6px;font:700 32px 'Courier New', monospace;letter-spacing:.35em;color:#1d2a22;text-align:center;">{{ .Token }}</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr><td bgcolor="#c5a468" style="border-radius:4px;">
-    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email" style="display:inline-block;padding:14px 26px;font:700 15px 'Helvetica Neue', Arial, sans-serif;color:#0f1e19;text-decoration:none;border-radius:4px;">Confirm my email</a>
-  </td></tr>
-</table><p style="margin:0 0 18px;font:15px/1.65 'Helvetica Neue', Arial, sans-serif;color:#1d2a22;">The code and button work once and expire soon.</p>
+<p style="margin:0 0 24px;padding:16px 20px;background:#f4f0e6;border:1px solid #e2dccb;border-radius:6px;font:700 32px 'Courier New', monospace;letter-spacing:.35em;color:#1d2a22;text-align:center;">{{ .Token }}</p><p style="margin:0 0 18px;font:15px/1.65 'Helvetica Neue', Arial, sans-serif;color:#1d2a22;">The code works once and expires in 1 hour. If you asked for more than one, use the newest email.</p><p style="margin:0 0 18px;font:13px/1.6 'Helvetica Neue', Arial, sans-serif;color:#5b6b5f;">Closed the sign-up page? Log in to Stayblz with your email and password and you'll be asked for this code.</p>
     </td></tr>
     <tr><td bgcolor="#ffffff" style="padding:0 28px 28px;border:1px solid #e2dccb;border-top:0;border-radius:0 0 8px 8px;">
       <p style="margin:0;padding-top:18px;border-top:1px solid #e2dccb;font:13px/1.6 'Helvetica Neue', Arial, sans-serif;color:#5b6b5f;"><strong>Didn't sign up?</strong> Someone may have typed your email by mistake. <a href="{{ .SiteURL }}/auth/not-me?token_hash={{ .TokenHash }}" style="color:#142820;font-weight:700;">This wasn't me — remove this sign-up</a>. If you ignore this email, the account stays unconfirmed and can't be used.</p>

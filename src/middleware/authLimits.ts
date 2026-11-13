@@ -1,18 +1,28 @@
 import type { Request, Response, NextFunction } from 'express';
 const attempts = new Map<string, { count: number; expires: number }>();
 
-/** Fixed-window limit per client IP. `max` may be a function so tests and env can tune it. */
-export function authLimit(action: string, max: number | (() => number), windowMs: number) {
+/**
+ * Fixed-window limit, per client IP by default. `max` may be a function so tests and env can tune it.
+ * `keyOf` limits by something else instead (such as the email address a request is about);
+ * when it returns null the request isn't counted.
+ */
+export function authLimit(
+  action: string,
+  max: number | (() => number),
+  windowMs: number,
+  keyOf?: (req: Request) => string | null,
+) {
   return (req: Request, res: Response, next: NextFunction) => {
     const limit = typeof max === 'function' ? max() : max;
-    if (!Number.isFinite(limit) || limit <= 0) {
+    const subject = keyOf ? keyOf(req) : (req.ip ?? 'unknown');
+    if (!Number.isFinite(limit) || limit <= 0 || subject === null) {
       next();
       return;
     }
     const now = Date.now();
     for (const [key, bucket] of attempts)
       if (bucket.expires <= now) attempts.delete(key);
-    const key = `${action}:${req.ip ?? 'unknown'}`;
+    const key = `${action}:${subject}`;
     const bucket = attempts.get(key) ?? { count: 0, expires: now + windowMs };
     if (bucket.count >= limit || (!attempts.has(key) && attempts.size >= 10000)) {
       const retryAfterSeconds = Math.max(
