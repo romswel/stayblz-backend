@@ -44,6 +44,14 @@ class Query {
     this.filters.push([k, ">", v]);
     return this;
   }
+  gte(k, v) {
+    this.filters.push([k, ">=", v]);
+    return this;
+  }
+  ilike(k, v) {
+    this.filters.push([k, "ilike", v]);
+    return this;
+  }
   lte(k, v) {
     this.filters.push([k, "<=", v]);
     return this;
@@ -196,6 +204,7 @@ const MIGRATIONS = [
   "202611100005_racing_core.sql",
   "202611110001_messenger.sql",
   "202611120001_chat_v2.sql",
+  "202611140001_marketplace.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */
