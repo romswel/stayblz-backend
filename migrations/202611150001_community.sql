@@ -352,3 +352,6 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values ('community-media', 'community-media', false, 6291456,
         array['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 on conflict (id) do nothing;
+
+-- Make the new tables and functions visible to the API right away.
+notify pgrst, 'reload schema';
