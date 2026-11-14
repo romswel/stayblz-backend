@@ -22,6 +22,7 @@ import paddockRoutes from "./routes/paddock";
 import paddockLiveRoutes from "./routes/paddockLive";
 import communityRoutes from "./routes/community";
 import storageRoutes from "./routes/storage";
+import avatarRoutes from "./routes/avatars";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -137,6 +138,8 @@ app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/tv", tvRoutes);
 // Stayblz Community: horse profiles, members, follows and the feed (photos are uploaded as raw image bodies).
 app.use("/api/community", communityRoutes);
+// Profile pictures (signed-in members; stored by lib/communityStorage: R2 when set up, else Supabase).
+app.use("/api/avatars", avatarRoutes);
 app.use("/api/admin/racing", adminRacingRoutes);
 // Cloudflare R2 (shared with Suprah, Stayblz files under stayblz/ only): admin status + connection check.
 app.use("/api/admin/storage", storageRoutes);

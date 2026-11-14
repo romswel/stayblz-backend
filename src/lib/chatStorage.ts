@@ -1,30 +1,16 @@
-import { supabase } from "./supabase";
+import { mediaStore, supabaseFiles } from "./mediaStore";
 
 /**
- * Chat attachments live in the private Supabase Storage bucket `chat-files` (created by
- * migration 202611120001_chat_v2.sql). Only the backend touches it, after the chat_* functions
- * have checked membership. Overridable in tests.
+ * Chat attachments: Cloudflare R2 (stayblz/chat/<path>) when it is set up, otherwise the private
+ * Supabase Storage bucket `chat-files` (created by migration 202611120001_chat_v2.sql); older files
+ * are read from Supabase either way (see lib/mediaStore.ts). Only the backend touches them, after the
+ * chat_* functions have checked membership. Overridable in tests.
  */
 export const CHAT_BUCKET = "chat-files";
 export const MAX_FILE_BYTES = 4 * 1024 * 1024;
 export const QUOTA_BYTES = 50 * 1024 * 1024;
 
-export const chatStorage = {
-  async upload(path: string, body: Buffer, contentType: string): Promise<void> {
-    const { error } = await supabase.storage.from(CHAT_BUCKET).upload(path, body, { contentType, upsert: false });
-    if (error) throw error;
-  },
-  async download(path: string): Promise<Buffer> {
-    const { data, error } = await supabase.storage.from(CHAT_BUCKET).download(path);
-    if (error || !data) throw error ?? new Error("missing_file");
-    return Buffer.from(await data.arrayBuffer());
-  },
-  async remove(paths: string[]): Promise<void> {
-    if (!paths.length) return;
-    const { error } = await supabase.storage.from(CHAT_BUCKET).remove(paths);
-    if (error) throw error;
-  },
-};
+export const chatStorage = mediaStore("chat", supabaseFiles(CHAT_BUCKET));
 
 /** Allowed file types. Photos are shrunk in the browser before upload; SVG/HTML are never accepted. */
 export const ALLOWED_TYPES: Record<string, { image: boolean; magic?: (b: Buffer) => boolean }> = {

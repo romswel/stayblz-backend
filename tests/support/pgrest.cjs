@@ -206,6 +206,8 @@ const MIGRATIONS = [
   "202611120001_chat_v2.sql",
   "202611140001_marketplace.sql",
   "202611140002_paddock.sql",
+  "202611150001_community.sql",
+  "202611150002_avatars.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */
@@ -213,7 +215,9 @@ async function installDatabase(supabase) {
   db = new PGlite();
   await db.exec(
     "create schema auth;create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb not null default '{}',raw_app_meta_data jsonb not null default '{}');" +
-      "create role anon;create role authenticated;create role service_role bypassrls;",
+      "create role anon;create role authenticated;create role service_role bypassrls;" +
+      // Stand-in for Supabase Storage's bucket list (202611150001_community.sql adds its bucket unconditionally).
+      "create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);",
   );
   for (const file of MIGRATIONS)
     await db.exec(fs.readFileSync("migrations/" + file, "utf8"));

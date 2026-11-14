@@ -1,9 +1,10 @@
-import { supabase } from "./supabase";
+import { mediaStore, supabaseFiles } from "./mediaStore";
 
 /**
- * Horse and post photos live in a private Supabase Storage bucket (created by the
- * 202611150001_community migration). The API streams them after a visibility check;
- * there are no public or signed URLs.
+ * Horse photos, post photos and profile pictures: Cloudflare R2 (stayblz/community/<path>) when it
+ * is set up, otherwise the private Supabase Storage bucket (created by the 202611150001_community
+ * migration); older files are read from Supabase either way (see lib/mediaStore.ts). The API streams
+ * them after a visibility check; there are no public or signed URLs.
  */
 export const COMMUNITY_BUCKET = process.env.COMMUNITY_MEDIA_BUCKET || "community-media";
 export const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
@@ -18,25 +19,4 @@ export const IMAGE_TYPES: Record<string, (file: Buffer) => boolean> = {
   "image/gif": (b) => b.length > 6 && /^GIF8[79]a$/.test(b.subarray(0, 6).toString("ascii")),
 };
 
-export const communityStorage = {
-  async upload(path: string, file: Buffer, type: string) {
-    const { error } = await supabase.storage
-      .from(COMMUNITY_BUCKET)
-      .upload(path, file, { contentType: type, upsert: false, cacheControl: "3600" });
-    if (error) throw error;
-  },
-  async download(path: string): Promise<Buffer> {
-    const { data, error } = await supabase.storage.from(COMMUNITY_BUCKET).download(path);
-    if (error || !data) throw error ?? new Error("missing_file");
-    return Buffer.from(await data.arrayBuffer());
-  },
-  async remove(paths: string[]) {
-    const list = paths.filter(Boolean);
-    if (!list.length) return;
-    // Storage removes up to 1000 paths per call.
-    for (let i = 0; i < list.length; i += 1000) {
-      const { error } = await supabase.storage.from(COMMUNITY_BUCKET).remove(list.slice(i, i + 1000));
-      if (error) throw error;
-    }
-  },
-};
+export const communityStorage = mediaStore("community", supabaseFiles(COMMUNITY_BUCKET, { cacheControl: "3600" }));

@@ -1,15 +1,29 @@
 # Cloudflare R2 storage (shared with Suprah)
 
-Stayblz can store files in Cloudflare R2, using **Suprah's R2 account, buckets and keys**
-(senior dev decision, connected 2026-11-15). Nothing in Stayblz uses it yet: chat files and
-community/horse photos still go to Supabase Storage (`lib/chatStorage.ts`, `lib/communityStorage.ts`).
+Stayblz stores files in Cloudflare R2, using **Suprah's R2 account, buckets and keys**
+(senior dev decision, connected 2026-11-15). These use it, through `lib/mediaStore.ts`:
+
+| Feature | Store | R2 key (private bucket) | Supabase fallback bucket |
+| --- | --- | --- | --- |
+| Horse photos | `communityStorage` | `stayblz/community/horses/<owner>/<horse>/<id>` | `community-media` |
+| Feed post photos | `communityStorage` | `stayblz/community/posts/<author>/<id>` | `community-media` |
+| Profile pictures | `communityStorage` | `stayblz/community/avatars/<account>/<version>` | `community-media` |
+| Stayblz Chat attachments | `chatStorage` | `stayblz/chat/{personal,team}/<chat>/<id>` | `chat-files` |
+
+**R2 when set up, Supabase otherwise (`mediaStore`).** Uploads go to R2 when the `R2_*` settings exist.
+Otherwise, or when R2 fails, they go to the Supabase bucket exactly as before. Reads try R2 first,
+then Supabase, so files saved before R2 was switched on keep working. Nothing needs copying, and the
+`path` stored in the database is the same either way, so SQL checks on paths (chat) are untouched.
+Deletes go to both places. **While Render has no `R2_*` settings, production behaves exactly as before.**
 
 ## Where things are
 
 | Part | File |
 | --- | --- |
 | Service (all R2 access) | `src/lib/r2Storage.ts` |
+| R2-or-Supabase store for features | `src/lib/mediaStore.ts` (used by `lib/communityStorage.ts`, `lib/chatStorage.ts`) |
 | Controller (admin status/check) | `src/routes/storage.ts`, mounted at `/api/admin/storage` |
+| Profile pictures | `src/routes/avatars.ts` at `/api/avatars`, table `account_avatars` (`202611150002_avatars.sql`) |
 | Settings | `R2_*` in `.env` (documented in `.env.example`) |
 | Tests (fake R2, no network) | `tests/r2.test.cjs` |
 | Live check | `npm run r2:check` (read-only) / `npm run r2:check -- --write` |
@@ -57,9 +71,16 @@ Failures are `StorageError` with `code`: `not_configured`, `bad_key`, `not_found
 - `r2Storage.signedUrl(key, { seconds, downloadName })`: a 1–60 minute link to a private file that points
   at `*.r2.cloudflarestorage.com`.
 
-**Moving an existing feature:** `r2Files("private")` has the same `upload/download/remove` shape as
-`communityStorage`/`chatStorage`. But existing rows point at files already in Supabase Storage.
-Before switching, copy those files to R2 (same relative path) or read from R2 first and fall back to Supabase.
+**A new feature with files:** create a store once, for example
+`export const docStorage = mediaStore("documents", supabaseFiles("documents"))`, then call
+`docStorage.upload(path, body, type)` / `.download(path)` / `.remove(paths)` after your own permission check.
+Keep the stored `path` relative, without a leading `stayblz/`. Use `r2Storage` directly only for R2-only
+files (no Supabase copy), such as big videos streamed with `open()`.
+
+**Profile pictures** (`/api/avatars`, signed in only): `GET /lookup?ids=a,b` returns `{ avatars: { id: version } }`
+(at most 100 ids; suspended accounts left out), `GET /:id/:version` streams the picture, and `POST /me` (raw
+JPG, PNG or WebP, up to 2 MB) or `POST /me/remove` change your own. The frontend batches lookups
+(`components/account/avatars.ts`) and shows initials when there's no picture (`AvatarFace`).
 
 ## Known gaps
 
@@ -69,8 +90,11 @@ Before switching, copy those files to R2 (same relative path) or read from R2 fi
 - **Frontend Content-Security-Policy:** `stayblz-frontend/vercel.json` only allows images and media from
   `'self'`. Files served through `/api/...` work as they are. Public links or signed links need their host
   added to `img-src`/`media-src` first.
-- **Render isn't set up yet:** production has no `R2_*` settings. Request size limits and Render free-tier
-  memory still apply: stream big files with `open()`. Don't load them with `get()`.
+- **Render isn't set up yet:** production has no `R2_*` settings, so live files still go to Supabase
+  (nothing breaks; R2 starts with the next upload once the settings are added). Request size limits and
+  Render free-tier memory still apply: stream big files with `open()`. Don't load them with `get()`.
+- **Local development uses the production database.** With R2 set up locally, photos you upload from
+  your computer go to R2, and the live site only finds them once Render has the R2 settings too.
 - **Same keys as Suprah:** a leak of Stayblz's server settings exposes Suprah's files too. The safer end
   state is below.
 
