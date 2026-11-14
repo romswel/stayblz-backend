@@ -39,8 +39,17 @@ const router = Router();
 router.use(requireAuth);
 
 const me = (req: Request) => (req as AuthenticatedRequest).user;
-const unavailable = (res: Response) =>
+type DbError = { code?: string; message?: string; hint?: string | null } | null | undefined;
+/** 503 for members; the real Supabase error goes to the server log so setup problems are visible. */
+const unavailable = (res: Response, ...errors: DbError[]) => {
+  const err = errors.find(Boolean);
+  const req = res.req;
+  console.error(
+    `[community] ${req?.method} ${req?.originalUrl} failed:`,
+    err ? `${err.code ?? "?"} ${err.message ?? ""}${err.hint ? ` (hint: ${err.hint})` : ""}` : "no error detail",
+  );
   res.status(503).json({ error: "The community is temporarily unavailable. Please try again." });
+};
 const notFound = (res: Response, what = "That page") => res.status(404).json({ error: `${what} isn't available.` });
 const bad = (res: Response, error: unknown) =>
   res.status(400).json({ error: error instanceof InputError ? error.message : "Check the form and try again." });
@@ -305,7 +314,7 @@ router.get(
       supabase.from("community_profiles").select("headline,inventory_visibility,show_earnings,listed").eq("user_id", user.id).maybeSingle(),
       supabase.rpc("community_people", { p_viewer: user.id, p_query: null, p_sort: null, p_limit: 1, p_offset: 0, p_only: user.id }),
     ]);
-    if (profile.error || people.error) return unavailable(res);
+    if (profile.error || people.error) return unavailable(res, profile.error, people.error);
     const row = Array.isArray(people.data) ? people.data[0] : null;
     res.json({
       settings: {
@@ -333,7 +342,7 @@ router.patch(
       .upsert({ user_id: me(req).id, ...changes, updated_at: new Date().toISOString() }, { onConflict: "user_id" })
       .select("headline,inventory_visibility,show_earnings,listed")
       .single();
-    if (error || !data) return unavailable(res);
+    if (error || !data) return unavailable(res, error);
     res.json({
       settings: {
         headline: data.headline,
@@ -364,7 +373,7 @@ router.get(
       p_offset: offset,
       p_only: null,
     });
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     const rows = Array.isArray(data) ? data : [];
     res.json({
       people: rows.slice(0, PEOPLE_PAGE).map(personView),
@@ -384,7 +393,7 @@ router.get(
       p_offset: 0,
       p_only: req.params.id,
     });
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     const row = Array.isArray(data) ? data[0] : null;
     if (!row) return notFound(res, "That member");
     res.json({ person: personView(row) });
@@ -404,7 +413,7 @@ router.get(
       .eq("owner_id", owner)
       .order("created_at", { ascending: false })
       .limit(500);
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     const horses = (data ?? []).filter((h) => canSeeHorse(viewer, h, ctx));
     const ids = horses.map((h) => h.id);
     const [stats, images] = await Promise.all([
@@ -413,7 +422,7 @@ router.get(
         ? supabase.from("owner_horse_images").select("horse_id").in("horse_id", ids)
         : Promise.resolve({ data: [] as { horse_id: string }[], error: null }),
     ]);
-    if (images.error) return unavailable(res);
+    if (images.error) return unavailable(res, images.error);
     const counts = new Map<string, number>();
     for (const i of images.data ?? []) counts.set(i.horse_id, (counts.get(i.horse_id) ?? 0) + 1);
     const mine = viewer === owner;
@@ -430,8 +439,8 @@ router.get(
   asyncRoute(async (req, res) => {
     try {
       res.json(await feedPage(me(req).id, "author", req.params.id, req));
-    } catch {
-      unavailable(res);
+    } catch (err) {
+      unavailable(res, err as DbError);
     }
   }),
 );
@@ -448,7 +457,7 @@ async function followList(req: Request, res: Response, direction: "followers" | 
     .eq(mineCol, req.params.id)
     .order("created_at", { ascending: false })
     .range(offset, offset + 60);
-  if (error) return unavailable(res);
+  if (error) return unavailable(res, error);
   const ids = (data ?? []).map((r: any) => r[otherCol] as string);
   if (!ids.length) return res.json({ people: [], nextOffset: null });
   const [accounts, mineFollows, profiles] = await Promise.all([
@@ -456,7 +465,7 @@ async function followList(req: Request, res: Response, direction: "followers" | 
     supabase.from("community_follows").select("followee_id").eq("follower_id", viewer).in("followee_id", ids),
     supabase.from("community_profiles").select("user_id,headline").in("user_id", ids),
   ]);
-  if (accounts.error || mineFollows.error || profiles.error) return unavailable(res);
+  if (accounts.error || mineFollows.error || profiles.error) return unavailable(res, accounts.error, mineFollows.error, profiles.error);
   const byId = new Map((accounts.data ?? []).filter((a: any) => a.status === "active").map((a: any) => [a.id, a]));
   const following = new Set((mineFollows.data ?? []).map((r: any) => r.followee_id));
   const headlines = new Map((profiles.data ?? []).map((p: any) => [p.user_id, p.headline]));
@@ -489,16 +498,16 @@ for (const action of ["follow", "unfollow"] as const)
       if (action === "follow") {
         if (!(await accountActive(target))) return notFound(res, "That member");
         const { error } = await supabase.from("community_follows").insert({ follower_id: viewer, followee_id: target });
-        if (error && error.code !== "23505") return unavailable(res);
+        if (error && error.code !== "23505") return unavailable(res, error);
       } else {
         const { error } = await supabase.from("community_follows").delete().eq("follower_id", viewer).eq("followee_id", target);
-        if (error) return unavailable(res);
+        if (error) return unavailable(res, error);
       }
       const { count, error } = await supabase
         .from("community_follows")
         .select("follower_id", { count: "exact", head: true })
         .eq("followee_id", target);
-      if (error) return unavailable(res);
+      if (error) return unavailable(res, error);
       res.json({ isFollowing: action === "follow", followers: count ?? 0 });
     }),
   );
@@ -510,7 +519,7 @@ router.get(
   asyncRoute(async (req, res) => {
     const viewer = me(req).id;
     const { data: horse, error } = await supabase.from("owner_horses").select(HORSE_COLUMNS).eq("id", req.params.id).maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!horse || !(await accountActive(horse.owner_id))) return notFound(res, "That horse");
     const ctx = await ownerContext(viewer, horse.owner_id);
     if (!canSeeHorse(viewer, horse, ctx)) return notFound(res, "That horse");
@@ -527,7 +536,7 @@ router.get(
         .limit(500),
       supabase.from("accounts").select("id,first_name,last_name").eq("id", horse.owner_id).maybeSingle(),
     ]);
-    if (images.error || records.error || owner.error) return unavailable(res);
+    if (images.error || records.error || owner.error) return unavailable(res, images.error, records.error, owner.error);
     res.json({
       horse: {
         ...horseView(horse, stats.get(horse.id), { mine, showEarnings, imageCount: images.data?.length ?? 0 }),
@@ -550,8 +559,8 @@ router.get(
   asyncRoute(async (req, res) => {
     try {
       res.json(await feedPage(me(req).id, "horse", req.params.id, req));
-    } catch {
-      unavailable(res);
+    } catch (err) {
+      unavailable(res, err as DbError);
     }
   }),
 );
@@ -570,10 +579,10 @@ router.post(
       .from("owner_horses")
       .select("id", { count: "exact", head: true })
       .eq("owner_id", owner);
-    if (countError) return unavailable(res);
+    if (countError) return unavailable(res, countError);
     if ((count ?? 0) >= 500) return res.status(409).json({ error: "You can register up to 500 horses." });
     const { data, error } = await supabase.from("owner_horses").insert({ ...input, owner_id: owner }).select(HORSE_COLUMNS).single();
-    if (error || !data) return unavailable(res);
+    if (error || !data) return unavailable(res, error);
     let shared = false;
     if (req.body?.share === true) {
       const audience = await shareAudience(owner, data.visibility);
@@ -603,7 +612,7 @@ router.patch(
       .eq("owner_id", me(req).id)
       .select(HORSE_COLUMNS)
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That horse");
     const stats = await loadStats([data.id]);
     res.json({ horse: horseView(data, stats.get(data.id), { mine: true, showEarnings: true }) });
@@ -617,9 +626,9 @@ router.post(
     const horse = await ownHorse(req.params.id, owner);
     if (!horse) return notFound(res, "That horse");
     const { data: images, error: imagesError } = await supabase.from("owner_horse_images").select("path").eq("horse_id", horse.id);
-    if (imagesError) return unavailable(res);
+    if (imagesError) return unavailable(res, imagesError);
     const { error } = await supabase.from("owner_horses").delete().eq("id", horse.id).eq("owner_id", owner);
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     await communityStorage.remove((images ?? []).map((i) => i.path)).catch(() => undefined);
     res.json({ ok: true });
   }),
@@ -641,7 +650,7 @@ router.post(
       .from("owner_horse_images")
       .select("id", { count: "exact", head: true })
       .eq("horse_id", horse.id);
-    if (countError) return unavailable(res);
+    if (countError) return unavailable(res, countError);
     if ((count ?? 0) >= MAX_HORSE_IMAGES)
       return res.status(409).json({ error: `A horse can have up to ${MAX_HORSE_IMAGES} photos. Remove one first.` });
     const path = `horses/${owner}/${horse.id}/${randomUUID()}`;
@@ -668,7 +677,7 @@ router.post(
       .single();
     if (error || !data) {
       await communityStorage.remove([path]).catch(() => undefined);
-      return unavailable(res);
+      return unavailable(res, error);
     }
     if (!horse.cover_image_id)
       await supabase.from("owner_horses").update({ cover_image_id: data.id }).eq("id", horse.id).eq("owner_id", owner);
@@ -689,7 +698,7 @@ router.post(
       .eq("horse_id", horse.id)
       .select("path")
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That photo");
     await communityStorage.remove([data.path]).catch(() => undefined);
     let cover = horse.cover_image_id === req.params.image ? null : horse.cover_image_id;
@@ -722,7 +731,7 @@ router.post(
         supabase.from("owner_horse_images").update({ position }).eq("id", id).eq("horse_id", horse.id).eq("owner_id", owner),
       ),
     );
-    if (results.some((r) => r.error)) return unavailable(res);
+    if (results.some((r) => r.error)) return unavailable(res, ...results.map((r) => r.error));
     res.json({ ok: true });
   }),
 );
@@ -740,10 +749,10 @@ router.post(
       .eq("horse_id", req.params.id)
       .eq("owner_id", owner)
       .maybeSingle();
-    if (imageError) return unavailable(res);
+    if (imageError) return unavailable(res, imageError);
     if (!image) return notFound(res, "That photo");
     const { error } = await supabase.from("owner_horses").update({ cover_image_id: imageId }).eq("id", req.params.id).eq("owner_id", owner);
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     res.json({ coverImageId: imageId });
   }),
 );
@@ -769,7 +778,7 @@ router.post(
       .insert({ ...input, horse_id: horse.id, owner_id: owner })
       .select(RECORD_COLUMNS)
       .single();
-    if (error || !data) return unavailable(res);
+    if (error || !data) return unavailable(res, error);
     let shared = false;
     if (req.body?.share === true) {
       const audience = await shareAudience(owner, horse.visibility);
@@ -819,7 +828,7 @@ router.patch(
       .eq("owner_id", owner)
       .select(RECORD_COLUMNS)
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That race record");
     const horse = await ownHorse(data.horse_id, owner);
     const stats = await loadStats([data.horse_id]);
@@ -841,11 +850,47 @@ router.post(
       .eq("owner_id", owner)
       .select("horse_id")
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That race record");
     const horse = await ownHorse(data.horse_id, owner);
     const stats = await loadStats([data.horse_id]);
     res.json({ ok: true, stats: horse ? horseView(horse, stats.get(data.horse_id), { mine: true, showEarnings: true }).stats : null });
+  }),
+);
+
+/* ============================== Setup check (admins) ============================== */
+
+/**
+ * GET /api/community/setup-check — admins only. Probes every table, function and the
+ * storage bucket the community needs, so a missing migration shows up by name.
+ */
+router.get(
+  "/setup-check",
+  asyncRoute(async (req, res) => {
+    if (roleRank(me(req).role) < roleRank("admin")) return notFound(res);
+    const viewer = me(req).id;
+    const tables = [
+      "community_profiles", "owner_horses", "owner_horse_images", "owner_horse_records",
+      "community_follows", "community_posts", "community_post_images", "community_likes",
+      "community_comments", "owner_horse_stats",
+    ];
+    const describe = (error: DbError) => (error ? `${error.code ?? "?"} ${error.message ?? ""}`.trim() : "ok");
+    const checks: { name: string; ok: boolean; detail: string }[] = [];
+    for (const t of tables) {
+      const { error } = await supabase.from(t).select("*").limit(0);
+      checks.push({ name: `table ${t}`, ok: !error, detail: describe(error) });
+    }
+    const rpcs: [string, Record<string, unknown>][] = [
+      ["community_people", { p_viewer: viewer, p_query: null, p_sort: null, p_limit: 1, p_offset: 0, p_only: viewer }],
+      ["community_feed", { p_viewer: viewer, p_scope: "all", p_target: null, p_before_time: null, p_before_id: null, p_after: null, p_limit: 1 }],
+    ];
+    for (const [fn, args] of rpcs) {
+      const { error } = await supabase.rpc(fn, args);
+      checks.push({ name: `function ${fn}`, ok: !error, detail: describe(error) });
+    }
+    const bucket = await supabase.storage.getBucket("community-media");
+    checks.push({ name: "storage bucket community-media", ok: !bucket.error, detail: bucket.error ? bucket.error.message : "ok" });
+    res.json({ ok: checks.every((c) => c.ok), checks });
   }),
 );
 
@@ -870,7 +915,7 @@ router.get(
         .order("name")
         .limit(40),
     ]);
-    if (people.error || horses.error) return unavailable(res);
+    if (people.error || horses.error) return unavailable(res, people.error, horses.error);
 
     // Keep only horses this viewer may see: active owner, then the owner's and the horse's privacy.
     const rows = horses.data ?? [];
@@ -883,7 +928,7 @@ router.get(
         supabase.from("community_profiles").select("user_id,inventory_visibility").in("user_id", owners),
         supabase.from("community_follows").select("followee_id").eq("follower_id", viewer).in("followee_id", owners),
       ]);
-      if (accounts.error || profiles.error || follows.error) return unavailable(res);
+      if (accounts.error || profiles.error || follows.error) return unavailable(res, accounts.error, profiles.error, follows.error);
       for (const a of accounts.data ?? [])
         if (a.status === "active") names.set(a.id, `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || "Stayblz member");
       const levels = new Map((profiles.data ?? []).map((p) => [p.user_id, p.inventory_visibility as OwnerContext["level"]]));
@@ -927,8 +972,8 @@ router.get(
     const scope = req.query.scope === "following" ? "following" : "all";
     try {
       res.json(await feedPage(me(req).id, scope, null, req));
-    } catch {
-      unavailable(res);
+    } catch (err) {
+      unavailable(res, err as DbError);
     }
   }),
 );
@@ -948,7 +993,7 @@ router.get(
       p_after: since,
       p_limit: 50,
     });
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     const posts = (Array.isArray(data) ? data : []).filter((p: any) => p.author?.id !== me(req).id);
     res.json({ count: posts.length });
   }),
@@ -957,8 +1002,9 @@ router.get(
 router.get(
   "/posts/:id",
   asyncRoute(async (req, res) => {
-    const post = await visiblePost(me(req).id, req.params.id).catch(() => undefined);
-    if (post === undefined) return unavailable(res);
+    let failure: DbError;
+    const post = await visiblePost(me(req).id, req.params.id).catch((err) => { failure = err as DbError; return undefined; });
+    if (post === undefined) return unavailable(res, failure);
     if (!post) return notFound(res, "That post");
     res.json({ post });
   }),
@@ -978,7 +1024,7 @@ router.post(
       .select("id", { count: "exact", head: true })
       .eq("author_id", author)
       .is("post_id", null);
-    if (countError) return unavailable(res);
+    if (countError) return unavailable(res, countError);
     if ((count ?? 0) >= MAX_PENDING_POST_IMAGES)
       return res.status(409).json({ error: "Publish or remove the photos you've already added first." });
     const path = `posts/${author}/${randomUUID()}`;
@@ -994,7 +1040,7 @@ router.post(
       .single();
     if (error || !data) {
       await communityStorage.remove([path]).catch(() => undefined);
-      return unavailable(res);
+      return unavailable(res, error);
     }
     res.status(201).json({ image: data });
   }),
@@ -1011,7 +1057,7 @@ router.post(
       .is("post_id", null)
       .select("path")
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (data) await communityStorage.remove([data.path]).catch(() => undefined);
     res.json({ ok: true });
   }),
@@ -1039,7 +1085,7 @@ router.post(
         .in("id", input.imageIds)
         .eq("author_id", user.id)
         .is("post_id", null);
-      if (error) return unavailable(res);
+      if (error) return unavailable(res, error);
       if ((pending ?? []).length !== input.imageIds.length)
         return res.status(400).json({ error: "Some photos are no longer available. Add them again." });
     }
@@ -1054,7 +1100,7 @@ router.post(
       })
       .select("id")
       .single();
-    if (error || !post) return unavailable(res);
+    if (error || !post) return unavailable(res, error);
     const attached = await Promise.all(
       input.imageIds.map((id, position) =>
         supabase.from("community_post_images").update({ post_id: post.id, position }).eq("id", id).eq("author_id", user.id).is("post_id", null),
@@ -1062,7 +1108,7 @@ router.post(
     );
     if (attached.some((r) => r.error)) {
       await supabase.from("community_posts").delete().eq("id", post.id);
-      return unavailable(res);
+      return unavailable(res, ...attached.map((r) => r.error));
     }
     const view = await visiblePost(user.id, post.id).catch(() => null);
     res.status(201).json({ post: view });
@@ -1088,7 +1134,7 @@ router.patch(
       .eq("author_id", user.id)
       .select("id")
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That post");
     res.json({ post: await visiblePost(user.id, data.id) });
   }),
@@ -1099,13 +1145,13 @@ router.post(
   asyncRoute(async (req, res) => {
     const user = me(req);
     const { data: post, error: postError } = await supabase.from("community_posts").select("id,author_id").eq("id", req.params.id).maybeSingle();
-    if (postError) return unavailable(res);
+    if (postError) return unavailable(res, postError);
     if (!post) return notFound(res, "That post");
     const staff = roleRank(user.role) >= roleRank("admin");
     if (post.author_id !== user.id && !staff) return res.status(403).json({ error: "You can only remove your own posts." });
     const { data: images } = await supabase.from("community_post_images").select("path").eq("post_id", post.id);
     const { error } = await supabase.from("community_posts").delete().eq("id", post.id);
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     await communityStorage.remove((images ?? []).map((i) => i.path)).catch(() => undefined);
     res.json({ ok: true });
   }),
@@ -1122,7 +1168,7 @@ router.post(
     const { error } = on
       ? await supabase.from("community_likes").upsert({ post_id: post.id, user_id: viewer }, { onConflict: "post_id,user_id", ignoreDuplicates: true })
       : await supabase.from("community_likes").delete().eq("post_id", post.id).eq("user_id", viewer);
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     const { count } = await supabase.from("community_likes").select("user_id", { count: "exact", head: true }).eq("post_id", post.id);
     res.json({ liked: on, likes: count ?? 0 });
   }),
@@ -1141,12 +1187,12 @@ router.get(
       .eq("post_id", post.id)
       .order("created_at", { ascending: true })
       .limit(300);
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     const ids = [...new Set((data ?? []).map((c) => c.author_id))];
     const { data: authors, error: authorError } = ids.length
       ? await supabase.from("accounts").select("id,first_name,last_name,status").in("id", ids)
       : { data: [], error: null };
-    if (authorError) return unavailable(res);
+    if (authorError) return unavailable(res, authorError);
     const names = new Map(
       (authors ?? []).filter((a: any) => a.status === "active").map((a: any) => [a.id, `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim()]),
     );
@@ -1184,7 +1230,7 @@ router.post(
       .insert({ post_id: post.id, author_id: viewer.id, body: input.body })
       .select("id,body,created_at")
       .single();
-    if (error || !data) return unavailable(res);
+    if (error || !data) return unavailable(res, error);
     res.status(201).json({
       comment: {
         id: data.id,
@@ -1202,7 +1248,7 @@ router.post(
   asyncRoute(async (req, res) => {
     const viewer = me(req);
     const { data: comment, error } = await supabase.from("community_comments").select("id,author_id,post_id").eq("id", req.params.id).maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!comment) return notFound(res, "That comment");
     let allowed = comment.author_id === viewer.id || roleRank(viewer.role) >= roleRank("admin");
     if (!allowed) {
@@ -1211,7 +1257,7 @@ router.post(
     }
     if (!allowed) return res.status(403).json({ error: "You can't remove that comment." });
     const { error: deleteError } = await supabase.from("community_comments").delete().eq("id", comment.id);
-    if (deleteError) return unavailable(res);
+    if (deleteError) return unavailable(res, deleteError);
     res.json({ ok: true });
   }),
 );
@@ -1242,10 +1288,10 @@ router.get(
       .select("path,content_type,horse_id,owner_id")
       .eq("id", req.params.image)
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!image) return notFound(res, "That photo");
     const { data: horse, error: horseError } = await supabase.from("owner_horses").select("owner_id,visibility").eq("id", image.horse_id).maybeSingle();
-    if (horseError) return unavailable(res);
+    if (horseError) return unavailable(res, horseError);
     if (!horse) return notFound(res, "That photo");
     if (viewer !== horse.owner_id) {
       if (!(await accountActive(horse.owner_id))) return notFound(res, "That photo");
@@ -1265,7 +1311,7 @@ router.get(
       .select("path,content_type,post_id,author_id")
       .eq("id", req.params.image)
       .maybeSingle();
-    if (error) return unavailable(res);
+    if (error) return unavailable(res, error);
     if (!image) return notFound(res, "That photo");
     if (!image.post_id) {
       // Not published yet: only the person who uploaded it.
