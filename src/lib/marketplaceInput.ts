@@ -122,3 +122,34 @@ export function listingFilters(query: Record<string, unknown>): ListingFilters {
   }
   return filters;
 }
+
+/* ---------- Photos and documents ---------- */
+
+/** A problem with the listing's files, with a message the seller can act on. */
+export class MediaInputError extends Error {}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * The listing's photos and documents, in display order (photo 0 is the cover).
+ * Ids are files the seller already uploaded. Throws MediaInputError.
+ */
+export function mediaInput(body: any, limits: { minPhotos: number; maxPhotos: number; maxDocuments: number }) {
+  const ids = (value: unknown, min: number, max: number, problem: string) => {
+    const list = value === undefined ? [] : value;
+    if (!Array.isArray(list) || !list.every((id) => typeof id === "string" && UUID.test(id)))
+      throw new MediaInputError("Some files couldn't be read. Remove them and add them again.");
+    const unique = [...new Set(list.map((id: string) => id.toLowerCase()))];
+    if (unique.length !== list.length) throw new MediaInputError("The same file was added twice.");
+    if (unique.length < min || unique.length > max) throw new MediaInputError(problem);
+    return unique;
+  };
+  const photoIds = ids(
+    body?.photoIds,
+    limits.minPhotos,
+    limits.maxPhotos,
+    `Add at least ${limits.minPhotos} photo (up to ${limits.maxPhotos}).`,
+  );
+  const documentIds = ids(body?.documentIds, 0, limits.maxDocuments, `A listing can have up to ${limits.maxDocuments} documents.`);
+  return { photoIds, documentIds };
+}
