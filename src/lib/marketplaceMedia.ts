@@ -72,9 +72,24 @@ export const marketplaceFiles = {
   remove: (keys: string[]) => r2Storage.remove("private", keys),
 };
 
+/** Which R2 settings are missing or wrong on this server (setting names only, never values). */
+export function storageProblems(): string[] {
+  const { private: bucket, problems } = r2Storage.status();
+  if (bucket.configured) return [];
+  // Public-bucket notes don't matter here: marketplace files only use the private bucket.
+  return problems.filter((p) => !/R2_BUCKET_PUBLIC|R2_PUBLIC_URL/.test(p));
+}
+
 /** Logs storage failures (without secrets) so setup problems show up in the server log. */
 export function logStorageFailure(where: string, error: unknown) {
   const code = error instanceof StorageError ? error.code : "unexpected";
-  console.error(`[marketplace] ${where}: storage ${code}`);
+  const detail = code === "not_configured" ? ` (${storageProblems().join("; ") || "R2 private storage is not set up"})` : "";
+  console.error(`[marketplace] ${where}: storage ${code}${detail}`);
   return code;
+}
+
+// Say it once at startup too, so a missing setting is visible in the deploy log straight away.
+{
+  const problems = storageProblems();
+  if (problems.length) console.warn(`[marketplace] Photo uploads won't work until R2 is set up: ${problems.join("; ")}`);
 }

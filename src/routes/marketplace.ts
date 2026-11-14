@@ -17,6 +17,7 @@ import {
   documentName,
   logStorageFailure,
   marketplaceFiles,
+  storageProblems,
   type FileKind,
 } from "../lib/marketplaceMedia";
 
@@ -47,9 +48,18 @@ const unavailable = (res: Response, error?: { code?: string; message?: string } 
 };
 const storageDown = (res: Response, where: string, error: unknown) => {
   const code = logStorageFailure(where, error);
-  return res.status(503).json({
-    error: code === "not_configured" ? "File storage isn't set up yet. Ask a Stayblz admin." : "File storage is busy. Try again in a moment.",
-  });
+  const admin = roleRank(user(res.req).role) >= roleRank("admin");
+  let message = "File storage is busy. Try again in a moment.";
+  if (code === "not_configured")
+    // Admins see which settings the server is missing (names only), so they can fix it.
+    message = admin
+      ? `R2 storage isn't set up on this server: ${storageProblems().join("; ") || "check the R2_* settings"}.`
+      : "File storage isn't set up yet. Ask a Stayblz admin.";
+  else if (code === "access_denied")
+    message = admin ? "R2 refused the request: check R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY." : message;
+  else if (code === "no_such_bucket")
+    message = admin ? "R2 can't find the bucket in R2_BUCKET_PRIVATE." : message;
+  return res.status(503).json({ error: message, code: `storage_${code}` });
 };
 const notFound = (res: Response) => res.status(404).json({ error: "Listing not found." });
 const badListing = (res: Response) =>
