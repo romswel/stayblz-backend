@@ -20,6 +20,8 @@ browser only through the same-origin proxy `https://stayblz-app.com/api/*` (`ver
 | `API_RATE_LIMIT_PER_MINUTE` | unset (1200) | unset | |
 | `ENABLE_PUBLIC_DEMO`, `DEMO_ADMIN_PASSWORD` | **unset** | unset | Ignored on Render anyway. |
 | `DATABASE_URL` | **unset** | release tooling only | Not read by the API. |
+| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT`, `R2_BUCKET_PRIVATE`, `R2_BUCKET_PUBLIC` | Suprah's values (not yet on Render) | copied from `suprah-backend/.env` | Cloudflare R2, shared with Suprah; Stayblz only uses keys under `stayblz/`. Unset = R2 off. See `r2-storage.md`. |
+| `R2_PUBLIC_URL` | unset until Suprah's live public address is known | empty | Suprah's local r2.dev value no longer resolves (2026-11-15). Only public-bucket links need it. |
 | `PORT`, `RENDER`, `RENDER_GIT_COMMIT` | set by Render | — | |
 
 Render service settings: Node 22.12 or newer; build `npm ci --include=dev && npm run build` (TypeScript is a
