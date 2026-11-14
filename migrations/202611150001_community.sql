@@ -1,17 +1,18 @@
--- ============================================================================
--- Stayblz Community: owner horse profiles (photos, race records), follows,
--- feed posts, likes and comments, plus each member's privacy settings.
+-- Stayblz Community: owner horse profiles (photos, race records), follows, feed posts,
+-- likes and comments, plus each member's privacy settings.
+-- Apply after 202611140002_paddock.sql.
 --
--- Every read and write goes through the API (service role). Row level security
--- is on with no policies, and the functions below are only executable by the
--- service role, so the browser's public key can't reach any of this directly.
--- ============================================================================
-
-create extension if not exists pgcrypto;
+-- Starts, wins and earnings are never stored: they're always calculated from the race
+-- records, so totals can't drift from the history. Photos live in the private
+-- "community-media" bucket and are streamed through the API after a visibility check.
+--
+-- Same rules as the rest of Stayblz: RLS on, no browser grants, service-role-only
+-- community_* functions; the API checks who may see what.
+begin;
 
 -- ---------- Privacy and profile settings (one row per member, optional) ----------
-create table if not exists community_profiles (
-  user_id uuid primary key references accounts(id) on delete cascade,
+create table public.community_profiles (
+  user_id uuid primary key references public.accounts(id) on delete cascade,
   headline text not null default '' check (char_length(headline) <= 120),
   -- Who can see this member's horses: every signed-in member, followers only, or nobody else.
   inventory_visibility text not null default 'members'
@@ -24,9 +25,9 @@ create table if not exists community_profiles (
 );
 
 -- ---------- Horses ----------
-create table if not exists owner_horses (
+create table public.owner_horses (
   id uuid primary key default gen_random_uuid(),
-  owner_id uuid not null references accounts(id) on delete cascade,
+  owner_id uuid not null references public.accounts(id) on delete cascade,
   name text not null check (char_length(name) between 1 and 80),
   breed text not null default '' check (char_length(breed) <= 60),
   sex text not null default ''
@@ -47,12 +48,12 @@ create table if not exists owner_horses (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index if not exists owner_horses_owner_idx on owner_horses (owner_id, created_at desc);
+create index owner_horses_owner_idx on public.owner_horses (owner_id, created_at desc);
 
-create table if not exists owner_horse_images (
+create table public.owner_horse_images (
   id uuid primary key default gen_random_uuid(),
-  horse_id uuid not null references owner_horses(id) on delete cascade,
-  owner_id uuid not null references accounts(id) on delete cascade,
+  horse_id uuid not null references public.owner_horses(id) on delete cascade,
+  owner_id uuid not null references public.accounts(id) on delete cascade,
   path text not null unique,
   content_type text not null,
   size_bytes int not null check (size_bytes > 0),
@@ -62,20 +63,18 @@ create table if not exists owner_horse_images (
   position int not null default 0,
   created_at timestamptz not null default now()
 );
-create index if not exists owner_horse_images_horse_idx on owner_horse_images (horse_id, position);
+create index owner_horse_images_horse_idx on public.owner_horse_images (horse_id, position);
 
-do $$ begin
-  alter table owner_horses
-    add constraint owner_horses_cover_fk foreign key (cover_image_id)
-    references owner_horse_images(id) on delete set null;
-exception when duplicate_object then null; end $$;
+alter table public.owner_horses
+  add constraint owner_horses_cover_fk foreign key (cover_image_id)
+  references public.owner_horse_images(id) on delete set null;
 
 -- Race records: the performance history. Starts, wins and earnings are always
 -- calculated from these rows, so totals can't drift from the history.
-create table if not exists owner_horse_records (
+create table public.owner_horse_records (
   id uuid primary key default gen_random_uuid(),
-  horse_id uuid not null references owner_horses(id) on delete cascade,
-  owner_id uuid not null references accounts(id) on delete cascade,
+  horse_id uuid not null references public.owner_horses(id) on delete cascade,
+  owner_id uuid not null references public.accounts(id) on delete cascade,
   race_date date not null,
   track text not null check (char_length(track) between 1 and 80),
   race_name text not null default '' check (char_length(race_name) <= 120),
@@ -90,41 +89,41 @@ create table if not exists owner_horse_records (
   updated_at timestamptz not null default now(),
   check (finish is null or field_size is null or finish <= field_size)
 );
-create index if not exists owner_horse_records_horse_idx on owner_horse_records (horse_id, race_date desc);
+create index owner_horse_records_horse_idx on public.owner_horse_records (horse_id, race_date desc);
 
 -- ---------- Follows ----------
-create table if not exists community_follows (
-  follower_id uuid not null references accounts(id) on delete cascade,
-  followee_id uuid not null references accounts(id) on delete cascade,
+create table public.community_follows (
+  follower_id uuid not null references public.accounts(id) on delete cascade,
+  followee_id uuid not null references public.accounts(id) on delete cascade,
   created_at timestamptz not null default now(),
   primary key (follower_id, followee_id),
   check (follower_id <> followee_id)
 );
-create index if not exists community_follows_followee_idx on community_follows (followee_id);
+create index community_follows_followee_idx on public.community_follows (followee_id);
 
 -- ---------- Posts, images, likes, comments ----------
-create table if not exists community_posts (
+create table public.community_posts (
   id uuid primary key default gen_random_uuid(),
-  author_id uuid not null references accounts(id) on delete cascade,
+  author_id uuid not null references public.accounts(id) on delete cascade,
   kind text not null default 'update'
     check (kind in ('update', 'horse_update', 'new_horse', 'result', 'achievement', 'announcement')),
   body text not null default '' check (char_length(body) <= 2000),
-  horse_id uuid references owner_horses(id) on delete set null,
+  horse_id uuid references public.owner_horses(id) on delete set null,
   -- Snapshot of a shared race result, so the post still reads right if the record changes.
   result jsonb,
   visibility text not null default 'members' check (visibility in ('members', 'followers')),
   created_at timestamptz not null default now(),
   edited_at timestamptz
 );
-create index if not exists community_posts_time_idx on community_posts (created_at desc, id desc);
-create index if not exists community_posts_author_idx on community_posts (author_id, created_at desc);
-create index if not exists community_posts_horse_idx on community_posts (horse_id);
+create index community_posts_time_idx on public.community_posts (created_at desc, id desc);
+create index community_posts_author_idx on public.community_posts (author_id, created_at desc);
+create index community_posts_horse_idx on public.community_posts (horse_id);
 
 -- Photos are uploaded first (post_id empty) and attached when the post is published.
-create table if not exists community_post_images (
+create table public.community_post_images (
   id uuid primary key default gen_random_uuid(),
-  post_id uuid references community_posts(id) on delete cascade,
-  author_id uuid not null references accounts(id) on delete cascade,
+  post_id uuid references public.community_posts(id) on delete cascade,
+  author_id uuid not null references public.accounts(id) on delete cascade,
   path text not null unique,
   content_type text not null,
   size_bytes int not null check (size_bytes > 0),
@@ -133,39 +132,41 @@ create table if not exists community_post_images (
   position int not null default 0,
   created_at timestamptz not null default now()
 );
-create index if not exists community_post_images_post_idx on community_post_images (post_id, position);
-create index if not exists community_post_images_pending_idx on community_post_images (author_id) where post_id is null;
+create index community_post_images_post_idx on public.community_post_images (post_id, position);
+create index community_post_images_pending_idx on public.community_post_images (author_id) where post_id is null;
 
-create table if not exists community_likes (
-  post_id uuid not null references community_posts(id) on delete cascade,
-  user_id uuid not null references accounts(id) on delete cascade,
+create table public.community_likes (
+  post_id uuid not null references public.community_posts(id) on delete cascade,
+  user_id uuid not null references public.accounts(id) on delete cascade,
   created_at timestamptz not null default now(),
   primary key (post_id, user_id)
 );
-create index if not exists community_likes_user_idx on community_likes (user_id);
+create index community_likes_user_idx on public.community_likes (user_id);
 
-create table if not exists community_comments (
+create table public.community_comments (
   id uuid primary key default gen_random_uuid(),
-  post_id uuid not null references community_posts(id) on delete cascade,
-  author_id uuid not null references accounts(id) on delete cascade,
+  post_id uuid not null references public.community_posts(id) on delete cascade,
+  author_id uuid not null references public.accounts(id) on delete cascade,
   body text not null check (char_length(body) between 1 and 1000),
   created_at timestamptz not null default now()
 );
-create index if not exists community_comments_post_idx on community_comments (post_id, created_at);
+create index community_comments_post_idx on public.community_comments (post_id, created_at);
 
 -- ---------- Locked down: API (service role) only ----------
-alter table community_profiles enable row level security;
-alter table owner_horses enable row level security;
-alter table owner_horse_images enable row level security;
-alter table owner_horse_records enable row level security;
-alter table community_follows enable row level security;
-alter table community_posts enable row level security;
-alter table community_post_images enable row level security;
-alter table community_likes enable row level security;
-alter table community_comments enable row level security;
+do $$ declare t text; begin
+  foreach t in array array[
+    'community_profiles', 'owner_horses', 'owner_horse_images', 'owner_horse_records',
+    'community_follows', 'community_posts', 'community_post_images', 'community_likes',
+    'community_comments'
+  ] loop
+    execute format('alter table public.%I enable row level security', t);
+    execute format('revoke all on public.%I from public, anon, authenticated', t);
+    execute format('grant select, insert, update, delete on public.%I to service_role', t);
+  end loop;
+end $$;
 
 -- ---------- Per-horse totals, always calculated from the race records ----------
-create or replace view owner_horse_stats with (security_invoker = true) as
+create view public.owner_horse_stats with (security_invoker = true) as
 select
   h.id as horse_id,
   h.owner_id,
@@ -175,47 +176,47 @@ select
   (count(r.id) filter (where r.finish = 3))::int as shows,
   coalesce(sum(r.earnings_cents), 0)::bigint as earnings_cents,
   max(r.race_date) as last_race
-from owner_horses h
-left join owner_horse_records r on r.horse_id = h.id
+from public.owner_horses h
+left join public.owner_horse_records r on r.horse_id = h.id
 group by h.id, h.owner_id;
 
 -- ---------- Visibility ----------
 -- A horse's effective level: its own setting, or the owner's inventory setting.
-create or replace function community_horse_level(p_level text, p_owner uuid)
-returns text language sql stable set search_path = public as $$
+create function public.community_horse_level(p_level text, p_owner uuid)
+returns text language sql stable security definer set search_path = '' as $$
   select case
     when p_level <> 'inherit' then p_level
-    else coalesce((select inventory_visibility from community_profiles where user_id = p_owner), 'members')
+    else coalesce((select inventory_visibility from public.community_profiles where user_id = p_owner), 'members')
   end
 $$;
 
 -- Can p_viewer see something p_owner shared at p_level?
-create or replace function community_visible(p_viewer uuid, p_owner uuid, p_level text)
-returns boolean language sql stable set search_path = public as $$
+create function public.community_visible(p_viewer uuid, p_owner uuid, p_level text)
+returns boolean language sql stable security definer set search_path = '' as $$
   select p_viewer = p_owner
     or p_level = 'members'
     or (p_level = 'followers' and exists (
-      select 1 from community_follows f where f.follower_id = p_viewer and f.followee_id = p_owner
+      select 1 from public.community_follows f where f.follower_id = p_viewer and f.followee_id = p_owner
     ))
 $$;
 
 -- ---------- Members directory and profile summaries ----------
 -- Counts only include horses the viewer is allowed to see. Earnings are empty when
 -- the member hides them (members always see their own).
-create or replace function community_people(
+create function public.community_people(
   p_viewer uuid, p_query text, p_sort text, p_limit int, p_offset int, p_only uuid default null
 )
-returns jsonb language sql stable set search_path = public as $$
+returns jsonb language sql stable security definer set search_path = '' as $$
   with base as (
     select
       a.id,
-      trim(coalesce(a.first_name, '') || ' ' || coalesce(a.last_name, '')) as name,
+      coalesce(nullif(btrim(coalesce(a.first_name, '') || ' ' || coalesce(a.last_name, '')), ''), 'Stayblz member') as name,
       a.created_at,
       coalesce(cp.headline, '') as headline,
       coalesce(cp.show_earnings, true) as show_earnings,
       coalesce(cp.inventory_visibility, 'members') as inventory_visibility
-    from accounts a
-    left join community_profiles cp on cp.user_id = a.id
+    from public.accounts a
+    left join public.community_profiles cp on cp.user_id = a.id
     where a.status = 'active'
       and (
         (p_only is not null and a.id = p_only)
@@ -229,31 +230,31 @@ returns jsonb language sql stable set search_path = public as $$
   ),
   visible_horses as (
     select h.id, h.owner_id
-    from owner_horses h
+    from public.owner_horses h
     join base b on b.id = h.owner_id
-    where community_visible(p_viewer, h.owner_id, community_horse_level(h.visibility, h.owner_id))
+    where public.community_visible(p_viewer, h.owner_id, public.community_horse_level(h.visibility, h.owner_id))
   ),
   stats as (
     select
       b.id, b.name, b.created_at, b.headline,
       (b.id = p_viewer) as me,
-      community_visible(p_viewer, b.id, b.inventory_visibility) as inventory_open,
+      public.community_visible(p_viewer, b.id, b.inventory_visibility) as inventory_open,
       (select count(*) from visible_horses v where v.owner_id = b.id)::int as horses,
       case when b.show_earnings or b.id = p_viewer then
         (select coalesce(sum(s.earnings_cents), 0)
-           from owner_horse_stats s join visible_horses v on v.id = s.horse_id
+           from public.owner_horse_stats s join visible_horses v on v.id = s.horse_id
           where v.owner_id = b.id)::bigint
       end as earnings_cents,
-      (select count(*) from owner_horse_records r join visible_horses v on v.id = r.horse_id
+      (select count(*) from public.owner_horse_records r join visible_horses v on v.id = r.horse_id
         where v.owner_id = b.id and r.finish = 1)::int as wins,
-      (select count(*) from owner_horse_records r join visible_horses v on v.id = r.horse_id
+      (select count(*) from public.owner_horse_records r join visible_horses v on v.id = r.horse_id
         where v.owner_id = b.id)::int as starts,
-      (select count(*) from community_follows f where f.followee_id = b.id)::int as followers,
-      (select count(*) from community_follows f where f.follower_id = b.id)::int as following_count,
-      (select count(*) from community_posts p where p.author_id = b.id)::int as posts,
-      exists (select 1 from community_follows f where f.follower_id = p_viewer and f.followee_id = b.id) as following,
-      exists (select 1 from community_follows f where f.follower_id = b.id and f.followee_id = p_viewer) as follows_me,
-      (select max(p.created_at) from community_posts p where p.author_id = b.id) as last_active
+      (select count(*) from public.community_follows f where f.followee_id = b.id)::int as followers,
+      (select count(*) from public.community_follows f where f.follower_id = b.id)::int as following_count,
+      (select count(*) from public.community_posts p where p.author_id = b.id)::int as posts,
+      exists (select 1 from public.community_follows f where f.follower_id = p_viewer and f.followee_id = b.id) as following,
+      exists (select 1 from public.community_follows f where f.follower_id = b.id and f.followee_id = p_viewer) as follows_me,
+      (select max(p.created_at) from public.community_posts p where p.author_id = b.id) as last_active
     from base b
   ),
   ranked as (
@@ -281,11 +282,11 @@ $$;
 -- ---------- Feed ----------
 -- p_scope: 'all' | 'following' | 'author' (p_target = member) | 'horse' (p_target = horse) | 'post' (p_target = post).
 -- Newest first; page with p_before_time + p_before_id; p_after counts newer posts.
-create or replace function community_feed(
+create function public.community_feed(
   p_viewer uuid, p_scope text, p_target uuid,
   p_before_time timestamptz, p_before_id uuid, p_after timestamptz, p_limit int
 )
-returns jsonb language sql stable set search_path = public as $$
+returns jsonb language sql stable security definer set search_path = '' as $$
   select coalesce(jsonb_agg(to_jsonb(x) order by x.created_at desc, x.id desc), '[]'::jsonb)
   from (
     select
@@ -296,12 +297,12 @@ returns jsonb language sql stable set search_path = public as $$
       (p.author_id = p_viewer) as mine,
       jsonb_build_object(
         'id', a.id,
-        'name', trim(coalesce(a.first_name, '') || ' ' || coalesce(a.last_name, '')),
+        'name', coalesce(nullif(btrim(coalesce(a.first_name, '') || ' ' || coalesce(a.last_name, '')), ''), 'Stayblz member'),
         'headline', coalesce(cp.headline, '')
       ) as author,
       case
         when h.id is not null
-         and community_visible(p_viewer, h.owner_id, community_horse_level(h.visibility, h.owner_id))
+         and public.community_visible(p_viewer, h.owner_id, public.community_horse_level(h.visibility, h.owner_id))
         then jsonb_build_object(
           'id', h.id, 'name', h.name, 'breed', h.breed, 'status', h.status,
           'coverImageId', h.cover_image_id
@@ -310,23 +311,23 @@ returns jsonb language sql stable set search_path = public as $$
       coalesce((
         select jsonb_agg(jsonb_build_object('id', i.id, 'width', i.width, 'height', i.height)
                          order by i.position, i.created_at)
-        from community_post_images i where i.post_id = p.id
+        from public.community_post_images i where i.post_id = p.id
       ), '[]'::jsonb) as images,
-      (select count(*) from community_likes l where l.post_id = p.id)::int as likes,
-      exists (select 1 from community_likes l where l.post_id = p.id and l.user_id = p_viewer) as liked,
-      (select count(*) from community_comments c where c.post_id = p.id)::int as comments
-    from community_posts p
-    join accounts a on a.id = p.author_id and a.status = 'active'
-    left join community_profiles cp on cp.user_id = p.author_id
-    left join owner_horses h on h.id = p.horse_id
-    where community_visible(p_viewer, p.author_id, p.visibility)
+      (select count(*) from public.community_likes l where l.post_id = p.id)::int as likes,
+      exists (select 1 from public.community_likes l where l.post_id = p.id and l.user_id = p_viewer) as liked,
+      (select count(*) from public.community_comments c where c.post_id = p.id)::int as comments
+    from public.community_posts p
+    join public.accounts a on a.id = p.author_id and a.status = 'active'
+    left join public.community_profiles cp on cp.user_id = p.author_id
+    left join public.owner_horses h on h.id = p.horse_id
+    where public.community_visible(p_viewer, p.author_id, p.visibility)
       and (p_scope <> 'following' or p.author_id = p_viewer or exists (
-        select 1 from community_follows f where f.follower_id = p_viewer and f.followee_id = p.author_id))
+        select 1 from public.community_follows f where f.follower_id = p_viewer and f.followee_id = p.author_id))
       and (p_scope <> 'author' or p.author_id = p_target)
       and (p_scope <> 'post' or p.id = p_target)
       and (p_scope <> 'horse' or (
         p.horse_id = p_target and h.id is not null
-        and community_visible(p_viewer, h.owner_id, community_horse_level(h.visibility, h.owner_id))))
+        and public.community_visible(p_viewer, h.owner_id, public.community_horse_level(h.visibility, h.owner_id))))
       and (p_before_time is null or (p.created_at, p.id) < (p_before_time, coalesce(p_before_id, 'ffffffff-ffff-ffff-ffff-ffffffffffff'::uuid)))
       and (p_after is null or p.created_at > p_after)
     order by p.created_at desc, p.id desc
@@ -334,17 +335,17 @@ returns jsonb language sql stable set search_path = public as $$
   ) x
 $$;
 
--- Server only.
-revoke all on owner_horse_stats from public, anon, authenticated;
-revoke all on function community_horse_level(text, uuid) from public, anon, authenticated;
-revoke all on function community_visible(uuid, uuid, text) from public, anon, authenticated;
-revoke all on function community_people(uuid, text, text, int, int, uuid) from public, anon, authenticated;
-revoke all on function community_feed(uuid, text, uuid, timestamptz, uuid, timestamptz, int) from public, anon, authenticated;
-grant select on owner_horse_stats to service_role;
-grant execute on function community_horse_level(text, uuid) to service_role;
-grant execute on function community_visible(uuid, uuid, text) to service_role;
-grant execute on function community_people(uuid, text, text, int, int, uuid) to service_role;
-grant execute on function community_feed(uuid, text, uuid, timestamptz, uuid, timestamptz, int) to service_role;
+-- The stats view and every community_* function: service role only.
+revoke all on public.owner_horse_stats from public, anon, authenticated;
+grant select on public.owner_horse_stats to service_role;
+
+do $$ declare f record; begin
+  for f in select p.oid::regprocedure as sig from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+           where n.nspname = 'public' and p.proname like 'community\_%' loop
+    execute format('revoke all on function %s from public, anon, authenticated', f.sig);
+    execute format('grant execute on function %s to service_role', f.sig);
+  end loop;
+end $$;
 
 -- ---------- Private storage bucket for horse and post photos ----------
 -- Photos are streamed through the API after a visibility check; the bucket is never public.
@@ -353,5 +354,5 @@ values ('community-media', 'community-media', false, 6291456,
         array['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 on conflict (id) do nothing;
 
--- Make the new tables and functions visible to the API right away.
 notify pgrst, 'reload schema';
+commit;
