@@ -20,6 +20,7 @@ import marketplaceRoutes from "./routes/marketplace";
 import tvRoutes from "./routes/tv";
 import paddockRoutes from "./routes/paddock";
 import paddockLiveRoutes from "./routes/paddockLive";
+import communityRoutes from "./routes/community";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -133,6 +134,8 @@ app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/tv", tvRoutes);
+// Stayblz Community: horse profiles, members, follows and the feed (photos are uploaded as raw image bodies).
+app.use("/api/community", communityRoutes);
 app.use("/api/admin/racing", adminRacingRoutes);
 app.use("/api/admin", adminRoutes);
 
