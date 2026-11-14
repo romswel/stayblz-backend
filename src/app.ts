@@ -18,6 +18,8 @@ import updatesRoutes from "./routes/updates";
 import adminRacingRoutes from "./routes/adminRacing";
 import marketplaceRoutes from "./routes/marketplace";
 import tvRoutes from "./routes/tv";
+import paddockRoutes from "./routes/paddock";
+import paddockLiveRoutes from "./routes/paddockLive";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -123,6 +125,9 @@ app.use("/api/feed", memberFeed);
 app.use("/api/messages", personalMessages);
 app.use("/api/team-messages", memberMessages);
 app.use("/api/my-racing", myRacingRoutes);
+// Stayblz Paddock: in-call + guest routes use seats/passes (no cookie); the rest need sign-in.
+app.use("/api/paddock/live", paddockLiveRoutes);
+app.use("/api/paddock", paddockRoutes);
 app.use("/api/inventory", memberInventory);
 app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);

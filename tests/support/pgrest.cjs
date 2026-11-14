@@ -205,6 +205,7 @@ const MIGRATIONS = [
   "202611110001_messenger.sql",
   "202611120001_chat_v2.sql",
   "202611140001_marketplace.sql",
+  "202611140002_paddock.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */
