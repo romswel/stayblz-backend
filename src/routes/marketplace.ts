@@ -48,8 +48,17 @@ const COLUMNS =
 const FILE_COLUMNS =
   "id,listing_id,seller_id,kind,storage_key,poster_key,content_type,size_bytes,width,height,duration_seconds,file_name,position,created_at";
 const user = (req: Request) => (req as AuthenticatedRequest).user;
+/** The photo/video table or its columns are missing: the marketplace migrations haven't been run. */
+const needsMigration = (error?: { code?: string; message?: string } | null) =>
+  !!error && ["PGRST205", "PGRST204", "42P01", "42703"].includes(error.code ?? "") && /marketplace_files|poster_key|duration_seconds/.test(error.message ?? "");
+const MIGRATION_HELP =
+  "Photo and video uploads aren't set up yet: run migrations 202611150002_marketplace_media.sql and 202611150003_marketplace_video.sql in the Supabase SQL Editor.";
 const unavailable = (res: Response, error?: { code?: string; message?: string } | null) => {
   if (error) console.error(`[marketplace] ${res.req?.method} ${res.req?.originalUrl} failed: ${error.code ?? "?"} ${error.message ?? ""}`);
+  if (needsMigration(error)) {
+    console.error(`[marketplace] ${MIGRATION_HELP}`);
+    return res.status(503).json({ error: MIGRATION_HELP, code: "setup_database" });
+  }
   return res.status(503).json({ error: "The marketplace is temporarily unavailable. Please try again." });
 };
 const storageDown = (res: Response, where: string, error: unknown) => {
@@ -255,11 +264,13 @@ router.get(
     const { data, error } = await query.limit(PAGE + 1);
     if (error) return unavailable(res, error);
     const rows = (data ?? []).slice(0, PAGE);
-    let media: Map<string, Media>;
+    // Browsing must keep working even if photos can't be loaded (e.g. the media migrations aren't run yet).
+    let media = new Map<string, Media>();
     try {
       media = await loadMedia(rows.map((r) => r.id));
     } catch (e) {
-      return unavailable(res, e as any);
+      const err = e as { code?: string; message?: string };
+      console.error(`[marketplace] photos couldn't be loaded: ${err.code ?? "?"} ${err.message ?? ""}${needsMigration(err) ? ` — ${MIGRATION_HELP}` : ""}`);
     }
     res.json({ listings: rows.map((row) => view(row, me, media.get(row.id))), more: (data ?? []).length > PAGE });
   }),
@@ -280,6 +291,37 @@ router.get(
     } catch (e) {
       unavailable(res, e as any);
     }
+  }),
+);
+
+/**
+ * GET /setup-check — admins only. Says what photo/video uploads still need: the database
+ * migrations and the R2 settings (setting names only, never values), and whether R2 answers.
+ */
+router.get(
+  "/setup-check",
+  asyncRoute(async (req, res) => {
+    if (roleRank(user(req).role) < roleRank("admin")) return notFound(res);
+    const table = await supabase.from("marketplace_files").select("id").limit(0);
+    const video = await supabase.from("marketplace_files").select("poster_key,duration_seconds").limit(0);
+    const missing = storageProblems();
+    let r2 = "not checked (settings missing)";
+    if (!missing.length) {
+      try {
+        await marketplaceFiles.get(`marketplace/_check/${Date.now()}`);
+        r2 = "ok";
+      } catch (e) {
+        const code = logStorageFailure("setup-check", e);
+        r2 = code === "not_found" ? "ok" : code;
+      }
+    }
+    const checks = [
+      { name: "migration 202611150002_marketplace_media.sql", ok: !table.error, detail: table.error ? `${table.error.code} ${table.error.message}` : "ok" },
+      { name: "migration 202611150003_marketplace_video.sql", ok: !video.error, detail: video.error ? `${video.error.code} ${video.error.message}` : "ok" },
+      { name: "R2 settings on this server", ok: !missing.length, detail: missing.join("; ") || "ok" },
+      { name: "R2 connection (private bucket)", ok: r2 === "ok", detail: r2 },
+    ];
+    res.json({ ok: checks.every((c) => c.ok), checks });
   }),
 );
 
@@ -426,9 +468,11 @@ async function roomForUpload(res: Response, sellerId: string) {
   await dropFiles(old ?? []).catch(() => undefined);
   const { count, error } = await supabase
     .from("marketplace_files")
-    .select("id", { count: "exact", head: true })
+    // Not a HEAD request: those come back without the error detail the setup message needs.
+    .select("id", { count: "exact" })
     .eq("seller_id", sellerId)
-    .is("listing_id", null);
+    .is("listing_id", null)
+    .limit(1);
   if (error) {
     unavailable(res, error);
     return false;

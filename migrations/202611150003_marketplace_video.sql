@@ -10,6 +10,7 @@ alter table public.marketplace_files drop constraint if exists marketplace_files
 alter table public.marketplace_files drop constraint if exists marketplace_files_content_type_check;
 alter table public.marketplace_files drop constraint if exists marketplace_files_size_bytes_check;
 alter table public.marketplace_files drop constraint if exists marketplace_files_check;
+alter table public.marketplace_files drop constraint if exists marketplace_files_kind_type_check;
 
 alter table public.marketplace_files
   add constraint marketplace_files_kind_check check (kind in ('photo', 'video', 'document')),

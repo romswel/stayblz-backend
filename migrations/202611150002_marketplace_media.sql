@@ -7,9 +7,10 @@
 -- file after its own sign-in check; the browser never gets an R2 address.
 --
 -- Same rules as the rest of Stayblz: RLS on, no browser grants, service role only.
+-- Safe to run again.
 begin;
 
-create table public.marketplace_files (
+create table if not exists public.marketplace_files (
   id uuid primary key default gen_random_uuid(),
   -- Empty until the listing is published or saved; removed with the listing.
   listing_id uuid references public.marketplace_listings(id) on delete cascade,
@@ -29,9 +30,9 @@ create table public.marketplace_files (
   created_at timestamptz not null default now(),
   check ((kind = 'document') = (content_type = 'application/pdf'))
 );
-create index marketplace_files_listing on public.marketplace_files (listing_id, kind, position)
+create index if not exists marketplace_files_listing on public.marketplace_files (listing_id, kind, position)
   where listing_id is not null;
-create index marketplace_files_pending on public.marketplace_files (seller_id, created_at)
+create index if not exists marketplace_files_pending on public.marketplace_files (seller_id, created_at)
   where listing_id is null;
 
 alter table public.marketplace_files enable row level security;
