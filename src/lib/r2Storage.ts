@@ -232,19 +232,61 @@ export const r2Storage = {
     }
   },
 
-  /** Stream a file (videos, big downloads): pipe `stream` to the response. */
-  async open(bucket: R2Bucket, key: string): Promise<{ stream: Readable; contentType: string; size: number | null }> {
+  /** Store a file from a stream of known length (videos), without holding it in memory. Never overwrites. */
+  async putStream(
+    bucket: R2Bucket,
+    key: string,
+    body: Readable,
+    length: number,
+    contentType: string,
+    options: PutOptions = {},
+  ): Promise<void> {
     const Key = r2Key(key);
     const { name, s3 } = target(bucket);
+    if (!Number.isSafeInteger(length) || length <= 0) throw new StorageError("bad_key", "A stream upload needs its exact length.");
     try {
-      const res = await s3.send(new GetObjectCommand({ Bucket: name, Key }));
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: name,
+          Key,
+          Body: body,
+          ContentType: contentType,
+          ContentLength: length,
+          IfNoneMatch: "*",
+          ...(options.cacheControl ? { CacheControl: options.cacheControl } : {}),
+        }),
+      );
+    } catch (error) {
+      throw failure(error);
+    }
+  },
+
+  /**
+   * Stream a file (videos, big downloads): pipe `stream` to the response.
+   * Pass a "bytes=start-end" range (from the browser's Range header) to read part of it; then
+   * `partial` is true and `contentRange` is the value for the Content-Range header.
+   */
+  async open(
+    bucket: R2Bucket,
+    key: string,
+    options: { range?: string } = {},
+  ): Promise<{ stream: Readable; contentType: string; size: number | null; partial: boolean; contentRange: string | null }> {
+    const Key = r2Key(key);
+    const { name, s3 } = target(bucket);
+    const Range = options.range && /^bytes=\d*-\d*$/.test(options.range) && options.range !== "bytes=-" ? options.range : undefined;
+    try {
+      const res = await s3.send(new GetObjectCommand({ Bucket: name, Key, ...(Range ? { Range } : {}) }));
       if (!res.Body) throw new StorageError("not_found");
       return {
         stream: res.Body as Readable,
         contentType: res.ContentType || "application/octet-stream",
         size: typeof res.ContentLength === "number" ? res.ContentLength : null,
+        partial: !!Range && !!res.ContentRange,
+        contentRange: res.ContentRange ?? null,
       };
     } catch (error) {
+      const e = error as { $metadata?: { httpStatusCode?: number } };
+      if (e?.$metadata?.httpStatusCode === 416) throw new StorageError("bad_key", "range_not_satisfiable");
       throw failure(error);
     }
   },

@@ -1,4 +1,5 @@
 import express, { Router, type NextFunction, type Request, type Response } from "express";
+import { Readable, Transform } from "node:stream";
 import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { isUuid } from "../middleware/stable";
 import { asyncRoute } from "../middleware/asyncRoute";
@@ -11,8 +12,12 @@ import {
   MAX_DOCUMENTS,
   MAX_PENDING_FILES,
   MAX_PHOTOS,
+  MAX_POSTER_BYTES,
   MAX_UPLOAD_BYTES,
-  MIN_PHOTOS,
+  MAX_VIDEO_BYTES,
+  MAX_VIDEO_SECONDS,
+  MAX_VIDEOS,
+  MIN_MEDIA,
   PENDING_TTL_MS,
   documentName,
   logStorageFailure,
@@ -24,9 +29,9 @@ import {
 // Horse marketplace: every signed-in member can browse; sellers add, edit and remove
 // their own listings. Admins can also remove any listing (moderation).
 //
-// Photos (1 to 8, required) and PDF documents (up to 5, optional) are stored in R2
-// (private bucket). The seller uploads them while filling in the form, and they are attached
-// when the listing is published or saved, so Cancel leaves the listing as it was.
+// Photos (up to 8) and videos (up to 3) — at least one of either — and PDF documents (up to 5,
+// optional) are stored in R2 (private bucket). The seller uploads them while filling in the form,
+// and they are attached when the listing is published or saved, so Cancel leaves the listing as it was.
 const router = Router();
 router.use(requireAuth);
 router.use((req, res, next) => {
@@ -40,7 +45,8 @@ router.use((req, res, next) => {
 const PAGE = 60;
 const COLUMNS =
   "id,seller_id,seller_name,name,price,breed,discipline,horse_type,gender,color,age,height_in,location,created_at,updated_at";
-const FILE_COLUMNS = "id,listing_id,seller_id,kind,storage_key,content_type,size_bytes,width,height,file_name,position,created_at";
+const FILE_COLUMNS =
+  "id,listing_id,seller_id,kind,storage_key,poster_key,content_type,size_bytes,width,height,duration_seconds,file_name,position,created_at";
 const user = (req: Request) => (req as AuthenticatedRequest).user;
 const unavailable = (res: Response, error?: { code?: string; message?: string } | null) => {
   if (error) console.error(`[marketplace] ${res.req?.method} ${res.req?.originalUrl} failed: ${error.code ?? "?"} ${error.message ?? ""}`);
@@ -79,21 +85,36 @@ type FileRow = {
   seller_id: string;
   kind: FileKind;
   storage_key: string;
+  poster_key: string | null;
   content_type: string;
   size_bytes: number;
   width: number | null;
   height: number | null;
+  duration_seconds: number | null;
   file_name: string;
   position: number;
   created_at: string;
 };
 
-const photoView = (f: FileRow) => ({ id: f.id, width: f.width, height: f.height });
+/** A photo or video as the gallery shows it. Videos say whether they have a poster image. */
+const mediaView = (f: FileRow) => ({
+  id: f.id,
+  kind: f.kind as "photo" | "video",
+  width: f.width,
+  height: f.height,
+  ...(f.kind === "video" ? { duration: f.duration_seconds, poster: !!f.poster_key } : {}),
+});
 const documentView = (f: FileRow) => ({ id: f.id, name: f.file_name || "Document.pdf", size: f.size_bytes });
-const fileView = (f: FileRow) => ({ ...photoView(f), kind: f.kind, name: f.kind === "document" ? f.file_name : "", size: f.size_bytes });
+const fileView = (f: FileRow) => ({
+  ...mediaView(f),
+  kind: f.kind,
+  name: f.kind === "document" ? f.file_name : "",
+  size: f.size_bytes,
+});
 
-type Media = { photos: FileRow[]; documents: FileRow[] };
-const noMedia: Media = { photos: [], documents: [] };
+/** media: photos and videos in display order (item 0 is the cover). */
+type Media = { media: FileRow[]; documents: FileRow[] };
+const noMedia: Media = { media: [], documents: [] };
 
 /** The seller's account id stays on the server; the page only learns whether it is yours. */
 function view(row: any, viewer: string, media: Media = noMedia, full = false) {
@@ -113,14 +134,16 @@ function view(row: any, viewer: string, media: Media = noMedia, full = false) {
     mine: row.seller_id === viewer,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    coverPhotoId: media.photos[0]?.id ?? null,
-    photoCount: media.photos.length,
+    // The card's picture: the first photo or video (a video shows its poster).
+    cover: media.media[0] ? mediaView(media.media[0]) : null,
+    photoCount: media.media.filter((f) => f.kind === "photo").length,
+    videoCount: media.media.filter((f) => f.kind === "video").length,
     documentCount: media.documents.length,
-    ...(full ? { photos: media.photos.map(photoView), documents: media.documents.map(documentView) } : {}),
+    ...(full ? { media: media.media.map(mediaView), documents: media.documents.map(documentView) } : {}),
   };
 }
 
-/** Photos and documents for these listings, in display order. */
+/** Photos, videos and documents for these listings, in display order. */
 async function loadMedia(listingIds: string[]) {
   const map = new Map<string, Media>();
   if (!listingIds.length) return map;
@@ -132,8 +155,8 @@ async function loadMedia(listingIds: string[]) {
     .order("created_at", { ascending: true });
   if (error) throw error;
   for (const f of (data ?? []) as FileRow[]) {
-    const media = map.get(f.listing_id!) ?? { photos: [], documents: [] };
-    (f.kind === "photo" ? media.photos : media.documents).push(f);
+    const media = map.get(f.listing_id!) ?? { media: [], documents: [] };
+    (f.kind === "document" ? media.documents : media.media).push(f);
     map.set(f.listing_id!, media);
   }
   return map;
@@ -144,24 +167,28 @@ async function loadMedia(listingIds: string[]) {
  * isn't on a listing yet, or (when editing) a file already on this listing. Returns the rows, or a
  * message for the seller.
  */
-async function claimFiles(sellerId: string, listingId: string | null, photoIds: string[], documentIds: string[]) {
-  const ids = [...photoIds, ...documentIds];
+async function claimFiles(sellerId: string, listingId: string | null, mediaIds: string[], documentIds: string[]) {
+  const ids = [...mediaIds, ...documentIds];
   const { data, error } = await supabase.from("marketplace_files").select(FILE_COLUMNS).in("id", ids).eq("seller_id", sellerId);
   if (error) throw error;
   const byId = new Map(((data ?? []) as FileRow[]).map((f) => [f.id, f]));
-  const usable = (id: string, kind: FileKind) => {
+  const usable = (id: string, kinds: FileKind[]) => {
     const f = byId.get(id);
-    return !!f && f.kind === kind && (f.listing_id === null || f.listing_id === listingId);
+    return !!f && kinds.includes(f.kind) && (f.listing_id === null || f.listing_id === listingId);
   };
-  if (!photoIds.every((id) => usable(id, "photo")) || !documentIds.every((id) => usable(id, "document")))
-    return { problem: "Some photos or documents are no longer available. Remove them and add them again." };
+  if (!mediaIds.every((id) => usable(id, ["photo", "video"])) || !documentIds.every((id) => usable(id, ["document"])))
+    return { problem: "Some photos, videos or documents are no longer available. Remove them and add them again." };
+  const photos = mediaIds.filter((id) => byId.get(id)!.kind === "photo").length;
+  const videos = mediaIds.length - photos;
+  if (photos > MAX_PHOTOS) return { problem: `A listing can have up to ${MAX_PHOTOS} photos.` };
+  if (videos > MAX_VIDEOS) return { problem: `A listing can have up to ${MAX_VIDEOS} videos.` };
   return { rows: byId };
 }
 
 /** Puts the files on the listing in the order given (photo 0 is the cover). */
-async function attachFiles(listingId: string, sellerId: string, photoIds: string[], documentIds: string[]) {
+async function attachFiles(listingId: string, sellerId: string, mediaIds: string[], documentIds: string[]) {
   const updates = [
-    ...photoIds.map((id, position) => ({ id, position })),
+    ...mediaIds.map((id, position) => ({ id, position })),
     ...documentIds.map((id, position) => ({ id, position })),
   ];
   const results = await Promise.all(
@@ -178,16 +205,20 @@ async function attachFiles(listingId: string, sellerId: string, photoIds: string
   if (failed?.error) throw failed.error;
 }
 
+/** Every R2 key a file uses (a video's poster too). */
+const keysOf = (rows: { storage_key: string; poster_key?: string | null }[]) =>
+  rows.flatMap((r) => (r.poster_key ? [r.storage_key, r.poster_key] : [r.storage_key]));
+
 /** Deletes file rows, then their R2 files. Storage failures are logged, never shown. */
-async function dropFiles(rows: Pick<FileRow, "id" | "storage_key">[]) {
+async function dropFiles(rows: Pick<FileRow, "id" | "storage_key" | "poster_key">[]) {
   if (!rows.length) return;
   const { error } = await supabase.from("marketplace_files").delete().in("id", rows.map((r) => r.id));
   if (error) throw error;
-  await marketplaceFiles.remove(rows.map((r) => r.storage_key)).catch((e) => logStorageFailure("remove", e));
+  await marketplaceFiles.remove(keysOf(rows)).catch((e) => logStorageFailure("remove", e));
 }
 
 function readMedia(body: any) {
-  return mediaInput(body, { minPhotos: MIN_PHOTOS, maxPhotos: MAX_PHOTOS, maxDocuments: MAX_DOCUMENTS });
+  return mediaInput(body, { minMedia: MIN_MEDIA, maxMedia: MAX_PHOTOS + MAX_VIDEOS, maxDocuments: MAX_DOCUMENTS });
 }
 
 /* ---------- Listings ---------- */
@@ -268,7 +299,7 @@ router.post(
       return res.status(400).json({ error: e instanceof MediaInputError ? e.message : "Check the photos and try again." });
     }
     const me = user(req);
-    const claimed = await claimFiles(me.id, null, files.photoIds, files.documentIds).catch((e) => ({ error: e }));
+    const claimed = await claimFiles(me.id, null, files.mediaIds, files.documentIds).catch((e) => ({ error: e }));
     if ("error" in claimed) return unavailable(res, claimed.error);
     if ("problem" in claimed) return res.status(400).json({ error: claimed.problem });
     const { data, error } = await supabase
@@ -278,7 +309,7 @@ router.post(
       .single();
     if (error || !data) return unavailable(res, error);
     try {
-      await attachFiles(data.id, me.id, files.photoIds, files.documentIds);
+      await attachFiles(data.id, me.id, files.mediaIds, files.documentIds);
       const media = await loadMedia([data.id]);
       res.status(201).json({ listing: view(data, me.id, media.get(data.id), true) });
     } catch (e) {
@@ -315,7 +346,7 @@ router.patch(
       .maybeSingle();
     if (ownError) return unavailable(res, ownError);
     if (!own) return notFound(res);
-    const claimed = await claimFiles(me.id, own.id, files.photoIds, files.documentIds).catch((e) => ({ error: e }));
+    const claimed = await claimFiles(me.id, own.id, files.mediaIds, files.documentIds).catch((e) => ({ error: e }));
     if ("error" in claimed) return unavailable(res, claimed.error);
     if ("problem" in claimed) return res.status(400).json({ error: claimed.problem });
 
@@ -329,12 +360,12 @@ router.patch(
     if (error) return unavailable(res, error);
     if (!data) return notFound(res);
     try {
-      await attachFiles(own.id, me.id, files.photoIds, files.documentIds);
+      await attachFiles(own.id, me.id, files.mediaIds, files.documentIds);
       // Files that were on the listing but aren't in the saved form any more.
-      const keep = new Set([...files.photoIds, ...files.documentIds]);
+      const keep = new Set([...files.mediaIds, ...files.documentIds]);
       const { data: current, error: currentError } = await supabase
         .from("marketplace_files")
-        .select("id,storage_key")
+        .select("id,storage_key,poster_key")
         .eq("listing_id", own.id);
       if (currentError) throw currentError;
       await dropFiles((current ?? []).filter((f) => !keep.has(f.id)));
@@ -354,7 +385,7 @@ router.post(
     // Read the file keys first: deleting the listing removes their rows.
     const { data: stored, error: storedError } = await supabase
       .from("marketplace_files")
-      .select("storage_key")
+      .select("storage_key,poster_key")
       .eq("listing_id", req.params.id);
     if (storedError) return unavailable(res, storedError);
     let query = supabase.from("marketplace_listings").delete().eq("id", req.params.id);
@@ -363,7 +394,7 @@ router.post(
     const { data, error } = await query.select("id").maybeSingle();
     if (error) return unavailable(res, error);
     if (!data) return notFound(res);
-    await marketplaceFiles.remove((stored ?? []).map((f) => f.storage_key)).catch((e) => logStorageFailure("remove listing", e));
+    await marketplaceFiles.remove(keysOf(stored ?? [])).catch((e) => logStorageFailure("remove listing", e));
     res.json({ ok: true });
   }),
 );
@@ -380,12 +411,131 @@ function readFile(req: Request, res: Response, next: NextFunction) {
 }
 
 /**
+ * Before a new upload: clean up this seller's old unsaved uploads (an abandoned form), then
+ * check they don't already have too many waiting. Answers the request and returns false if not.
+ */
+async function roomForUpload(res: Response, sellerId: string) {
+  const stale = new Date(Date.now() - PENDING_TTL_MS).toISOString();
+  const { data: old } = await supabase
+    .from("marketplace_files")
+    .select("id,storage_key,poster_key")
+    .eq("seller_id", sellerId)
+    .is("listing_id", null)
+    .lt("created_at", stale)
+    .limit(50);
+  await dropFiles(old ?? []).catch(() => undefined);
+  const { count, error } = await supabase
+    .from("marketplace_files")
+    .select("id", { count: "exact", head: true })
+    .eq("seller_id", sellerId)
+    .is("listing_id", null);
+  if (error) {
+    unavailable(res, error);
+    return false;
+  }
+  if ((count ?? 0) >= MAX_PENDING_FILES) {
+    res.status(409).json({ error: "Save or cancel the listing you're working on before adding more files." });
+    return false;
+  }
+  return true;
+}
+
+const dim = (v: unknown) => (typeof v === "string" && /^\d{1,5}$/.test(v) && Number(v) > 0 ? Number(v) : null);
+
+/** Reads the first bytes of a request (to check the file type) and returns a stream of the whole body. */
+async function peek(req: Request, bytes: number): Promise<{ head: Buffer; body: Readable }> {
+  const iterator = (req as Readable)[Symbol.asyncIterator]() as AsyncIterator<Buffer>;
+  const chunks: Buffer[] = [];
+  let have = 0;
+  while (have < bytes) {
+    const { value, done } = await iterator.next();
+    if (done) break;
+    chunks.push(value);
+    have += value.length;
+  }
+  const head = Buffer.concat(chunks);
+  const body = Readable.from(
+    (async function* () {
+      if (head.length) yield head;
+      for (;;) {
+        const { value, done } = await iterator.next();
+        if (done) return;
+        yield value;
+      }
+    })(),
+  );
+  return { head, body };
+}
+
+/**
+ * POST /uploads?kind=video&duration=…&width=…&height=…   (body: the video, with Content-Length)
+ * Streamed straight to R2 (never held in memory), so it's handled before the photo parser.
+ */
+async function uploadVideo(req: Request, res: Response) {
+  const me = user(req);
+  const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+  const spec = FILE_TYPES[type];
+  if (!spec || spec.kind !== "video") return res.status(415).json({ error: "Videos must be MP4, MOV or WebM." });
+  const length = Number(req.headers["content-length"]);
+  if (!Number.isSafeInteger(length) || length <= 0) return res.status(411).json({ error: "That video couldn't be read." });
+  if (length > MAX_VIDEO_BYTES) return res.status(413).json({ error: "Videos can be up to 100 MB." });
+  const duration = dim(req.query.duration);
+  if (duration !== null && duration > MAX_VIDEO_SECONDS) return res.status(400).json({ error: "Videos can be up to 3 minutes long." });
+  if (!(await roomForUpload(res, me.id))) return;
+
+  const { head, body } = await peek(req, 16);
+  if (!spec.looksRight(head)) {
+    req.resume();
+    return res.status(415).json({ error: "That file doesn't look like the type of video it claims to be." });
+  }
+  // Stop at the declared length: a body that runs longer is cut off and the upload fails.
+  let seen = 0;
+  const limited = body.pipe(
+    new Transform({
+      transform(chunk: Buffer, _enc, done) {
+        seen += chunk.length;
+        if (seen > length) return done(new Error("too_long"));
+        done(null, chunk);
+      },
+    }),
+  );
+  const key = marketplaceFiles.key(me.id, type);
+  try {
+    await marketplaceFiles.putStream(key, limited, length, type);
+  } catch (e) {
+    req.resume();
+    return storageDown(res, "video upload", e);
+  }
+  const { data, error } = await supabase
+    .from("marketplace_files")
+    .insert({
+      seller_id: me.id,
+      kind: "video",
+      storage_key: key,
+      content_type: type,
+      size_bytes: length,
+      width: dim(req.query.width),
+      height: dim(req.query.height),
+      duration_seconds: duration,
+    })
+    .select(FILE_COLUMNS)
+    .single();
+  if (error || !data) {
+    await marketplaceFiles.remove([key]).catch(() => undefined);
+    return unavailable(res, error);
+  }
+  res.status(201).json({ file: fileView(data as FileRow) });
+}
+
+/**
  * POST /uploads?kind=photo&width=…&height=…   (body: the image bytes)
  * POST /uploads?kind=document&name=…          (body: the PDF bytes)
+ * POST /uploads?kind=video&duration=…         (body: the video; see uploadVideo)
  */
 router.post(
   "/uploads",
   uploadLimit,
+  (req, res, next) => (req.query.kind === "video" ? void uploadVideo(req, res).catch(next) : next()),
   readFile,
   asyncRoute(async (req, res) => {
     const me = user(req);
@@ -400,26 +550,7 @@ router.post(
       return res.status(413).json({ error: kind === "photo" ? "Photos can be up to 8 MB." : "Documents can be up to 10 MB." });
     if (!spec.looksRight(file)) return res.status(415).json({ error: "That file doesn't look like the type it claims to be." });
 
-    // Clean up this seller's old unsaved uploads (an abandoned form), then check the limit.
-    const stale = new Date(Date.now() - PENDING_TTL_MS).toISOString();
-    const { data: old } = await supabase
-      .from("marketplace_files")
-      .select("id,storage_key")
-      .eq("seller_id", me.id)
-      .is("listing_id", null)
-      .lt("created_at", stale)
-      .limit(50);
-    await dropFiles(old ?? []).catch(() => undefined);
-    const { count, error: countError } = await supabase
-      .from("marketplace_files")
-      .select("id", { count: "exact", head: true })
-      .eq("seller_id", me.id)
-      .is("listing_id", null);
-    if (countError) return unavailable(res, countError);
-    if ((count ?? 0) >= MAX_PENDING_FILES)
-      return res.status(409).json({ error: "Save or cancel the listing you're working on before adding more files." });
-
-    const dim = (v: unknown) => (typeof v === "string" && /^\d{1,5}$/.test(v) && Number(v) > 0 ? Number(v) : null);
+    if (!(await roomForUpload(res, me.id))) return;
     const key = marketplaceFiles.key(me.id, type);
     try {
       await marketplaceFiles.put(key, file, type);
@@ -448,6 +579,48 @@ router.post(
   }),
 );
 
+/**
+ * POST /uploads/:file/poster   (body: a JPEG frame from the video, captured in the browser)
+ * Only for the seller's own video that isn't saved with a listing yet.
+ */
+router.post(
+  "/uploads/:file/poster",
+  uploadLimit,
+  readFile,
+  asyncRoute(async (req, res) => {
+    if (!isUuid(req.params.file)) return res.status(404).json({ error: "File not found." });
+    const me = user(req);
+    const file = req.body;
+    const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+    if (type !== "image/jpeg" || !Buffer.isBuffer(file) || !FILE_TYPES["image/jpeg"].looksRight(file))
+      return res.status(415).json({ error: "The poster must be a JPG image." });
+    if (file.length > MAX_POSTER_BYTES) return res.status(413).json({ error: "The poster is too big." });
+    const { data: video, error } = await supabase
+      .from("marketplace_files")
+      .select("id,storage_key,poster_key")
+      .eq("id", req.params.file)
+      .eq("seller_id", me.id)
+      .eq("kind", "video")
+      .is("listing_id", null)
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!video) return res.status(404).json({ error: "File not found." });
+    if (video.poster_key) return res.json({ ok: true });
+    const key = marketplaceFiles.posterKey(video.storage_key);
+    try {
+      await marketplaceFiles.put(key, file, "image/jpeg");
+    } catch (e) {
+      return storageDown(res, "poster upload", e);
+    }
+    const { error: saveError } = await supabase.from("marketplace_files").update({ poster_key: key }).eq("id", video.id).eq("seller_id", me.id);
+    if (saveError) {
+      await marketplaceFiles.remove([key]).catch(() => undefined);
+      return unavailable(res, saveError);
+    }
+    res.json({ ok: true });
+  }),
+);
+
 /** Drop an upload that hasn't been saved with a listing yet. Saved files are removed by saving the form without them. */
 router.post(
   "/uploads/:file/remove",
@@ -455,7 +628,7 @@ router.post(
     if (!isUuid(req.params.file)) return res.json({ ok: true });
     const { data, error } = await supabase
       .from("marketplace_files")
-      .select("id,storage_key")
+      .select("id,storage_key,poster_key")
       .eq("id", req.params.file)
       .eq("seller_id", user(req).id)
       .is("listing_id", null)
@@ -469,34 +642,97 @@ router.post(
 /* ---------- Files (streamed after a sign-in check) ---------- */
 
 /**
- * GET /media/:file — a listing's photo or document. Every signed-in member can browse the
- * marketplace, so they can see files on published listings; unsaved uploads only by their seller.
+ * The file row if this member may see it: every signed-in member can browse the marketplace, so
+ * files on published listings are visible to them; unsaved uploads only to their seller.
  */
+async function visibleFile(req: Request, res: Response): Promise<FileRow | null> {
+  if (!isUuid(req.params.file)) {
+    res.status(404).json({ error: "File not found." });
+    return null;
+  }
+  const { data, error } = await supabase.from("marketplace_files").select(FILE_COLUMNS).eq("id", req.params.file).maybeSingle();
+  if (error) {
+    unavailable(res, error);
+    return null;
+  }
+  const f = data as FileRow | null;
+  if (!f || (f.listing_id === null && f.seller_id !== user(req).id)) {
+    res.status(404).json({ error: "File not found." });
+    return null;
+  }
+  return f;
+}
+
+async function sendWhole(res: Response, key: string, contentType: string) {
+  let stored;
+  try {
+    stored = await marketplaceFiles.get(key);
+  } catch (e) {
+    if (logStorageFailure("download", e) === "not_found") return res.status(404).json({ error: "File not found." });
+    return res.status(503).json({ error: "File storage is busy. Try again in a moment." });
+  }
+  res.setHeader("Content-Type", contentType);
+  res.setHeader("Content-Length", String(stored.body.length));
+  res.end(stored.body);
+}
+
+/** GET /media/:file — a listing's photo, video (streamed, seekable) or document. */
 router.get(
   "/media/:file",
   asyncRoute(async (req, res) => {
-    if (!isUuid(req.params.file)) return res.status(404).json({ error: "File not found." });
-    const { data, error } = await supabase.from("marketplace_files").select(FILE_COLUMNS).eq("id", req.params.file).maybeSingle();
-    if (error) return unavailable(res, error);
-    const f = data as FileRow | null;
-    if (!f || (f.listing_id === null && f.seller_id !== user(req).id)) return res.status(404).json({ error: "File not found." });
-    let stored;
-    try {
-      stored = await marketplaceFiles.get(f.storage_key);
-    } catch (e) {
-      if (logStorageFailure("download", e) === "not_found") return res.status(404).json({ error: "File not found." });
-      return res.status(503).json({ error: "File storage is busy. Try again in a moment." });
-    }
-    res.setHeader("Content-Type", FILE_TYPES[f.content_type] ? f.content_type : "application/octet-stream");
-    res.setHeader("Content-Length", String(stored.body.length));
+    const f = await visibleFile(req, res);
+    if (!f) return;
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Cache-Control", "private, max-age=3600");
+    const type = FILE_TYPES[f.content_type] ? f.content_type : "application/octet-stream";
+
+    if (f.kind === "video") {
+      // Browsers ask for parts of a video (Range) to start quickly and to seek.
+      const range = typeof req.headers.range === "string" ? req.headers.range : undefined;
+      let file;
+      try {
+        file = await marketplaceFiles.open(f.storage_key, range);
+      } catch (e) {
+        if ((e as Error).message === "range_not_satisfiable") {
+          res.setHeader("Content-Range", `bytes */${f.size_bytes}`);
+          return res.status(416).end();
+        }
+        if (logStorageFailure("video", e) === "not_found") return res.status(404).json({ error: "File not found." });
+        return res.status(503).json({ error: "File storage is busy. Try again in a moment." });
+      }
+      res.status(file.partial ? 206 : 200);
+      res.setHeader("Content-Type", type);
+      res.setHeader("Accept-Ranges", "bytes");
+      res.setHeader("Content-Disposition", "inline");
+      if (file.size !== null) res.setHeader("Content-Length", String(file.size));
+      if (file.partial && file.contentRange) res.setHeader("Content-Range", file.contentRange);
+      // Stop reading from R2 as soon as the viewer leaves or skips ahead.
+      res.on("close", () => file.stream.destroy());
+      file.stream.on("error", () => res.destroy());
+      file.stream.pipe(res);
+      return;
+    }
+
     if (f.kind === "document") {
       // Always a download (never rendered on our origin). Plain ASCII name for the header.
       const ascii = documentName(f.file_name).replace(/[^\x20-\x7e]+/g, "_").replace(/["\\]/g, "");
       res.setHeader("Content-Disposition", `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(f.file_name)}`);
     } else res.setHeader("Content-Disposition", "inline");
-    res.end(stored.body);
+    await sendWhole(res, f.storage_key, type);
+  }),
+);
+
+/** GET /media/:file/poster — a video's poster image (cards and before playing). */
+router.get(
+  "/media/:file/poster",
+  asyncRoute(async (req, res) => {
+    const f = await visibleFile(req, res);
+    if (!f) return;
+    if (f.kind !== "video" || !f.poster_key) return res.status(404).json({ error: "File not found." });
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Cache-Control", "private, max-age=3600");
+    res.setHeader("Content-Disposition", "inline");
+    await sendWhole(res, f.poster_key, "image/jpeg");
   }),
 );
 

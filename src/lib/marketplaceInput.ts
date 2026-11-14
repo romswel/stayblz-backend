@@ -131,10 +131,11 @@ export class MediaInputError extends Error {}
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * The listing's photos and documents, in display order (photo 0 is the cover).
- * Ids are files the seller already uploaded. Throws MediaInputError.
+ * The listing's photos and videos (one list, in display order; item 0 is the cover) and its
+ * documents. Ids are files the seller already uploaded; the route checks how many of each kind.
+ * Older clients send `photoIds`, which is read the same way. Throws MediaInputError.
  */
-export function mediaInput(body: any, limits: { minPhotos: number; maxPhotos: number; maxDocuments: number }) {
+export function mediaInput(body: any, limits: { minMedia: number; maxMedia: number; maxDocuments: number }) {
   const ids = (value: unknown, min: number, max: number, problem: string) => {
     const list = value === undefined ? [] : value;
     if (!Array.isArray(list) || !list.every((id) => typeof id === "string" && UUID.test(id)))
@@ -144,12 +145,12 @@ export function mediaInput(body: any, limits: { minPhotos: number; maxPhotos: nu
     if (unique.length < min || unique.length > max) throw new MediaInputError(problem);
     return unique;
   };
-  const photoIds = ids(
-    body?.photoIds,
-    limits.minPhotos,
-    limits.maxPhotos,
-    `Add at least ${limits.minPhotos} photo (up to ${limits.maxPhotos}).`,
+  const mediaIds = ids(
+    body?.mediaIds ?? body?.photoIds,
+    limits.minMedia,
+    limits.maxMedia,
+    `Add at least ${limits.minMedia} photo or video.`,
   );
   const documentIds = ids(body?.documentIds, 0, limits.maxDocuments, `A listing can have up to ${limits.maxDocuments} documents.`);
-  return { photoIds, documentIds };
+  return { mediaIds, documentIds };
 }

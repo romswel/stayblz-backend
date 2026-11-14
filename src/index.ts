@@ -1,3 +1,5 @@
+// Must be first: fills process.env from .env (local) or Render's Secret File before the app loads.
+import './lib/loadEnv';
 import { app } from './app';
 
 const port = Number(process.env.PORT ?? 4000);

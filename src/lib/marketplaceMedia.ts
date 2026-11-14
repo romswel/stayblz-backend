@@ -1,3 +1,4 @@
+import type { Readable } from "node:stream";
 import { newKey, r2Storage, StorageError } from "./r2Storage";
 
 /**
@@ -5,8 +6,10 @@ import { newKey, r2Storage, StorageError } from "./r2Storage";
  * stayblz/marketplace/<seller>/. The marketplace routes check who may add or see a file
  * before anything here runs; nothing in this file is reachable from the browser directly.
  */
-export const MIN_PHOTOS = 1;
+/** A listing needs at least one photo or video. */
+export const MIN_MEDIA = 1;
 export const MAX_PHOTOS = 8;
+export const MAX_VIDEOS = 3;
 export const MAX_DOCUMENTS = 5;
 /** Files uploaded but not yet saved with a listing (one form's worth plus some slack). */
 export const MAX_PENDING_FILES = 20;
@@ -15,9 +18,13 @@ export const PENDING_TTL_MS = 24 * 60 * 60 * 1000;
 
 export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+export const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
+export const MAX_VIDEO_SECONDS = 180;
+export const MAX_POSTER_BYTES = 2 * 1024 * 1024;
+/** Photos and documents are read into memory; videos are streamed straight to R2. */
 export const MAX_UPLOAD_BYTES = Math.max(MAX_PHOTO_BYTES, MAX_DOCUMENT_BYTES);
 
-export type FileKind = "photo" | "document";
+export type FileKind = "photo" | "video" | "document";
 
 type FileType = { kind: FileKind; extension: string; maxBytes: number; looksRight: (b: Buffer) => boolean };
 
@@ -40,6 +47,25 @@ export const FILE_TYPES: Record<string, FileType> = {
     extension: "webp",
     maxBytes: MAX_PHOTO_BYTES,
     looksRight: (b) => b.length > 12 && b.subarray(0, 4).toString("ascii") === "RIFF" && b.subarray(8, 12).toString("ascii") === "WEBP",
+  },
+  // MP4 and MOV (iPhone) start with a box whose type is "ftyp"; WebM starts with the EBML header.
+  "video/mp4": {
+    kind: "video",
+    extension: "mp4",
+    maxBytes: MAX_VIDEO_BYTES,
+    looksRight: (b) => b.length > 12 && b.subarray(4, 8).toString("ascii") === "ftyp",
+  },
+  "video/quicktime": {
+    kind: "video",
+    extension: "mov",
+    maxBytes: MAX_VIDEO_BYTES,
+    looksRight: (b) => b.length > 12 && ["ftyp", "moov", "wide", "mdat", "free"].includes(b.subarray(4, 8).toString("ascii")),
+  },
+  "video/webm": {
+    kind: "video",
+    extension: "webm",
+    maxBytes: MAX_VIDEO_BYTES,
+    looksRight: (b) => b.length > 4 && b[0] === 0x1a && b[1] === 0x45 && b[2] === 0xdf && b[3] === 0xa3,
   },
   "application/pdf": {
     kind: "document",
@@ -68,7 +94,13 @@ export const marketplaceFiles = {
   key: (sellerId: string, type: string) => newKey(`marketplace/${sellerId}`, FILE_TYPES[type]?.extension),
   put: (key: string, body: Buffer, contentType: string) =>
     r2Storage.put("private", key, body, contentType, { cacheControl: "private, max-age=3600" }),
+  /** Videos: streamed to R2 without holding them in memory. */
+  putStream: (key: string, body: Readable, length: number, contentType: string) =>
+    r2Storage.putStream("private", key, body, length, contentType, { cacheControl: "private, max-age=3600" }),
+  /** A video poster lives next to its video: "<video key>.poster.jpg". */
+  posterKey: (videoKey: string) => `${videoKey}.poster.jpg`,
   get: (key: string) => r2Storage.get("private", key),
+  open: (key: string, range?: string) => r2Storage.open("private", key, { range }),
   remove: (keys: string[]) => r2Storage.remove("private", keys),
 };
 
