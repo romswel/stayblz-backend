@@ -1,9 +1,9 @@
-import type { Readable } from "node:stream";
+import { Readable } from "node:stream";
 import { newKey, r2Storage, StorageError } from "./r2Storage";
+import { supabase } from "./supabase";
 
 /**
- * Marketplace photos and documents, stored in the private R2 bucket under
- * stayblz/marketplace/<seller>/. The marketplace routes check who may add or see a file
+ * Marketplace photos, videos and documents (see "Where the files live" below). The marketplace routes check who may add or see a file
  * before anything here runs; nothing in this file is reachable from the browser directly.
  */
 /** A listing needs at least one photo or video. */
@@ -89,19 +89,127 @@ export function documentName(value: unknown): string {
   return `${clean || "Document"}.pdf`;
 }
 
+/* ---------- Where the files live ----------
+ * Cloudflare R2 (private bucket, stayblz/marketplace/…) when this server has the R2_* settings;
+ * otherwise a private Supabase Storage bucket, the same way community photos fall back. Files are
+ * read from wherever they are, so listings keep working when R2 is connected later.
+ */
+export const SUPABASE_BUCKET = process.env.MARKETPLACE_MEDIA_BUCKET || "marketplace-media";
+/** Supabase Storage holds smaller files than R2, so videos are capped while it is the store. */
+export const MAX_FALLBACK_VIDEO_BYTES = 50 * 1024 * 1024;
+
+const usingR2 = () => r2Storage.isConfigured("private");
+
+let bucketReady: Promise<void> | null = null;
+/** Creates the private bucket the first time it's needed (no migration to run). */
+function ensureBucket(): Promise<void> {
+  bucketReady ??= (async () => {
+    const { error } = await supabase.storage.createBucket(SUPABASE_BUCKET, { public: false });
+    if (error && !/exist|duplicate/i.test(error.message ?? "")) {
+      bucketReady = null;
+      throw new StorageError("unavailable", `Supabase bucket: ${error.message}`);
+    }
+  })();
+  return bucketReady;
+}
+
+const supabaseStore = {
+  async put(key: string, body: Buffer, contentType: string) {
+    await ensureBucket();
+    const { error } = await supabase.storage.from(SUPABASE_BUCKET).upload(key, body, { contentType, upsert: false, cacheControl: "3600" });
+    if (error) throw new StorageError(/exist|duplicate/i.test(error.message ?? "") ? "exists" : "unavailable", `Supabase upload: ${error.message}`);
+  },
+  async get(key: string): Promise<{ body: Buffer; contentType: string }> {
+    const { data, error } = await supabase.storage.from(SUPABASE_BUCKET).download(key);
+    if (error || !data) throw new StorageError("not_found");
+    return { body: Buffer.from(await data.arrayBuffer()), contentType: data.type || "application/octet-stream" };
+  },
+  /** Streams a file (or a byte range of it) through a one-minute signed link that never leaves the server. */
+  async open(key: string, range?: string) {
+    const { data, error } = await supabase.storage.from(SUPABASE_BUCKET).createSignedUrl(key, 60);
+    if (error || !data?.signedUrl) throw new StorageError("not_found");
+    const wanted = range && /^bytes=\d*-\d*$/.test(range) && range !== "bytes=-" ? range : undefined;
+    const res = await fetch(data.signedUrl, { headers: wanted ? { Range: wanted } : {} }).catch(() => null);
+    if (!res) throw new StorageError("unavailable");
+    if (res.status === 416) throw new StorageError("bad_key", "range_not_satisfiable");
+    if (res.status === 404 || res.status === 400) throw new StorageError("not_found");
+    if (!res.ok || !res.body) throw new StorageError("unavailable");
+    const length = Number(res.headers.get("content-length"));
+    return {
+      stream: Readable.fromWeb(res.body as any),
+      contentType: res.headers.get("content-type") || "application/octet-stream",
+      size: Number.isFinite(length) && length > 0 ? length : null,
+      partial: res.status === 206,
+      contentRange: res.headers.get("content-range"),
+    };
+  },
+  async remove(keys: string[]) {
+    if (!keys.length) return;
+    const { error } = await supabase.storage.from(SUPABASE_BUCKET).remove(keys);
+    if (error) throw new StorageError("unavailable", `Supabase remove: ${error.message}`);
+  },
+};
+
+async function readAll(stream: Readable, limit: number): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  let size = 0;
+  for await (const chunk of stream) {
+    size += chunk.length;
+    if (size > limit) throw new StorageError("too_large");
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
+
 export const marketplaceFiles = {
+  /** "r2" when this server has the R2 settings, otherwise "supabase". */
+  backend: (): "r2" | "supabase" => (usingR2() ? "r2" : "supabase"),
   /** A new, unguessable key in the seller's folder. */
   key: (sellerId: string, type: string) => newKey(`marketplace/${sellerId}`, FILE_TYPES[type]?.extension),
-  put: (key: string, body: Buffer, contentType: string) =>
-    r2Storage.put("private", key, body, contentType, { cacheControl: "private, max-age=3600" }),
-  /** Videos: streamed to R2 without holding them in memory. */
-  putStream: (key: string, body: Readable, length: number, contentType: string) =>
-    r2Storage.putStream("private", key, body, length, contentType, { cacheControl: "private, max-age=3600" }),
   /** A video poster lives next to its video: "<video key>.poster.jpg". */
   posterKey: (videoKey: string) => `${videoKey}.poster.jpg`,
-  get: (key: string) => r2Storage.get("private", key),
-  open: (key: string, range?: string) => r2Storage.open("private", key, { range }),
-  remove: (keys: string[]) => r2Storage.remove("private", keys),
+
+  put: (key: string, body: Buffer, contentType: string) =>
+    usingR2()
+      ? r2Storage.put("private", key, body, contentType, { cacheControl: "private, max-age=3600" })
+      : supabaseStore.put(key, body, contentType),
+
+  /** Videos: streamed straight to R2; with Supabase Storage they are read first (up to 50 MB). */
+  async putStream(key: string, body: Readable, length: number, contentType: string) {
+    if (usingR2()) return r2Storage.putStream("private", key, body, length, contentType, { cacheControl: "private, max-age=3600" });
+    return supabaseStore.put(key, await readAll(body, MAX_FALLBACK_VIDEO_BYTES), contentType);
+  },
+
+  /** Reads from R2 first (when set up), then from Supabase Storage, so files are found wherever they were saved. */
+  async get(key: string) {
+    if (usingR2()) {
+      try {
+        return await r2Storage.get("private", key);
+      } catch (e) {
+        if (!(e instanceof StorageError) || e.code !== "not_found") throw e;
+      }
+    }
+    return supabaseStore.get(key);
+  },
+  async open(key: string, range?: string) {
+    if (usingR2()) {
+      try {
+        return await r2Storage.open("private", key, { range });
+      } catch (e) {
+        if (!(e instanceof StorageError) || e.code !== "not_found") throw e;
+      }
+    }
+    return supabaseStore.open(key, range);
+  },
+  async remove(keys: string[]) {
+    const list = [...new Set(keys.filter(Boolean))];
+    if (!list.length) return;
+    // A file may be in either store; removing a missing file is fine in both.
+    const jobs: Promise<unknown>[] = [supabaseStore.remove(list)];
+    if (usingR2()) jobs.push(r2Storage.remove("private", list));
+    const failed = (await Promise.allSettled(jobs)).find((r) => r.status === "rejected") as PromiseRejectedResult | undefined;
+    if (failed) throw failed.reason;
+  },
 };
 
 /** Which R2 settings are missing or wrong on this server (setting names only, never values). */
@@ -120,8 +228,10 @@ export function logStorageFailure(where: string, error: unknown) {
   return code;
 }
 
-// Say it once at startup too, so a missing setting is visible in the deploy log straight away.
+// Say once at startup where files will go, so the deploy log shows it straight away.
 {
   const problems = storageProblems();
-  if (problems.length) console.warn(`[marketplace] Photo uploads won't work until R2 is set up: ${problems.join("; ")}`);
+  if (problems.length)
+    console.warn(`[marketplace] R2 isn't set up on this server (${problems.join("; ")}): listing files are kept in Supabase Storage ("${SUPABASE_BUCKET}") for now.`);
+  else console.info("[marketplace] Listing files are stored in Cloudflare R2.");
 }

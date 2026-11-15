@@ -10,6 +10,7 @@ import { listingFilters, listingInput, mediaInput, MediaInputError } from "../li
 import {
   FILE_TYPES,
   MAX_DOCUMENTS,
+  MAX_FALLBACK_VIDEO_BYTES,
   MAX_PENDING_FILES,
   MAX_PHOTOS,
   MAX_POSTER_BYTES,
@@ -305,21 +306,24 @@ router.get(
     const table = await supabase.from("marketplace_files").select("id").limit(0);
     const video = await supabase.from("marketplace_files").select("poster_key,duration_seconds").limit(0);
     const missing = storageProblems();
-    let r2 = "not checked (settings missing)";
-    if (!missing.length) {
-      try {
-        await marketplaceFiles.get(`marketplace/_check/${Date.now()}`);
-        r2 = "ok";
-      } catch (e) {
-        const code = logStorageFailure("setup-check", e);
-        r2 = code === "not_found" ? "ok" : code;
-      }
+    const backend = marketplaceFiles.backend();
+    // Ask the store for a file that can't exist: "not found" means it answered.
+    let reach = "ok";
+    try {
+      await marketplaceFiles.get(`marketplace/_check/${Date.now()}`);
+    } catch (e) {
+      const code = logStorageFailure("setup-check", e);
+      if (code !== "not_found") reach = code;
     }
     const checks = [
       { name: "migration 202611150002_marketplace_media.sql", ok: !table.error, detail: table.error ? `${table.error.code} ${table.error.message}` : "ok" },
       { name: "migration 202611150003_marketplace_video.sql", ok: !video.error, detail: video.error ? `${video.error.code} ${video.error.message}` : "ok" },
-      { name: "R2 settings on this server", ok: !missing.length, detail: missing.join("; ") || "ok" },
-      { name: "R2 connection (private bucket)", ok: r2 === "ok", detail: r2 },
+      {
+        name: "file storage in use",
+        ok: reach === "ok",
+        detail: `${backend === "r2" ? "Cloudflare R2" : "Supabase Storage (R2 not set up on this server)"}: ${reach}`,
+      },
+      { name: "R2 settings on this server (optional)", ok: true, detail: missing.join("; ") || "all set" },
     ];
     res.json({ ok: checks.every((c) => c.ok), checks });
   }),
@@ -523,6 +527,8 @@ async function uploadVideo(req: Request, res: Response) {
   const length = Number(req.headers["content-length"]);
   if (!Number.isSafeInteger(length) || length <= 0) return res.status(411).json({ error: "That video couldn't be read." });
   if (length > MAX_VIDEO_BYTES) return res.status(413).json({ error: "Videos can be up to 100 MB." });
+  if (marketplaceFiles.backend() === "supabase" && length > MAX_FALLBACK_VIDEO_BYTES)
+    return res.status(413).json({ error: "Videos can be up to 50 MB for now." });
   const duration = dim(req.query.duration);
   if (duration !== null && duration > MAX_VIDEO_SECONDS) return res.status(400).json({ error: "Videos can be up to 3 minutes long." });
   if (!(await roomForUpload(res, me.id))) return;
