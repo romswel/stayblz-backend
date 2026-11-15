@@ -6,8 +6,11 @@ import { supabase } from "./supabase";
  * Marketplace photos, videos and documents (see "Where the files live" below). The marketplace routes check who may add or see a file
  * before anything here runs; nothing in this file is reachable from the browser directly.
  */
-/** A listing needs at least one photo or video. */
-export const MIN_MEDIA = 1;
+/**
+ * Photos, videos and documents are all optional: a listing can have any mix of them, or none
+ * (boss's request, 2026-11-15). Cards without a picture show the drawn horse portrait.
+ */
+export const MIN_MEDIA = 0;
 export const MAX_PHOTOS = 8;
 export const MAX_VIDEOS = 3;
 export const MAX_DOCUMENTS = 5;
@@ -23,6 +26,18 @@ export const MAX_VIDEO_SECONDS = 180;
 export const MAX_POSTER_BYTES = 2 * 1024 * 1024;
 /** Photos and documents are read into memory; videos are streamed straight to R2. */
 export const MAX_UPLOAD_BYTES = Math.max(MAX_PHOTO_BYTES, MAX_DOCUMENT_BYTES);
+/**
+ * All of one seller's marketplace files together (saved and unsaved). While files are kept in
+ * Supabase Storage (1 GB on the free plan, shared with chat and community photos), one seller
+ * can't fill it; R2 has far more room.
+ */
+export const MAX_SELLER_BYTES_SUPABASE = 300 * 1024 * 1024;
+export const MAX_SELLER_BYTES_R2 = 2 * 1024 * 1024 * 1024;
+/**
+ * Without R2, a video (up to 50 MB) is read into memory before it goes to Supabase. Render's free
+ * server has 512 MB, so only this many are taken at once (R2 uploads stream and aren't limited).
+ */
+export const MAX_BUFFERED_VIDEO_UPLOADS = 2;
 
 export type FileKind = "photo" | "video" | "document";
 

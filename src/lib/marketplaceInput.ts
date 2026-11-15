@@ -136,13 +136,14 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  * Older clients send `photoIds`, which is read the same way. Throws MediaInputError.
  */
 export function mediaInput(body: any, limits: { minMedia: number; maxMedia: number; maxDocuments: number }) {
-  const ids = (value: unknown, min: number, max: number, problem: string) => {
-    const list = value === undefined ? [] : value;
+  const ids = (value: unknown, min: number, max: number, tooFew: string, tooMany: string) => {
+    const list = value === undefined || value === null ? [] : value;
     if (!Array.isArray(list) || !list.every((id) => typeof id === "string" && UUID.test(id)))
       throw new MediaInputError("Some files couldn't be read. Remove them and add them again.");
     const unique = [...new Set(list.map((id: string) => id.toLowerCase()))];
     if (unique.length !== list.length) throw new MediaInputError("The same file was added twice.");
-    if (unique.length < min || unique.length > max) throw new MediaInputError(problem);
+    if (unique.length < min) throw new MediaInputError(tooFew);
+    if (unique.length > max) throw new MediaInputError(tooMany);
     return unique;
   };
   const mediaIds = ids(
@@ -150,7 +151,14 @@ export function mediaInput(body: any, limits: { minMedia: number; maxMedia: numb
     limits.minMedia,
     limits.maxMedia,
     `Add at least ${limits.minMedia} photo or video.`,
+    `A listing can have up to ${limits.maxMedia} photos and videos.`,
   );
-  const documentIds = ids(body?.documentIds, 0, limits.maxDocuments, `A listing can have up to ${limits.maxDocuments} documents.`);
+  const documentIds = ids(
+    body?.documentIds,
+    0,
+    limits.maxDocuments,
+    "",
+    `A listing can have up to ${limits.maxDocuments} documents.`,
+  );
   return { mediaIds, documentIds };
 }

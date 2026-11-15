@@ -12,8 +12,11 @@ import {
   MAX_DOCUMENTS,
   MAX_FALLBACK_VIDEO_BYTES,
   MAX_PENDING_FILES,
+  MAX_BUFFERED_VIDEO_UPLOADS,
   MAX_PHOTOS,
   MAX_POSTER_BYTES,
+  MAX_SELLER_BYTES_R2,
+  MAX_SELLER_BYTES_SUPABASE,
   MAX_UPLOAD_BYTES,
   MAX_VIDEO_BYTES,
   MAX_VIDEO_SECONDS,
@@ -30,8 +33,9 @@ import {
 // Horse marketplace: every signed-in member can browse; sellers add, edit and remove
 // their own listings. Admins can also remove any listing (moderation).
 //
-// Photos (up to 8) and videos (up to 3) — at least one of either — and PDF documents (up to 5,
-// optional) are stored in R2 (private bucket). The seller uploads them while filling in the form,
+// Photos (up to 8), videos (up to 3) and PDF documents (up to 5) are all optional: any mix, or
+// none. They're stored in R2 (private bucket) when this server has the R2 settings, otherwise in
+// Supabase Storage (see lib/marketplaceMedia). The seller uploads them while filling in the form,
 // and they are attached when the listing is published or saved, so Cancel leaves the listing as it was.
 const router = Router();
 router.use(requireAuth);
@@ -329,6 +333,21 @@ router.get(
   }),
 );
 
+/**
+ * GET /limits — upload limits right now, so the form can say them and check a video before
+ * sending it (videos are smaller while files are kept in Supabase Storage).
+ */
+router.get("/limits", (_req, res) => {
+  res.setHeader("Cache-Control", "private, max-age=300");
+  res.json({
+    videoBytes: marketplaceFiles.backend() === "r2" ? MAX_VIDEO_BYTES : MAX_FALLBACK_VIDEO_BYTES,
+    videoSeconds: MAX_VIDEO_SECONDS,
+    photos: MAX_PHOTOS,
+    videos: MAX_VIDEOS,
+    documents: MAX_DOCUMENTS,
+  });
+});
+
 router.post(
   "/listings",
   asyncRoute(async (req, res) => {
@@ -460,7 +479,7 @@ function readFile(req: Request, res: Response, next: NextFunction) {
  * Before a new upload: clean up this seller's old unsaved uploads (an abandoned form), then
  * check they don't already have too many waiting. Answers the request and returns false if not.
  */
-async function roomForUpload(res: Response, sellerId: string) {
+async function roomForUpload(res: Response, sellerId: string, incomingBytes: number) {
   const stale = new Date(Date.now() - PENDING_TTL_MS).toISOString();
   const { data: old } = await supabase
     .from("marketplace_files")
@@ -485,8 +504,30 @@ async function roomForUpload(res: Response, sellerId: string) {
     res.status(409).json({ error: "Save or cancel the listing you're working on before adding more files." });
     return false;
   }
+  // Each seller's files together stay under a cap, so one person can't fill the site's storage.
+  const { data: mine, error: mineError } = await supabase
+    .from("marketplace_files")
+    .select("size_bytes")
+    .eq("seller_id", sellerId)
+    .limit(2000);
+  if (mineError) {
+    unavailable(res, mineError);
+    return false;
+  }
+  const cap = marketplaceFiles.backend() === "r2" ? MAX_SELLER_BYTES_R2 : MAX_SELLER_BYTES_SUPABASE;
+  const used = (mine ?? []).reduce((sum, f) => sum + (Number(f.size_bytes) || 0), 0);
+  if (used + incomingBytes > cap) {
+    const mb = Math.round(cap / 1024 / 1024);
+    res.status(409).json({
+      error: `Your marketplace files are full (${mb >= 1024 ? `${mb / 1024} GB` : `${mb} MB`} in all). Remove a video or an old listing to add more.`,
+    });
+    return false;
+  }
   return true;
 }
+
+// Videos held in memory on their way to Supabase (see MAX_BUFFERED_VIDEO_UPLOADS).
+let bufferedVideoUploads = 0;
 
 const dim = (v: unknown) => (typeof v === "string" && /^\d{1,5}$/.test(v) && Number(v) > 0 ? Number(v) : null);
 
@@ -531,7 +572,22 @@ async function uploadVideo(req: Request, res: Response) {
     return res.status(413).json({ error: "Videos can be up to 50 MB for now." });
   const duration = dim(req.query.duration);
   if (duration !== null && duration > MAX_VIDEO_SECONDS) return res.status(400).json({ error: "Videos can be up to 3 minutes long." });
-  if (!(await roomForUpload(res, me.id))) return;
+  const buffered = marketplaceFiles.backend() === "supabase";
+  if (buffered && bufferedVideoUploads >= MAX_BUFFERED_VIDEO_UPLOADS)
+    return res.status(503).json({ error: "Other videos are uploading right now. Try again in a minute." });
+  if (buffered) {
+    bufferedVideoUploads++;
+    let released = false;
+    const release = () => {
+      if (!released) {
+        released = true;
+        bufferedVideoUploads--;
+      }
+    };
+    res.on("finish", release);
+    res.on("close", release);
+  }
+  if (!(await roomForUpload(res, me.id, length))) return;
 
   const { head, body } = await peek(req, 16);
   if (!spec.looksRight(head)) {
@@ -600,7 +656,7 @@ router.post(
       return res.status(413).json({ error: kind === "photo" ? "Photos can be up to 8 MB." : "Documents can be up to 10 MB." });
     if (!spec.looksRight(file)) return res.status(415).json({ error: "That file doesn't look like the type it claims to be." });
 
-    if (!(await roomForUpload(res, me.id))) return;
+    if (!(await roomForUpload(res, me.id, file.length))) return;
     const key = marketplaceFiles.key(me.id, type);
     try {
       await marketplaceFiles.put(key, file, type);

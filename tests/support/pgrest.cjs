@@ -112,6 +112,12 @@ class Query {
     return this;
   }
   or(value) {
+    // "listing_id.is.null,listing_id.eq.<id>" (marketplace files: unsaved, or already on this listing)
+    const nullOr = value.match(/^([a-z_]+)\.is\.null,\1\.eq\.([0-9a-f-]+)$/);
+    if (nullOr) {
+      this.nullOr = [nullOr[1], nullOr[2]];
+      return this;
+    }
     const match = value.match(
       /^sent_at.lt.(.+),and\(sent_at.eq.(.+),id.lt.([0-9a-f-]+)\)$/,
     );
@@ -156,6 +162,8 @@ class Query {
             ? `${identifier(key)} is null`
             : `${identifier(key)} ${op} ${bind(value)}`,
       );
+      if (this.nullOr)
+        where.push(`(${identifier(this.nullOr[0])} is null or ${identifier(this.nullOr[0])}::text = ${bind(this.nullOr[1])})`);
       if (this.cursor) {
         const time = bind(this.cursor[0]),
           id = bind(this.cursor[1]);
@@ -208,6 +216,8 @@ const MIGRATIONS = [
   "202611140002_paddock.sql",
   "202611150001_community.sql",
   "202611150002_avatars.sql",
+  "202611150002_marketplace_media.sql",
+  "202611150003_marketplace_video.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */
