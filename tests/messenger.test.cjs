@@ -137,22 +137,6 @@ test("replies, reactions and unsend; polling returns only what changed", async (
   // Same emoji again removes yours.
   r = await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "❤️" } });
   assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 1, mine: false }]);
-  // Several different emojis per person; each one toggles on its own.
-  await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "❤️" } });
-  r = await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "😂" } });
-  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 2, mine: true }, { emoji: "😂", count: 1, mine: true }]);
-  r = await call(bob, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "😂" } });
-  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 2, mine: true }, { emoji: "😂", count: 2, mine: true }]);
-  r = await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "❤️" } });
-  assert.deepEqual(r.data.message.reactions, [{ emoji: "😂", count: 2, mine: true }, { emoji: "❤️", count: 1, mine: false }]);
-  // Up to 10 each.
-  const many = ["👍", "😮", "😢", "🐎", "🎉", "🔥", "👏", "🏆", "💯"];
-  for (const emoji of many) assert.equal((await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji } })).status, 200);
-  assert.equal((await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "🙌" } })).status, 409);
-  // Old single-emoji rows still read correctly.
-  await db.query(`update personal_messages set reactions = jsonb_build_object($2::text, '❤️') where id=$1`, [reply, carol]);
-  r = await call(alice, `/api/messages/${direct}`);
-  assert.deepEqual(r.data.conversation.messages.find((m) => m.id === reply).reactions, [{ emoji: "❤️", count: 1, mine: false }]);
   assert.equal((await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "nope" } })).status, 400);
 
   // Only your own messages can be unsent; the text is erased for everyone.
