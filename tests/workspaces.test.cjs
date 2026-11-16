@@ -754,3 +754,47 @@ test("message cursors accept hosted offsets and preserve microseconds without fi
     assert.equal(invalid.status, 400);
   }
 });
+test("invitees see, accept and decline invitations addressed to their own email only", async () => {
+  const forCarol = await call(alice, "/api/workspaces/invitations", {
+    stable: stableA,
+    body: { email: (carol + "@example.test").toUpperCase(), role: "member" },
+  });
+  assert.equal(forCarol.status, 201);
+  const declined = await call(alice, "/api/workspaces/invitations", {
+    stable: stableA,
+    body: { email: carol + "@example.test" },
+  });
+  let r = await call(carol, "/api/workspaces/my-invitations");
+  assert.equal(r.status, 200);
+  const mine = r.data.invitations.find((i) => i.id === forCarol.data.invitation.id);
+  assert.equal(mine.stableName, "Alice stable");
+  assert.equal(mine.invitedBy, "Alice");
+  assert.equal(mine.role, "member");
+  assert.equal(JSON.stringify(r.data).includes("token"), false);
+  // Another account can neither list, accept nor decline it.
+  r = await call(bob, "/api/workspaces/my-invitations");
+  assert.equal(r.data.invitations.some((i) => i.id === mine.id), false);
+  assert.equal(
+    (await call(bob, `/api/workspaces/my-invitations/${mine.id}/accept`, { body: {} })).status,
+    400,
+  );
+  await call(bob, `/api/workspaces/my-invitations/${declined.data.invitation.id}/decline`, { body: {} });
+  assert.equal(
+    (await db.query("select 1 from stable_invitations where id=$1", [declined.data.invitation.id])).rows.length,
+    1,
+  );
+  // Decline removes it; accept joins the stable once.
+  assert.equal(
+    (await call(carol, `/api/workspaces/my-invitations/${declined.data.invitation.id}/decline`, { body: {} })).status,
+    200,
+  );
+  r = await call(carol, `/api/workspaces/my-invitations/${mine.id}/accept`, { body: {} });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.stableId, stableA);
+  assert.ok((await call(carol, "/api/workspaces")).data.stables.some((s) => s.id === stableA && s.role === "member"));
+  assert.equal(
+    (await call(carol, `/api/workspaces/my-invitations/${mine.id}/accept`, { body: {} })).status,
+    400,
+  );
+  assert.deepEqual((await call(carol, "/api/workspaces/my-invitations")).data.invitations, []);
+});

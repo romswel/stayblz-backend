@@ -107,6 +107,121 @@ router.post(
     res.json({ stableId: data });
   }),
 );
+// Invitations addressed to the signed-in account's email. The invitee never
+// needs the shared code: the server matches the verified session email.
+const myEmail = (req: any) =>
+  ((req as AuthenticatedRequest).user.email ?? "").toLowerCase();
+router.get(
+  "/my-invitations",
+  asyncRoute(async (req, res) => {
+    const email = myEmail(req);
+    if (!email) return res.json({ invitations: [] });
+    const { data, error } = await supabase
+      .from("stable_invitations")
+      .select("id,stable_id,role,invited_by,expires_at,member_stables(name)")
+      .eq("email", email)
+      .is("accepted_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false });
+    if (error) return failure(res);
+    const rows = (data ?? []).filter((r: any) => r.member_stables);
+    let inviters: any[] = [];
+    if (rows.length) {
+      const found = await supabase
+        .from("stable_memberships")
+        .select("stable_id,user_id,display_name,role")
+        .in(
+          "stable_id",
+          rows.map((r: any) => r.stable_id),
+        )
+        .in(
+          "user_id",
+          rows.map((r: any) => r.invited_by),
+        );
+      if (found.error) return failure(res);
+      inviters = found.data ?? [];
+    }
+    // Mirror accept_stable_invitation: hide invitations it would reject
+    // because the inviter has since lost the authority to invite.
+    const invitations = rows.flatMap((r: any) => {
+      const inviter = inviters.find(
+        (m) => m.stable_id === r.stable_id && m.user_id === r.invited_by,
+      );
+      if (
+        !inviter ||
+        !["owner", "manager"].includes(inviter.role) ||
+        (r.role === "manager" && inviter.role !== "owner")
+      )
+        return [];
+      return [
+        {
+          id: r.id,
+          stableId: r.stable_id,
+          stableName: r.member_stables.name,
+          role: r.role,
+          invitedBy: inviter.display_name,
+          expiresAt: r.expires_at,
+        },
+      ];
+    });
+    res.json({ invitations });
+  }),
+);
+router.post(
+  "/my-invitations/:id/accept",
+  asyncRoute(async (req, res) => {
+    const user = (req as AuthenticatedRequest).user;
+    const email = myEmail(req);
+    if (user.passwordSetupRequired)
+      return res.status(403).json({ error: "Complete password setup first." });
+    if (!isUuid(req.params.id) || !email)
+      return res
+        .status(400)
+        .json({ error: "This invitation cannot be accepted." });
+    const { data: invitation, error: lookup } = await supabase
+      .from("stable_invitations")
+      .select("token_hash")
+      .eq("id", req.params.id)
+      .eq("email", email)
+      .is("accepted_at", null)
+      .maybeSingle();
+    if (lookup) return failure(res);
+    const invalid = () =>
+      res.status(400).json({
+        error:
+          "This invitation is expired, already used, revoked, or addressed to a different email.",
+      });
+    if (!invitation) return invalid();
+    // The existing RPC re-checks email, expiry, one-time use and inviter role.
+    const { data, error } = await supabase.rpc("accept_stable_invitation", {
+      p_user: user.id,
+      p_email: email,
+      p_display: user.displayName,
+      p_hash: invitation.token_hash,
+    });
+    if (error)
+      return error.message?.includes("invalid_invitation")
+        ? invalid()
+        : failure(res);
+    res.json({ stableId: data });
+  }),
+);
+router.post(
+  "/my-invitations/:id/decline",
+  asyncRoute(async (req, res) => {
+    const email = myEmail(req);
+    if (!isUuid(req.params.id) || !email)
+      return res.status(400).json({ error: "Invalid invitation." });
+    const { error } = await supabase
+      .from("stable_invitations")
+      .delete()
+      .eq("id", req.params.id)
+      .eq("email", email)
+      .is("accepted_at", null);
+    if (error) return failure(res);
+    res.json({ ok: true });
+  }),
+);
 router.get(
   "/members",
   requireStable,
