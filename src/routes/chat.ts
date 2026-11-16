@@ -34,6 +34,7 @@ const ERRORS: Record<string, [number, string]> = {
   request_pending: [409, "Accept this message request before you reply or react."],
   blocked: [403, "You can't message this person."],
   invalid_reaction: [400, "Pick one of the reactions shown."],
+  too_many_reactions: [409, "You can add up to 10 reactions to a message."],
   invalid_message: [400, "Use 1–4,000 characters and try again."],
   edit_window: [409, "Messages can only be edited for 15 minutes after sending."],
   not_editable: [400, "Only text messages can be edited."],
