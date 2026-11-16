@@ -122,7 +122,7 @@ test("replies, reactions and unsend; polling returns only what changed", async (
 
   r = await send(alice, direct, "Great, see you there", { replyTo: target.id });
   assert.equal(r.status, 201);
-  assert.deepEqual(r.data.message.replyTo, { id: target.id, from: "Bob Burke", body: "Yes — race 4.", removed: false, attachment: null });
+  assert.deepEqual(r.data.message.replyTo, { id: target.id, from: "Bob Burke", senderId: bob, body: "Yes — race 4.", removed: false, attachment: null });
   const reply = r.data.message.id;
   // A reply to a message from another chat is dropped, not leaked.
   const other = await call(carol, "/api/messages", { body: { title: "Carol's group" } });
@@ -131,12 +131,12 @@ test("replies, reactions and unsend; polling returns only what changed", async (
   assert.equal(r.data.message.replyTo, null);
 
   r = await call(bob, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "❤️" } });
-  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 1, mine: true }]);
+  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 1, mine: true, ids: [bob] }]);
   r = await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "❤️" } });
-  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 2, mine: true }]);
+  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 2, mine: true, ids: [alice, bob] }]);
   // Same emoji again removes yours.
   r = await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "❤️" } });
-  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 1, mine: false }]);
+  assert.deepEqual(r.data.message.reactions, [{ emoji: "❤️", count: 1, mine: false, ids: [bob] }]);
   assert.equal((await call(alice, `/api/messages/${direct}/messages/${reply}/react`, { body: { emoji: "nope" } })).status, 400);
 
   // Only your own messages can be unsent; the text is erased for everyone.

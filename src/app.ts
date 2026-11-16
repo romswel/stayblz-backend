@@ -23,6 +23,7 @@ import paddockLiveRoutes from "./routes/paddockLive";
 import communityRoutes from "./routes/community";
 import storageRoutes from "./routes/storage";
 import avatarRoutes from "./routes/avatars";
+import notificationRoutes from "./routes/notifications";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -140,6 +141,8 @@ app.use("/api/tv", tvRoutes);
 app.use("/api/community", communityRoutes);
 // Profile pictures (signed-in members; stored by lib/communityStorage: R2 when set up, else Supabase).
 app.use("/api/avatars", avatarRoutes);
+// Notification settings + Web Push devices (signed in). Stayblz Chat is the first feature that notifies.
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin/racing", adminRacingRoutes);
 // Cloudflare R2 (shared with Suprah, Stayblz files under stayblz/ only): admin status + connection check.
 app.use("/api/admin/storage", storageRoutes);

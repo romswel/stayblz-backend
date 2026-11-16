@@ -5,6 +5,7 @@ import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { isActive, touch } from "../lib/presence";
 import { chatError, loadThread } from "./chat";
+import { chatLimits } from "../lib/chatStorage";
 
 /**
  * Stayblz Chat people: find members by name, friends + requests, blocking, and your chat privacy
@@ -124,7 +125,8 @@ router.get(
   asyncRoute(async (req, res) => {
     const { data, error } = await supabase.rpc("chat_profile_get", { p_user: me(req).id });
     if (error) return fail(res, error);
-    res.json({ profile: data });
+    // The real file limits right now: 4 MB / 50 MB on Supabase Storage, 25 MB / 500 MB when R2 is set up.
+    res.json({ profile: data, limits: chatLimits() });
   }),
 );
 router.post(

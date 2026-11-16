@@ -11,7 +11,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "post-update": "npm run build && node scripts/post-update.cjs",
-    "r2:check": "npm run build && node scripts/r2-check.cjs"
+    "r2:check": "npm run build && node scripts/r2-check.cjs",
+    "push:keys": "node scripts/push-keys.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1169.0",
@@ -19,13 +20,15 @@
     "@supabase/supabase-js": "^2.118.0",
     "cors": "^2.8.5",
     "dotenv": "^18.0.9",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
     "@types/node": "^22.20.5",
+    "@types/web-push": "^3.6.4",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }

@@ -11,6 +11,8 @@ const { app } = require("../dist/app");
 const auth = require("../dist/middleware/auth");
 const { supabase } = require("../dist/lib/supabase");
 const { chatStorage } = require("../dist/lib/chatStorage");
+// File limits depend on whether R2 is set up (a developer's .env may have it): these tests use the Supabase limits.
+require("../dist/lib/r2Storage").r2Storage.isConfigured = () => false;
 
 const ann = "a1111111-1111-4111-8111-111111111111",
   ben = "b2222222-2222-4222-8222-222222222222",

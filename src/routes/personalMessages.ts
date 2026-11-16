@@ -43,7 +43,13 @@ function directAllowed(id: string) {
   return true;
 }
 
-/** Menu badge: unread personal chats, message requests, and unread team chats. */
+const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+
+/**
+ * Menu badge: unread personal chats, message requests, and unread team chats.
+ * With `?since=<time from the previous answer>` it also lists the newest unread message per chat that arrived
+ * since then (`incoming`), which the browser turns into notifications, and returns `now` for the next poll.
+ */
 router.get(
   "/unread",
   asyncRoute(async (req, res) => {
@@ -53,7 +59,15 @@ router.get(
     const { data, error } = await supabase.rpc("chat_unread", { p_user: user(req).id });
     if (error) return unavailable(res);
     res.set("Cache-Control", "no-store");
-    res.json(data);
+    const since = req.query.since;
+    if (typeof since !== "string") return res.json(data);
+    const now = new Date().toISOString();
+    if (!ISO.test(since) || !Number.isFinite(Date.parse(since))) return res.json({ ...data, incoming: [], now });
+    // A few seconds of overlap so a clock difference between this server and the database never drops a message;
+    // the browser ignores ones it already showed.
+    const overlap = new Date(Date.parse(since) - 5_000).toISOString();
+    const incoming = await supabase.rpc("chat_incoming", { p_user: user(req).id, p_since: overlap });
+    res.json({ ...data, incoming: incoming.error ? [] : (incoming.data ?? []), now });
   }),
 );
 

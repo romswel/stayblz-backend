@@ -218,6 +218,8 @@ const MIGRATIONS = [
   "202611150002_avatars.sql",
   "202611150002_marketplace_media.sql",
   "202611150003_marketplace_video.sql",
+  "202611170001_chat_v3.sql",
+  "202611170002_notifications.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */

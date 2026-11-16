@@ -5,8 +5,17 @@ import { isUuid, type StableRequest } from "../middleware/stable";
 import type { AuthenticatedRequest } from "../middleware/auth";
 import { supabase } from "../lib/supabase";
 import { messageCursor } from "../lib/workspace";
-import { ALLOWED_TYPES, MAX_FILE_BYTES, QUOTA_BYTES, chatStorage, safeFileName } from "../lib/chatStorage";
+import {
+  ALLOWED_TYPES,
+  MAX_GROUP_PHOTO_BYTES,
+  MAX_R2_FILE_BYTES,
+  chatLimits,
+  chatStorage,
+  safeFileName,
+} from "../lib/chatStorage";
+import { IMAGE_TYPES } from "../lib/communityStorage";
 import { allow, allowed, isActive, seenAt, setTyping, touch, typers } from "../lib/presence";
+import { pushChatMessage } from "../lib/push";
 
 /**
  * Stayblz Chat endpoints shared by personal chats (/api/messages) and team chats (/api/team-messages).
@@ -100,15 +109,27 @@ function uploadAllowed(id: string) {
   return true;
 }
 
-const rawFile = express.raw({ type: () => true, limit: MAX_FILE_BYTES });
+const mb = (bytes: number) => `${Math.round(bytes / 1024 / 1024)} MB`;
+// Read up to the R2 size; the real limit (4 MB on Supabase, 25 MB on R2) is checked once the body is in.
+const rawFile = express.raw({ type: () => true, limit: MAX_R2_FILE_BYTES });
 function rawFileOrError(req: Request, res: Response, next: NextFunction) {
   rawFile(req, res, (error?: any) => {
     if (error?.type === "entity.too.large")
-      return res.status(413).json({ error: "Files can be up to 4 MB.", code: "file_too_large" });
+      return res.status(413).json({ error: `Files can be up to ${mb(chatLimits().fileBytes)}.`, code: "file_too_large" });
     if (error) return next(error);
     next();
   });
 }
+const rawPhoto = express.raw({ type: () => true, limit: MAX_GROUP_PHOTO_BYTES });
+function rawPhotoOrError(req: Request, res: Response, next: NextFunction) {
+  rawPhoto(req, res, (error?: any) => {
+    if (error?.type === "entity.too.large")
+      return res.status(413).json({ error: "Group photos can be up to 2 MB.", code: "file_too_large" });
+    if (error) return next(error);
+    next();
+  });
+}
+const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function chatRoutes(kind: ChatKind) {
   const router = Router();
@@ -211,6 +232,7 @@ export function chatRoutes(kind: ChatKind) {
         return res.status(503).json({ error: "Message not sent. The chat server is busy — tap Retry in a moment." });
       }
       res.status(201).json({ message: data });
+      void pushChatMessage(kind, req.params.id, user(req), data ?? {});
     }),
   );
 
@@ -226,9 +248,16 @@ export function chatRoutes(kind: ChatKind) {
       const clientId = req.query.clientId;
       const replyTo = req.query.replyTo ?? null;
       const file = req.body;
-      if (!rule) return res.status(415).json({ error: "Send photos (JPG, PNG, WebP, GIF) or PDF, Word, Excel and text files.", code: "file_type" });
+      if (!rule)
+        return res.status(415).json({
+          error: "Send photos (JPG, PNG, WebP, GIF), videos (MP4, MOV, WebM), voice clips, or PDF, Word, Excel and text files.",
+          code: "file_type",
+        });
       if (!Buffer.isBuffer(file) || !file.length || !name || !isUuid(clientId) || (replyTo !== null && !isUuid(replyTo)))
         return res.status(400).json({ error: "That file can't be sent." });
+      const limits = chatLimits();
+      if (file.length > limits.fileBytes)
+        return res.status(413).json({ error: `Files can be up to ${mb(limits.fileBytes)}.`, code: "file_too_large" });
       if (rule.magic && !rule.magic(file)) return res.status(415).json({ error: "That file doesn't look like the type it claims to be.", code: "file_type" });
       if (!uploadAllowed(me.id)) return res.status(429).json({ error: "You've sent a lot of files. Wait a few minutes.", retryAfterSeconds: 600 });
 
@@ -245,12 +274,18 @@ export function chatRoutes(kind: ChatKind) {
       if (!existing) {
         const { data: used, error: quotaErr } = await supabase.rpc("chat_quota", { p_user: me.id });
         if (quotaErr) return chatError(res, quotaErr);
-        if (Number(used ?? 0) + file.length > QUOTA_BYTES)
-          return res.status(413).json({ error: "You've used your 50 MB of chat files. Unsend some old files to make room.", code: "quota" });
+        if (Number(used ?? 0) + file.length > limits.quotaBytes)
+          return res.status(413).json({
+            error: `You've used your ${mb(limits.quotaBytes)} of chat files. Unsend some old files to make room.`,
+            code: "quota",
+          });
       }
 
       const path = `${kind}/${req.params.id}/${randomUUID()}`;
       const dims = (v: unknown) => (typeof v === "string" && /^\d{1,5}$/.test(v) ? Number(v) : undefined);
+      // Voice clips (1–300 s) and videos (up to an hour) carry their length, shown before the file loads.
+      const seconds = typeof req.query.duration === "string" && /^\d{1,4}$/.test(req.query.duration) ? Number(req.query.duration) : 0;
+      const maxSeconds = rule.audio ? 300 : rule.video ? 3600 : 0;
       const attachment = {
         path,
         name,
@@ -259,6 +294,7 @@ export function chatRoutes(kind: ChatKind) {
         ...(rule.image && dims(req.query.width) && dims(req.query.height)
           ? { width: dims(req.query.width), height: dims(req.query.height) }
           : {}),
+        ...(seconds >= 1 && seconds <= maxSeconds ? { duration: seconds } : {}),
       };
       if (!existing) {
         try {
@@ -282,6 +318,7 @@ export function chatRoutes(kind: ChatKind) {
         return chatError(res, error);
       }
       res.status(201).json({ message: data });
+      if (!existing) void pushChatMessage(kind, req.params.id, me, data ?? {});
     }),
   );
 
@@ -402,7 +439,7 @@ export function chatRoutes(kind: ChatKind) {
         return res.status(400).json({ error: "Choose up to 10 chats." });
       const results: { to: string; ok: boolean; error?: string }[] = [];
       for (const target of [...new Set(to as string[])]) {
-        const { error } = await supabase.rpc("chat_forward", {
+        const { data: sent, error } = await supabase.rpc("chat_forward", {
           ...chatScope(req, kind),
           p_from: req.params.id,
           p_message: req.params.message,
@@ -412,6 +449,7 @@ export function chatRoutes(kind: ChatKind) {
         });
         const code = error ? Object.keys(ERRORS).find((k) => error.message?.includes(k)) : undefined;
         results.push(error ? { to: target, ok: false, error: code ? ERRORS[code][1] : "Not sent." } : { to: target, ok: true });
+        if (!error && sent) void pushChatMessage(kind, target, user(req), sent);
       }
       res.json({ results });
     }),
@@ -431,6 +469,12 @@ export function chatRoutes(kind: ChatKind) {
       if ("folder" in body) {
         if (body.folder !== null && !isUuid(body.folder)) return res.status(400).json({ error: "That folder no longer exists." });
         changes.folder = body.folder;
+      }
+      // Mute for a while: 15 minutes up to 7 days.
+      if ("muteMinutes" in body) {
+        if (!Number.isInteger(body.muteMinutes) || body.muteMinutes < 1 || body.muteMinutes > 10080 || "muted" in body)
+          return res.status(400).json({ error: "Those settings couldn't be saved." });
+        changes.muteMinutes = body.muteMinutes;
       }
       const { data, error } = await supabase.rpc("chat_settings_set", {
         ...chatScope(req, kind),
@@ -465,6 +509,16 @@ export function chatRoutes(kind: ChatKind) {
     }),
   );
 
+  // Messages with web links in them (Chat info → Links), newest first.
+  router.get(
+    "/:id/links",
+    asyncRoute(async (req, res) => {
+      const { data, error } = await supabase.rpc("chat_links", { ...chatScope(req, kind), p_conversation: req.params.id });
+      if (error) return chatError(res, error);
+      res.json({ messages: data ?? [] });
+    }),
+  );
+
   router.post(
     "/:id/rename",
     asyncRoute(async (req, res) => {
@@ -478,6 +532,83 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ ok: true });
+    }),
+  );
+
+  // Group photo: any member can change or remove it. Square JPEG/PNG/WebP (made in the browser), up to 2 MB,
+  // kept in the chat file store (R2 under stayblz/chat/group-photos/…, or Supabase) and shown to members only.
+  router.post(
+    "/:id/photo",
+    rawPhotoOrError,
+    asyncRoute(async (req, res) => {
+      const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+      const file = req.body;
+      if (!PHOTO_TYPES.includes(type)) return res.status(415).json({ error: "Choose a JPG, PNG or WebP photo.", code: "file_type" });
+      if (!Buffer.isBuffer(file) || !file.length || !IMAGE_TYPES[type]?.(file))
+        return res.status(415).json({ error: "That file doesn't look like a photo.", code: "file_type" });
+      if (!uploadAllowed(user(req).id)) return res.status(429).json({ error: "You've sent a lot of files. Wait a few minutes.", retryAfterSeconds: 600 });
+      const scope = chatScope(req, kind);
+      const { data: chat, error: chatErr } = await supabase.rpc("chat_get", { ...scope, p_conversation: req.params.id });
+      if (chatErr) return chatError(res, chatErr);
+      if (!chat) return res.status(404).json({ error: "Conversation not found." });
+      if (chat.kind !== "group") return chatError(res, { message: "not_group" });
+      const path = `group-photos/${kind}/${req.params.id}/${randomUUID()}`;
+      try {
+        await chatStorage.upload(path, file, type);
+      } catch {
+        return res.status(503).json({ error: "Photo storage is busy. Try again in a moment." });
+      }
+      const { data, error } = await supabase.rpc("chat_set_photo", {
+        ...scope,
+        p_conversation: req.params.id,
+        p_display: user(req).displayName,
+        p_path: path,
+      });
+      if (error) {
+        await chatStorage.remove([path]).catch(() => undefined);
+        return chatError(res, error);
+      }
+      if (data?.old) await chatStorage.remove([data.old]).catch(() => undefined);
+      res.status(201).json({ photo: path.slice(path.lastIndexOf("/") + 1) });
+    }),
+  );
+
+  router.post(
+    "/:id/photo/remove",
+    asyncRoute(async (req, res) => {
+      const { data, error } = await supabase.rpc("chat_set_photo", {
+        ...chatScope(req, kind),
+        p_conversation: req.params.id,
+        p_display: user(req).displayName,
+        p_path: null,
+      });
+      if (error) return chatError(res, error);
+      if (data?.old) await chatStorage.remove([data.old]).catch(() => undefined);
+      res.json({ photo: null });
+    }),
+  );
+
+  router.get(
+    "/:id/photo/:version",
+    asyncRoute(async (req, res) => {
+      const { data: chat, error } = await supabase.rpc("chat_get", { ...chatScope(req, kind), p_conversation: req.params.id });
+      if (error) return chatError(res, error);
+      const path: string | null = chat?.photo ?? null;
+      if (!path || !isUuid(req.params.version) || !path.endsWith("/" + req.params.version))
+        return res.status(404).json({ error: "That photo isn't available." });
+      let file: Buffer;
+      try {
+        file = await chatStorage.download(path);
+      } catch {
+        return res.status(404).json({ error: "That photo isn't available." });
+      }
+      const head = file.subarray(0, 16);
+      const type = PHOTO_TYPES.find((t) => IMAGE_TYPES[t]?.(head)) ?? "application/octet-stream";
+      res.setHeader("Content-Type", type);
+      res.setHeader("Content-Length", String(file.length));
+      res.setHeader("Content-Disposition", "inline");
+      res.setHeader("Cache-Control", "private, max-age=86400");
+      res.end(file);
     }),
   );
 
@@ -516,6 +647,8 @@ export function chatRoutes(kind: ChatKind) {
   router.post(
     "/:id/leave",
     asyncRoute(async (req, res) => {
+      // Remember the group photo: if you're the last one out, the chat (and its photo) goes.
+      const { data: before } = await supabase.rpc("chat_get", { ...chatScope(req, kind), p_conversation: req.params.id });
       const { data, error } = await supabase.rpc("chat_leave", {
         ...chatScope(req, kind),
         p_conversation: req.params.id,
@@ -523,6 +656,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       const paths = Array.isArray(data?.removePaths) ? data.removePaths.filter((p: unknown) => typeof p === "string") : [];
+      if (data?.deleted && typeof before?.photo === "string") paths.push(before.photo);
       if (paths.length) await chatStorage.remove(paths).catch(() => undefined);
       res.json({ ok: true });
     }),
