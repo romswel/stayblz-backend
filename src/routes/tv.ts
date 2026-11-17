@@ -18,13 +18,13 @@ router.get("/status", (_req, res) => {
 });
 
 router.get("/playback", (_req, res) => {
-  const { state, title, streamUrl } = tvSettings();
+  const { state, title, streamUrl, kind } = tvSettings();
   // Access checks (subscription / entitlement) go here, before the address is handed out.
   if (state !== "live" || !streamUrl) {
     res.status(409).json({ code: "off_air", error: "Nothing is on air right now." });
     return;
   }
-  res.json({ url: streamUrl, title });
+  res.json({ url: streamUrl, title, kind });
 });
 
 export default router;
