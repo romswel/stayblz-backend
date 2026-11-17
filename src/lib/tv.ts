@@ -77,7 +77,9 @@ export function youtubeEmbed(raw: string | undefined): string | null {
     else if (parts[0] === "embed") video = parts[1] ?? null;
     else if (parts[0] === "channel" && parts[2] === "live") channel = parts[1] ?? null;
   }
-  const params = new URLSearchParams({ autoplay: "1", mute: "1", playsinline: "1", rel: "0" });
+  // No mute=1: YouTube starts with sound when the browser allows it and otherwise falls back to
+  // muted autoplay with its own Unmute button (the page keeps that corner of the player clear).
+  const params = new URLSearchParams({ autoplay: "1", playsinline: "1", rel: "0" });
   if (channel && CHANNEL_ID.test(channel)) {
     params.set("channel", channel);
     return `https://www.youtube.com/embed/live_stream?${params}`;

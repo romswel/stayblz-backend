@@ -101,7 +101,7 @@ test("demo YouTube embed: live with kind embed; the HLS stream wins when both ar
   assert.equal(playback.data.kind, "embed");
   assert.equal(
     playback.data.url,
-    "https://www.youtube-nocookie.com/embed/cJA4RJ5teuw?autoplay=1&mute=1&playsinline=1&rel=0&start=600",
+    "https://www.youtube-nocookie.com/embed/cJA4RJ5teuw?autoplay=1&playsinline=1&rel=0&start=600",
   );
   process.env.TV_STREAM_URL = STREAM;
   assert.deepEqual((await call("/api/tv/playback")).data, { url: STREAM, title: "Los Alamitos", kind: "hls" });
@@ -112,13 +112,13 @@ test("demo YouTube embed: live with kind embed; the HLS stream wins when both ar
 });
 
 test("YouTube link rules: only YouTube video or channel ids, rebuilt by us", () => {
-  const v = "https://www.youtube-nocookie.com/embed/cJA4RJ5teuw?autoplay=1&mute=1&playsinline=1&rel=0";
+  const v = "https://www.youtube-nocookie.com/embed/cJA4RJ5teuw?autoplay=1&playsinline=1&rel=0";
   assert.equal(youtubeEmbed("https://youtu.be/cJA4RJ5teuw"), v);
   assert.equal(youtubeEmbed("https://www.youtube.com/live/cJA4RJ5teuw?si=abc"), v);
   assert.equal(youtubeEmbed("https://www.youtube.com/embed/cJA4RJ5teuw"), v);
   assert.equal(
     youtubeEmbed("https://www.youtube.com/channel/UCzU39Vjjyv2_SXipboFPAsQ/live"),
-    "https://www.youtube.com/embed/live_stream?autoplay=1&mute=1&playsinline=1&rel=0&channel=UCzU39Vjjyv2_SXipboFPAsQ",
+    "https://www.youtube.com/embed/live_stream?autoplay=1&playsinline=1&rel=0&channel=UCzU39Vjjyv2_SXipboFPAsQ",
   );
   for (const bad of [
     "",
