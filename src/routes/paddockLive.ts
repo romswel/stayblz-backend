@@ -120,6 +120,7 @@ router.post("/chat", (req, res) => {
   const message = typeof text === "string" ? text.replace(/\r\n?/g, "\n").trim() : "";
   if (!message) return res.status(400).json({ error: "Type a message first." });
   if (message.length > 1000) return res.status(400).json({ error: "Messages can be up to 1,000 characters." });
+  if (!live.allowed(found, "chat")) return res.status(403).json({ code: "chat_off", error: "The host turned off chat for everyone." });
   if (!burstAllowed(`chat:${found.peer.id}`, 20, 10_000))
     return res.status(429).json({ error: "You're sending messages very fast. Wait a few seconds." });
   live.chat(found, id, message);
@@ -131,6 +132,7 @@ router.post("/react", (req, res) => {
   if (!found) return;
   const emoji = req.body?.emoji;
   if (typeof emoji !== "string" || !live.REACTIONS.includes(emoji)) return res.status(400).json({ error: "Pick a reaction." });
+  if (!live.allowed(found, "react")) return res.status(403).json({ code: "react_off", error: "The host turned off reactions." });
   if (!burstAllowed(`react:${found.peer.id}`, 12, 10_000)) return res.status(429).json({ error: "That's a lot of reactions! Wait a moment." });
   live.react(found, emoji);
   res.status(201).json({ ok: true });
@@ -142,7 +144,7 @@ router.post(
   asyncRoute(async (req, res) => {
     const found = seated(req, res);
     if (!found) return;
-    const { action, peer, knock, on } = req.body ?? {};
+    const { action, peer, knock, on, rule } = req.body ?? {};
     if (!live.canManage(found)) return res.status(403).json({ error: "Only the host and co-hosts can do that." });
     const meetingId = found.room.info.id;
     switch (action) {
@@ -158,7 +160,15 @@ router.post(
       case "mute":
       case "lower-hand":
       case "stop-screen":
+      case "stop-cam":
         if (!live.control(found, peer, action)) return res.status(404).json({ error: "That person isn't in the call." });
+        return res.json({ ok: true });
+      case "rules":
+        if (!live.RULE_KEYS.includes(rule) || typeof on !== "boolean") return res.status(400).json({ error: "Choose a setting to change." });
+        live.setRule(found, rule, on);
+        return res.json({ ok: true });
+      case "spotlight":
+        if (!live.setSpotlight(found, peer ?? null)) return res.status(404).json({ error: "That person isn't in the call." });
         return res.json({ ok: true });
       case "mute-all":
         live.controlAll(found, "mute");
