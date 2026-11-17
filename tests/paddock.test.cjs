@@ -399,3 +399,164 @@ test("ending the call sends everyone out; deleting removes the meeting", async (
   assert.equal((await call(host, `/api/paddock/${meeting.code}`, { method: "DELETE" })).status, 200);
   assert.equal((await call(host, `/api/paddock/${meeting.code}`)).status, 404);
 });
+
+// ————— Host rules, spotlight, rings and alerts (2026-11-17) —————
+const alertsLib = require("../dist/lib/paddockAlerts");
+const alertsOf = (who, { since = 0, wait = 0 } = {}) => call(who, `/api/paddock/alerts?since=${since}&wait=${wait}`);
+
+test("host rules: switching microphones, cameras, chat or reactions off holds for everyone but hosts", async () => {
+  const r0 = await call(host, "/api/paddock", { body: { title: "Rules check", access: "open" } });
+  const m = r0.data.meeting;
+  const h = await joinAs(host, m.code);
+  const x = await joinAs(extras[1], m.code);
+  await call(null, "/api/paddock/live/send", { seat: x.seat, body: { state: { mic: true, cam: true } } });
+  assert.equal((await hostTool(x.seat, { action: "rules", rule: "mic", on: false })).status, 403);
+  assert.equal((await hostTool(h.seat, { action: "rules", rule: "loud", on: false })).status, 400);
+  assert.equal((await hostTool(h.seat, { action: "rules", rule: "mic", on: false })).status, 200);
+  assert.equal((await hostTool(h.seat, { action: "rules", rule: "cam", on: false })).status, 200);
+  let r = await sync(x.seat);
+  assert.deepEqual(r.data.room.rules, { present: true, chat: true, react: true, mic: false, cam: false });
+  assert.equal(r.data.you.state.mic, false);
+  assert.equal(r.data.you.state.cam, false);
+  assert.deepEqual(r.data.signals.filter((s) => s.type === "control").map((s) => s.data.action).sort(), ["mute", "stop-cam"]);
+  // Trying to switch back on is ignored by the server; the host still can.
+  await call(null, "/api/paddock/live/send", { seat: x.seat, body: { state: { mic: true, cam: true } } });
+  assert.equal((await sync(x.seat)).data.you.state.mic, false);
+  await call(null, "/api/paddock/live/send", { seat: h.seat, body: { state: { mic: true } } });
+  assert.equal((await sync(h.seat)).data.you.state.mic, true);
+  // Chat and reactions off: members are told, hosts can still use them.
+  await hostTool(h.seat, { action: "rules", rule: "chat", on: false });
+  await hostTool(h.seat, { action: "rules", rule: "react", on: false });
+  r = await call(null, "/api/paddock/live/chat", { seat: x.seat, body: { id: "msg-rule-1", text: "Hello?" } });
+  assert.equal(r.status, 403);
+  assert.equal(r.data.code, "chat_off");
+  assert.equal((await call(null, "/api/paddock/live/react", { seat: x.seat, body: { emoji: "👍" } })).status, 403);
+  assert.equal((await call(null, "/api/paddock/live/chat", { seat: h.seat, body: { id: "msg-rule-2", text: "Hosts only" } })).status, 201);
+  const notices = (await sync(x.seat, { feedSince: 1 })).data.feed.filter((f) => f.kind === "notice").map((f) => f.text);
+  assert.ok(notices.includes("Hana Host turned off chat for everyone"), notices.join(" | "));
+  // Someone new joins with their mic off while microphones are off.
+  const y = await joinAs(extras[2], m.code);
+  assert.equal((await sync(y.seat)).data.you.state.mic, false);
+
+  // Spotlight for everyone; it clears when that person leaves. Camera off for one person.
+  assert.equal((await hostTool(h.seat, { action: "spotlight", peer: "nobody-here-123" })).status, 404);
+  assert.equal((await hostTool(h.seat, { action: "spotlight", peer: x.peerId })).status, 200);
+  assert.equal((await sync(y.seat)).data.room.spotlight, x.peerId);
+  assert.equal((await hostTool(h.seat, { action: "stop-cam", peer: y.peerId })).status, 200);
+  await call(null, "/api/paddock/live/leave", { body: { seat: x.seat } });
+  assert.equal((await sync(y.seat)).data.room.spotlight, null);
+  // Account ids come with each person (for profile pictures); guests have none.
+  const peers = (await sync(h.seat)).data.peers;
+  assert.equal(peers.find((p) => p.id === y.peerId).accountId, extras[2]);
+  // A co-host can talk while microphones are off for everyone; once demoted, they're muted like everyone else.
+  assert.equal((await hostTool(h.seat, { action: "cohost", peer: y.peerId, on: true })).status, 200);
+  await call(null, "/api/paddock/live/send", { seat: y.seat, body: { state: { mic: true } } });
+  assert.equal((await sync(y.seat)).data.you.state.mic, true);
+  assert.equal((await hostTool(h.seat, { action: "cohost", peer: y.peerId, on: false })).status, 200);
+  const demoted = await sync(y.seat);
+  assert.equal(demoted.data.you.role, "member");
+  assert.equal(demoted.data.you.state.mic, false);
+  assert.ok(demoted.data.signals.some((s) => s.type === "control" && s.data.action === "mute"));
+  await hostTool(h.seat, { action: "end" });
+});
+
+test("rings: the host calls invited people, who see it, can decline, or join to answer", async () => {
+  const r0 = await call(host, "/api/paddock", { body: { title: "Quick call", inviteeIds: [teammate] } });
+  const m = r0.data.meeting;
+  // Nobody hears about an instant meeting until someone rings.
+  assert.deepEqual((await alertsOf(teammate)).data.alerts, []);
+  const h = await joinAs(host, m.code);
+  // A stranger can't ring people for someone else's meeting.
+  assert.equal((await call(stranger, `/api/paddock/${m.code}/ring`, { body: {} })).status, 403);
+
+  const before = (await alertsOf(teammate)).data.version;
+  const waiting = alertsOf(teammate, { since: before, wait: 4000 });
+  let r = await call(host, `/api/paddock/${m.code}/ring`, { body: { video: false } });
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.data.rang, [{ id: teammate, name: "Tom Teammate" }]);
+  r = await waiting;
+  const ring = r.data.alerts[0];
+  assert.equal(ring.kind, "ring");
+  assert.equal(ring.status, "active");
+  assert.equal(ring.fromName, "Hana Host");
+  assert.equal(ring.video, false);
+  assert.equal(ring.code, m.code);
+  // The call shows who's being rung. Ringing again doesn't ring twice.
+  assert.deepEqual((await sync(h.seat)).data.room.ringing.map((x) => x.name), ["Tom Teammate"]);
+  assert.deepEqual((await call(host, `/api/paddock/${m.code}/ring`, { body: {} })).data.rang, []);
+
+  // Decline: the caller hears about it, the ring ends.
+  assert.equal((await call(stranger, `/api/paddock/alerts/${ring.id}/decline`, { body: {} })).status, 404);
+  assert.equal((await call(teammate, `/api/paddock/alerts/${ring.id}/decline`, { body: {} })).status, 200);
+  assert.equal((await alertsOf(teammate)).data.alerts[0].status, "declined");
+  let s = await sync(h.seat, { feedSince: 1 });
+  assert.deepEqual(s.data.room.ringing, []);
+  assert.ok(s.data.feed.some((f) => f.kind === "notice" && f.text === "Tom Teammate can't join right now"));
+
+  // Ring again; joining answers it.
+  await call(host, `/api/paddock/${m.code}/ring`, { body: { ids: [teammate] } });
+  const t = await joinAs(teammate, m.code);
+  assert.equal(t.status, 200);
+  assert.ok((await alertsOf(teammate)).data.alerts.some((a) => a.status === "answered"));
+
+  // Nobody answers: a missed call, and the caller is told.
+  await call(null, "/api/paddock/live/leave", { body: { seat: t.seat } });
+  alertsLib.setAlertTimings({ ring: 30 });
+  await call(host, `/api/paddock/${m.code}/ring`, { body: {} });
+  await new Promise((resolve) => setTimeout(resolve, 60));
+  alertsLib.sweepAlerts();
+  alertsLib.setAlertTimings({ ring: 45_000 });
+  assert.ok((await alertsOf(teammate)).data.alerts.some((a) => a.kind === "ring" && a.status === "missed"));
+  s = await sync(h.seat, { feedSince: 1 });
+  assert.ok(s.data.feed.some((f) => f.text === "Tom Teammate didn't answer"));
+
+  // People who blocked the caller, or turned call alerts off, aren't rung.
+  await db.query("insert into chat_blocks(user_id, blocked_id) values($1,$2)", [teammate, host]);
+  assert.deepEqual((await call(host, `/api/paddock/${m.code}/ring`, { body: {} })).data.rang, []);
+  await db.query("delete from chat_blocks where user_id=$1", [teammate]);
+  await call(teammate, "/api/notifications/settings", { body: { paddockCalls: false } });
+  assert.equal((await call(teammate, "/api/notifications/settings")).data.settings.paddockCalls, false);
+  assert.deepEqual((await call(host, `/api/paddock/${m.code}/ring`, { body: {} })).data.rang, []);
+  await call(teammate, "/api/notifications/settings", { body: { paddockCalls: true } });
+
+  // Leaving the call stops the ringing.
+  await call(host, `/api/paddock/${m.code}/ring`, { body: {} });
+  await call(null, "/api/paddock/live/leave", { body: { seat: h.seat } });
+  assert.ok((await alertsOf(teammate)).data.alerts.every((a) => a.status !== "active"));
+});
+
+test("adding people from a call rings them; scheduled meetings tell invitees, and when they start", async () => {
+  const r0 = await call(host, "/api/paddock", { body: { title: "Add people" } });
+  const m = r0.data.meeting;
+  const h = await joinAs(host, m.code);
+  assert.equal((await call(stranger, `/api/paddock/${m.code}/invite`, { body: { ids: [extras[3]] } })).status, 403);
+  assert.equal((await call(host, `/api/paddock/${m.code}/invite`, { body: { ids: [] } })).status, 400);
+  let r = await call(host, `/api/paddock/${m.code}/invite`, { body: { ids: [extras[3], crypto.randomUUID()] } });
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.data.rang.map((p) => p.id), [extras[3]]);
+  assert.equal((await alertsOf(extras[3])).data.alerts[0].kind, "ring");
+  // They're on the list now, so they walk straight in.
+  assert.equal((await call(extras[3], `/api/paddock/${m.code}`)).data.canJoin, true);
+  await call(null, "/api/paddock/live/leave", { body: { seat: h.seat } });
+
+  const soon = new Date(Date.now() + 3600_000).toISOString();
+  r = await call(host, "/api/paddock", { body: { title: "Breeze-up plan", scheduledFor: soon, inviteeIds: [extras[4]] } });
+  const planned = r.data.meeting;
+  let a = (await alertsOf(extras[4])).data.alerts;
+  assert.equal(a.length, 1);
+  assert.equal(a[0].kind, "invited");
+  assert.equal(a[0].scheduledFor, planned.scheduledFor);
+  // Adding someone by editing tells only them.
+  await call(host, `/api/paddock/${planned.code}`, { method: "PATCH", body: { inviteeIds: [extras[4], extras[5]] } });
+  assert.equal((await alertsOf(extras[5])).data.alerts[0].kind, "invited");
+  assert.equal((await alertsOf(extras[4])).data.alerts.length, 1);
+  // The host opens it: invitees hear it started (and joining clears it).
+  const opened = await joinAs(host, planned.code);
+  a = (await alertsOf(extras[5])).data.alerts.filter((x) => x.status === "active");
+  assert.deepEqual(a.map((x) => x.kind), ["started"]);
+  const e5 = await joinAs(extras[5], planned.code);
+  assert.ok((await alertsOf(extras[5])).data.alerts.every((x) => x.status !== "active"));
+  await call(null, "/api/paddock/live/leave", { body: { seat: e5.seat } });
+  await call(null, "/api/paddock/live/leave", { body: { seat: opened.seat } });
+  assert.equal((await call(null, "/api/paddock/alerts")).status, 401);
+});

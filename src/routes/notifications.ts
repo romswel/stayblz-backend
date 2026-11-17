@@ -7,7 +7,7 @@ import { isPushEndpoint, pushConfig, pushTest } from "../lib/push";
 /**
  * Notifications (signed in), mounted at /api/notifications. Stayblz Chat is the first thing that notifies.
  *   GET  /settings            your choices + whether alerts-when-closed (Web Push) work on this server
- *   POST /settings            change choices: enabled, chatMessages, chatRequests, previews, sound, prompted
+ *   POST /settings            change choices: enabled, chatMessages, chatRequests, paddockCalls, previews, sound, prompted
  *   POST /push/subscribe      save this device's push subscription (from PushManager.subscribe)
  *   POST /push/unsubscribe    forget this device
  *   POST /push/test           send a test alert to your devices
@@ -33,7 +33,7 @@ router.get(
   }),
 );
 
-const KEYS = ["enabled", "chatMessages", "chatRequests", "previews", "sound", "prompted"];
+const KEYS = ["enabled", "chatMessages", "chatRequests", "paddockCalls", "previews", "sound", "prompted"];
 router.post(
   "/settings",
   asyncRoute(async (req, res) => {

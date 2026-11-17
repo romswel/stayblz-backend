@@ -70,6 +70,16 @@ export interface FeedItem {
   text: string;
   at: number;
 }
+/** What everyone (not just hosts) may do. Hosts and co-hosts can always do all of it. */
+export interface RoomRules {
+  present: boolean;
+  chat: boolean;
+  react: boolean;
+  mic: boolean;
+  cam: boolean;
+}
+export const RULE_KEYS = ["present", "chat", "react", "mic", "cam"] as const;
+export type RuleKey = (typeof RULE_KEYS)[number];
 export interface MeetingInfo {
   id: string;
   code: string;
@@ -90,9 +100,23 @@ interface Room {
   feedSeq: number;
   version: number;
   locked: boolean;
+  rules: RoomRules;
+  /** Shown large for everyone (a host's choice), or null. */
+  spotlight: string | null;
+  /** Stayblz members being rung right now: account id → their name and when ringing stops. */
+  ringing: Map<string, { name: string; until: number }>;
   startedAt: number;
   emptySince: number | null;
 }
+
+// Other modules (incoming-call alerts) hear when people arrive and when a room empties.
+export type RoomEvent = { type: "joined"; meetingId: string; accountId: string } | { type: "empty"; meetingId: string };
+const roomListeners = new Set<(event: RoomEvent) => void>();
+export function onRoomEvent(listener: (event: RoomEvent) => void) {
+  roomListeners.add(listener);
+  return () => void roomListeners.delete(listener);
+}
+const announce = (event: RoomEvent) => roomListeners.forEach((listener) => listener(event));
 
 // Timings. Tests shorten them with setTimings().
 const timings = {
@@ -159,6 +183,9 @@ export function openRoom(info: MeetingInfo): Room {
       feedSeq: 0,
       version: 1,
       locked: false,
+      rules: { present: true, chat: true, react: true, mic: true, cam: true },
+      spotlight: null,
+      ringing: new Map(),
       startedAt: now(),
       emptySince: now(),
     };
@@ -172,7 +199,16 @@ export function updateRoom(info: MeetingInfo) {
   const room = rooms.get(info.id);
   if (!room) return;
   room.info = info;
-  for (const peer of room.peers.values()) peer.role = roleFor(info, peer.accountId);
+  for (const peer of room.peers.values()) {
+    const was = peer.role;
+    peer.role = roleFor(info, peer.accountId);
+    // No longer a co-host: the room's "let everyone" switches apply to them now.
+    if ((was === "host" || was === "cohost") && peer.role !== was && !managing(peer)) {
+      if (!room.rules.mic && peer.state.mic) controlPeer(peer.id, peer, "mute");
+      if (!room.rules.cam && peer.state.cam) controlPeer(peer.id, peer, "stop-cam");
+      if (!room.rules.present && peer.state.screen) controlPeer(peer.id, peer, "stop-screen");
+    }
+  }
   if (!info.guestsAllowed)
     for (const knock of room.knocks.values())
       if (knock.status === "waiting" && !knock.accountId) answerKnock(room, knock, "denied");
@@ -240,6 +276,12 @@ export function join(room: Room, input: JoinInput): JoinResult {
   if (room.locked && role !== "host" && role !== "cohost" && !room.admitted.has(id))
     return { ok: false, code: "locked" };
   if (room.peers.size >= PADDOCK_MAX_PEOPLE) return { ok: false, code: "full" };
+  const start = startState(input.state);
+  if (role === "member" || role === "guest") {
+    if (!room.rules.mic) start.mic = false;
+    if (!room.rules.cam) start.cam = false;
+    if (!room.rules.present) start.screen = false;
+  }
   const peer: Peer = {
     id: input.peerId,
     accountId: input.accountId,
@@ -249,7 +291,7 @@ export function join(room: Room, input: JoinInput): JoinResult {
     joinedAt: now(),
     lastSeen: now(),
     polling: 0,
-    state: startState(input.state),
+    state: start,
     inbox: [],
     nextSeq: 1,
     epoch: randomBytes(6).toString("hex"),
@@ -263,6 +305,10 @@ export function join(room: Room, input: JoinInput): JoinResult {
   room.emptySince = null;
   seats.set(peer.seat, { roomId: room.info.id, peerId: peer.id });
   notice(room, `${peer.name} joined`, peer);
+  if (peer.accountId) {
+    room.ringing.delete(peer.accountId);
+    announce({ type: "joined", meetingId: room.info.id, accountId: peer.accountId });
+  }
   bump(room);
   return { ok: true, seat: peer.seat, peerId: peer.id, role };
 }
@@ -273,12 +319,37 @@ function dropPeer(room: Room, peer: Peer, reason: GoneReason) {
   gone.set(peer.seat, { reason, at: now() });
   wake(peer);
   if (reason !== "ended") notice(room, reason === "removed" ? `${peer.name} was removed` : `${peer.name} left`, peer);
-  if (room.peers.size === 0) room.emptySince = now();
+  if (room.spotlight === peer.id) room.spotlight = null;
+  if (room.peers.size === 0) {
+    room.emptySince = now();
+    room.ringing.clear();
+    announce({ type: "empty", meetingId: room.info.id });
+  }
   bump(room);
 }
 
-function notice(room: Room, text: string, peer: Peer) {
+function notice(room: Room, text: string, peer: { id: string; name: string }) {
   pushFeed(room, { kind: "notice", id: `n${room.feedSeq + 1}`, from: peer.id, name: peer.name, text });
+}
+/** A note from Stayblz itself to everyone in a call ("Ivy declined"). */
+export function roomNotice(meetingId: string, text: string) {
+  const room = rooms.get(meetingId);
+  if (!room || room.peers.size === 0) return;
+  notice(room, text, { id: "stayblz", name: "Stayblz" });
+  bump(room);
+}
+/** Who's being rung for this call (shown in the call as "Ringing…"). */
+export function setRinging(meetingId: string, accountId: string, ring: { name: string; until: number } | null) {
+  const room = rooms.get(meetingId);
+  if (!room) return;
+  if (ring) room.ringing.set(accountId, ring);
+  else if (!room.ringing.delete(accountId)) return;
+  bump(room);
+}
+/** Account ids of the Stayblz members in this call right now. */
+export function accountsIn(meetingId: string): Set<string> {
+  const room = rooms.get(meetingId);
+  return new Set(room ? [...room.peers.values()].map((p) => p.accountId).filter((id): id is string => !!id) : []);
 }
 function pushFeed(room: Room, item: Omit<FeedItem, "seq" | "at">) {
   room.feed.push({ ...item, seq: ++room.feedSeq, at: now() });
@@ -317,12 +388,17 @@ function snapshot(room: Room, peer: Peer, feedSince: number) {
       startedAt: room.startedAt,
       guestsAllowed: room.info.guestsAllowed,
       maxPeople: PADDOCK_MAX_PEOPLE,
+      rules: room.rules,
+      spotlight: room.spotlight,
+      ringing: [...room.ringing.values()].filter((r) => r.until > now()).map((r) => ({ name: r.name, until: r.until })),
     },
     peers: [...room.peers.values()].map((p) => ({
       id: p.id,
       name: p.name,
       role: p.role,
       guest: !p.accountId,
+      // For profile pictures. Only Stayblz members have one.
+      accountId: p.accountId,
       state: p.state,
       joinedAt: p.joinedAt,
     })),
@@ -396,6 +472,12 @@ export function send(found: Seated, body: { state?: unknown; signals?: unknown }
         if (typeof s[key] !== "boolean") return { ok: false, code: "invalid" };
         next[key] = s[key] as boolean;
       }
+    // A host switched this off for everyone: the server keeps it off (others' browsers follow this state).
+    if (!managing(peer)) {
+      if (!room.rules.mic) next.mic = false;
+      if (!room.rules.cam) next.cam = false;
+      if (!room.rules.present) next.screen = false;
+    }
     if (s.hand !== undefined) {
       if (s.hand !== null && typeof s.hand !== "boolean") return { ok: false, code: "invalid" };
       next.hand = s.hand ? (peer.state.hand ?? now()) : null;
@@ -437,6 +519,10 @@ export function send(found: Seated, body: { state?: unknown; signals?: unknown }
   }
   return { ok: true, delivered };
 }
+
+const managing = (peer: Peer) => peer.role === "host" || peer.role === "cohost";
+/** Chat or reactions switched off by a host (hosts and co-hosts can still use them). */
+export const allowed = (found: Seated, rule: "chat" | "react") => managing(found.peer) || found.room.rules[rule];
 
 /** In-call chat: kept only while the room is open. The same `id` twice is stored once. */
 export function chat(found: Seated, id: string, text: string) {
@@ -605,14 +691,42 @@ export function grantAdmission(room: Room, who: { accountId: string | null; gues
   room.admitted.add(identity(who));
 }
 
-/** A host's request to someone's own browser (mute, lower hand, stop presenting). */
-export function control(found: Seated, peerId: unknown, action: "mute" | "lower-hand" | "stop-screen") {
-  const target = typeof peerId === "string" ? found.room.peers.get(peerId) : undefined;
-  if (!target) return false;
+export type ControlAction = "mute" | "lower-hand" | "stop-screen" | "stop-cam";
+function controlPeer(from: string, target: Peer, action: ControlAction) {
   if (action === "mute") target.state = { ...target.state, mic: false };
   if (action === "lower-hand") target.state = { ...target.state, hand: null };
   if (action === "stop-screen") target.state = { ...target.state, screen: false };
-  target.inbox.push({ seq: target.nextSeq++, from: found.peer.id, type: "control", gen: 0, data: { action } });
+  if (action === "stop-cam") target.state = { ...target.state, cam: false };
+  target.inbox.push({ seq: target.nextSeq++, from, type: "control", gen: 0, data: { action } });
+}
+/** A host's request to someone's own browser (mute, lower hand, stop presenting, camera off). */
+export function control(found: Seated, peerId: unknown, action: ControlAction) {
+  const target = typeof peerId === "string" ? found.room.peers.get(peerId) : undefined;
+  if (!target) return false;
+  controlPeer(found.peer.id, target, action);
+  bump(found.room);
+  return true;
+}
+
+/** "Let everyone…" switches. Turning one off also switches it off now for everyone who isn't a host. */
+export function setRule(found: Seated, rule: RuleKey, on: boolean) {
+  const { room } = found;
+  if (room.rules[rule] === on) return;
+  room.rules = { ...room.rules, [rule]: on };
+  if (!on && (rule === "mic" || rule === "cam" || rule === "present")) {
+    const key = rule === "present" ? "screen" : rule;
+    const action: ControlAction = rule === "mic" ? "mute" : rule === "cam" ? "stop-cam" : "stop-screen";
+    for (const peer of room.peers.values()) if (!managing(peer) && peer.state[key]) controlPeer(found.peer.id, peer, action);
+  }
+  const what = { present: "presenting", chat: "chat", react: "reactions", mic: "microphones", cam: "cameras" }[rule];
+  notice(room, `${found.peer.name} turned ${on ? "on" : "off"} ${what} for everyone`, found.peer);
+  bump(room);
+}
+
+/** Show one person large for everyone (or stop, with null). */
+export function setSpotlight(found: Seated, peerId: unknown) {
+  if (peerId !== null && (typeof peerId !== "string" || !found.room.peers.has(peerId))) return false;
+  found.room.spotlight = peerId as string | null;
   bump(found.room);
   return true;
 }
@@ -651,6 +765,7 @@ export function endRoom(meetingId: string) {
     knocks.delete(k.id);
   }
   rooms.delete(meetingId);
+  announce({ type: "empty", meetingId });
 }
 
 // ————— Housekeeping —————

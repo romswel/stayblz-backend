@@ -15,7 +15,9 @@ export interface PushPayload {
   /** Same tag = the phone replaces the earlier alert for that chat instead of stacking them. */
   tag: string;
   url: string;
-  kind: "chat" | "test";
+  kind: "chat" | "test" | "call" | "meeting";
+  /** Paddock: the alert (so "Decline" on the notification can answer it). */
+  alertId?: string;
 }
 interface Target {
   userId?: string;
@@ -156,6 +158,39 @@ export async function pushChatMessage(
         body: !t.previews ? "New message" : data.group ? `${name}: ${summary}` : summary,
       };
     });
+  } catch {
+    return 0;
+  }
+}
+
+/** Paddock alerts (incoming call, meeting started, invited) for people who allow call alerts. Never throws. */
+export async function pushPaddock(
+  alert: { id: string; kind: "ring" | "started" | "invited"; meetingId: string; code: string; title: string; fromName: string; video: boolean; when?: string },
+  targets: { endpoint: string; p256dh: string; auth: string }[],
+) {
+  try {
+    if (!pushConfig() || !targets.length) return 0;
+    const url = `/paddock/${alert.code}`;
+    const payload: PushPayload =
+      alert.kind === "ring"
+        ? {
+            kind: "call",
+            alertId: alert.id,
+            tag: `call-${alert.meetingId}`,
+            url,
+            title: `${alert.fromName} is calling you`,
+            body: `${alert.video ? "Video" : "Voice"} call on Stayblz Paddock · ${clip(alert.title, 80)}`,
+          }
+        : alert.kind === "started"
+          ? { kind: "meeting", tag: `meeting-${alert.meetingId}`, url, title: `${clip(alert.title, 80)} has started`, body: `${alert.fromName} is in the meeting. Tap to join.` }
+          : {
+              kind: "meeting",
+              tag: `meeting-${alert.meetingId}`,
+              url,
+              title: `${alert.fromName} invited you to a meeting`,
+              body: alert.when ? `${clip(alert.title, 80)} · ${alert.when}` : clip(alert.title, 120),
+            };
+    return await deliver(targets, () => payload);
   } catch {
     return 0;
   }
