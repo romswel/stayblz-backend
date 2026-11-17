@@ -6,7 +6,7 @@ process.env.NODE_ENV = "test";
 process.env.ENABLE_PUBLIC_DEMO = "true";
 const { app } = require("../dist/app");
 const auth = require("../dist/middleware/auth");
-const { tvSettings, streamUrl } = require("../dist/lib/tv");
+const { tvSettings, streamUrl, youtubeEmbed } = require("../dist/lib/tv");
 
 const STREAM = "https://video.example.test/live/race.m3u8";
 let server, origin, token;
@@ -22,7 +22,7 @@ after(async () => {
   await new Promise((resolve) => server.close(resolve));
 });
 beforeEach(() => {
-  for (const key of ["TV_ON_AIR", "TV_STREAM_URL", "TV_TITLE", "TV_NEXT_AT"]) delete process.env[key];
+  for (const key of ["TV_ON_AIR", "TV_STREAM_URL", "TV_TITLE", "TV_NEXT_AT", "TV_EMBED_URL"]) delete process.env[key];
 });
 
 async function call(path, signedIn = true) {
@@ -56,7 +56,7 @@ test("live: status names the broadcast but never the stream; playback hands it o
   assert.equal(JSON.stringify(status.data).includes("m3u8"), false);
   const playback = await call("/api/tv/playback");
   assert.equal(playback.status, 200);
-  assert.deepEqual(playback.data, { url: STREAM, title: "Keeneland Race 7" });
+  assert.deepEqual(playback.data, { url: STREAM, title: "Keeneland Race 7", kind: "hls" });
 });
 
 test("the on-air switch without a valid stream is not live", async () => {
@@ -88,4 +88,46 @@ test("stream address rules: https anywhere, http only for localhost outside prod
   assert.equal(streamUrl("http://localhost:8080/a.m3u8", true), null);
   assert.equal(streamUrl("javascript:alert(1)", false), null);
   assert.equal(tvSettings({ TV_TITLE: "x".repeat(300), TV_NEXT_AT: "2099-01-01T00:00:00Z" }).title.length, 120);
+});
+
+test("demo YouTube embed: live with kind embed; the HLS stream wins when both are set", async () => {
+  process.env.TV_ON_AIR = "true";
+  process.env.TV_TITLE = "Los Alamitos";
+  process.env.TV_EMBED_URL = "https://www.youtube.com/watch?v=cJA4RJ5teuw&t=600s";
+  const status = await call("/api/tv/status");
+  assert.deepEqual(status.data, { state: "live", title: "Los Alamitos", startsAt: null });
+  const playback = await call("/api/tv/playback");
+  assert.equal(playback.data.kind, "embed");
+  assert.equal(
+    playback.data.url,
+    "https://www.youtube-nocookie.com/embed/cJA4RJ5teuw?autoplay=1&mute=1&playsinline=1&rel=0&start=600",
+  );
+  process.env.TV_STREAM_URL = STREAM;
+  assert.deepEqual((await call("/api/tv/playback")).data, { url: STREAM, title: "Los Alamitos", kind: "hls" });
+  delete process.env.TV_STREAM_URL;
+  process.env.TV_ON_AIR = "false";
+  assert.equal((await call("/api/tv/status")).data.state, "off_air");
+  assert.equal((await call("/api/tv/playback")).status, 409);
+});
+
+test("YouTube link rules: only YouTube video or channel ids, rebuilt by us", () => {
+  const v = "https://www.youtube-nocookie.com/embed/cJA4RJ5teuw?autoplay=1&mute=1&playsinline=1&rel=0";
+  assert.equal(youtubeEmbed("https://youtu.be/cJA4RJ5teuw"), v);
+  assert.equal(youtubeEmbed("https://www.youtube.com/live/cJA4RJ5teuw?si=abc"), v);
+  assert.equal(youtubeEmbed("https://www.youtube.com/embed/cJA4RJ5teuw"), v);
+  assert.equal(
+    youtubeEmbed("https://www.youtube.com/channel/UCzU39Vjjyv2_SXipboFPAsQ/live"),
+    "https://www.youtube.com/embed/live_stream?autoplay=1&mute=1&playsinline=1&rel=0&channel=UCzU39Vjjyv2_SXipboFPAsQ",
+  );
+  for (const bad of [
+    "",
+    "cJA4RJ5teuw",
+    "http://www.youtube.com/watch?v=cJA4RJ5teuw",
+    "https://evil.test/watch?v=cJA4RJ5teuw",
+    "https://youtube.com.evil.test/watch?v=cJA4RJ5teuw",
+    "https://www.youtube.com/watch?v=bad\"><script>",
+    "https://www.youtube.com/@losalqh",
+    "javascript:alert(1)",
+  ])
+    assert.equal(youtubeEmbed(bad), null, bad);
 });
