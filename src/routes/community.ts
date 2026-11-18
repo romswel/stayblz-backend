@@ -357,17 +357,56 @@ router.patch(
 /* ============================== Members ============================== */
 
 const PEOPLE_PAGE = 30;
+/** Members directory pages (Feeds → Members). */
+const DIRECTORY_PAGE = 15;
+const DIRECTORY_MAX_PAGE = 500;
+/** The community_people RPC returns at most 61 rows per call. */
+const DIRECTORY_CHUNK = 60;
 const SORTS = ["active", "horses", "earnings", "followers", "new"];
+/** Placeholder accounts kept out of the Members list: any name containing the word admin, test or user (any case). */
+const HIDDEN_MEMBER_WORDS = /\b(admin|test|user)\b/i;
+const listedMember = (r: any) => !HIDDEN_MEMBER_WORDS.test(String(r?.name ?? ""));
 
 router.get(
   "/people",
   asyncRoute(async (req, res) => {
-    const offset = Number(req.query.offset ?? 0);
     const sort = typeof req.query.sort === "string" && SORTS.includes(req.query.sort) ? req.query.sort : "active";
+    const query = searchText(req.query.q) || null;
+
+    // Numbered pages of 15, counted after hiding placeholders so every page is full.
+    if (req.query.page !== undefined) {
+      const page = Number(req.query.page);
+      if (!Number.isSafeInteger(page) || page < 1 || page > DIRECTORY_MAX_PAGE) return res.status(400).json({ error: "Invalid page." });
+      const need = page * DIRECTORY_PAGE + 1; // one extra tells us whether a next page exists
+      const kept: any[] = [];
+      for (let raw = 0; kept.length < need && raw <= 10_000; raw += DIRECTORY_CHUNK) {
+        const { data, error } = await supabase.rpc("community_people", {
+          p_viewer: me(req).id,
+          p_query: query,
+          p_sort: sort,
+          p_limit: DIRECTORY_CHUNK,
+          p_offset: raw,
+          p_only: null,
+        });
+        if (error) return unavailable(res, error);
+        const rows = Array.isArray(data) ? data : [];
+        kept.push(...rows.filter(listedMember));
+        if (rows.length < DIRECTORY_CHUNK) break;
+      }
+      const start = (page - 1) * DIRECTORY_PAGE;
+      return res.json({
+        people: kept.slice(start, start + DIRECTORY_PAGE).map(personView),
+        page,
+        hasNext: kept.length > start + DIRECTORY_PAGE,
+      });
+    }
+
+    // Older clients page by raw offset.
+    const offset = Number(req.query.offset ?? 0);
     if (!Number.isSafeInteger(offset) || offset < 0 || offset > 10_000) return res.status(400).json({ error: "Invalid page." });
     const { data, error } = await supabase.rpc("community_people", {
       p_viewer: me(req).id,
-      p_query: searchText(req.query.q) || null,
+      p_query: query,
       p_sort: sort,
       p_limit: PEOPLE_PAGE + 1,
       p_offset: offset,
@@ -376,7 +415,8 @@ router.get(
     if (error) return unavailable(res, error);
     const rows = Array.isArray(data) ? data : [];
     res.json({
-      people: rows.slice(0, PEOPLE_PAGE).map(personView),
+      // Paging still counts the raw rows, so hiding placeholders never skips anyone.
+      people: rows.slice(0, PEOPLE_PAGE).filter(listedMember).map(personView),
       nextOffset: rows.length > PEOPLE_PAGE ? offset + PEOPLE_PAGE : null,
     });
   }),
