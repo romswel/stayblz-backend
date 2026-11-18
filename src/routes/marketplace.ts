@@ -50,15 +50,15 @@ router.use((req, res, next) => {
 
 const PAGE = 60;
 const COLUMNS =
-  "id,seller_id,seller_name,name,price,breed,discipline,horse_type,gender,color,age,height_in,location,created_at,updated_at";
+  "id,seller_id,seller_name,name,price,breed,discipline,horse_type,gender,color,age,height_in,location,description,created_at,updated_at";
 const FILE_COLUMNS =
   "id,listing_id,seller_id,kind,storage_key,poster_key,content_type,size_bytes,width,height,duration_seconds,file_name,position,created_at";
 const user = (req: Request) => (req as AuthenticatedRequest).user;
 /** The photo/video table or its columns are missing: the marketplace migrations haven't been run. */
 const needsMigration = (error?: { code?: string; message?: string } | null) =>
-  !!error && ["PGRST205", "PGRST204", "42P01", "42703"].includes(error.code ?? "") && /marketplace_files|poster_key|duration_seconds/.test(error.message ?? "");
+  !!error && ["PGRST205", "PGRST204", "42P01", "42703"].includes(error.code ?? "") && /marketplace_files|poster_key|duration_seconds|description/.test(error.message ?? "");
 const MIGRATION_HELP =
-  "Photo and video uploads aren't set up yet: run migrations 202611150002_marketplace_media.sql and 202611150003_marketplace_video.sql in the Supabase SQL Editor.";
+  "The marketplace database isn't up to date: run migrations 202611150002_marketplace_media.sql, 202611150003_marketplace_video.sql and 202611190002_marketplace_description.sql in the Supabase SQL Editor.";
 const unavailable = (res: Response, error?: { code?: string; message?: string } | null) => {
   if (error) console.error(`[marketplace] ${res.req?.method} ${res.req?.originalUrl} failed: ${error.code ?? "?"} ${error.message ?? ""}`);
   if (needsMigration(error)) {
@@ -86,7 +86,7 @@ const notFound = (res: Response) => res.status(404).json({ error: "Listing not f
 const badListing = (res: Response) =>
   res.status(400).json({
     error:
-      "Check the listing: name, price, breed, discipline, type, gender, colour, age, height and location are all required.",
+      "Check the listing: name, price, breed, discipline, type, gender, colour, age, height and location are all required, and the description can be up to 2,000 characters.",
   });
 
 const perUser = (req: Request) => (req as Partial<AuthenticatedRequest>).user?.id ?? null;
@@ -154,7 +154,10 @@ function view(row: any, viewer: string, media: Media = noMedia, full = false) {
     photoCount: media.media.filter((f) => f.kind === "photo").length,
     videoCount: media.media.filter((f) => f.kind === "video").length,
     documentCount: media.documents.length,
-    ...(full ? { media: media.media.map(mediaView), documents: media.documents.map(documentView) } : {}),
+    // The description, photos and documents are only sent for one listing, not for the cards.
+    ...(full
+      ? { description: row.description ?? "", media: media.media.map(mediaView), documents: media.documents.map(documentView) }
+      : {}),
   };
 }
 
