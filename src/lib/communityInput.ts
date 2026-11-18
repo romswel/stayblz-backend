@@ -120,6 +120,16 @@ export function postInput(body: Record<string, unknown>) {
   };
 }
 
+/** Sharing one of your horses to the Feed: an optional caption and who sees the post. */
+export function horseShareInput(body: Record<string, unknown>) {
+  return {
+    body: clean(body.body, 2000, "caption", 0, true),
+    visibility: oneOf(body.visibility, POST_VISIBILITY, "audience", "members"),
+    /** Switch a private horse to "Everyone" first (the owner said yes in the share dialog). */
+    makeVisible: body.makeVisible === true,
+  };
+}
+
 export function postEditInput(body: Record<string, unknown>) {
   return { body: clean(body.body, 2000, "post", 0, true) };
 }
