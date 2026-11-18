@@ -25,6 +25,7 @@ export const LIMITS = {
   price: [1, 100_000_000],
   age: [0, 40],
   heightIn: [24, 80],
+  description: 2000,
 } as const;
 
 const invalid = () => new Error("invalid_input");
@@ -38,6 +39,20 @@ function line(value: unknown, min: number, max: number) {
   const clean = value.replace(/\s+/g, " ").trim();
   // Plain text only: no markup characters in names or places.
   if (clean.length < min || clean.length > max || /[<>]/.test(clean)) throw invalid();
+  return clean;
+}
+/** Free text that keeps its line breaks: optional, trimmed, at most `max` characters. */
+function paragraph(value: unknown, max: number) {
+  if (value === null) return "";
+  if (typeof value !== "string") throw invalid();
+  const clean = value
+    .replace(/\r\n?/g, "\n")
+    // Control characters (except line breaks and tabs) have no place in a description.
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "")
+    .replace(/[ \t]+$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  if (clean.length > max) throw invalid();
   return clean;
 }
 function whole(value: unknown, [min, max]: readonly [number, number]) {
@@ -59,6 +74,8 @@ export function listingInput(body: any) {
     age: whole(body?.age, LIMITS.age),
     height_in: whole(body?.heightIn, LIMITS.heightIn),
     location: line(body?.location, 2, 80),
+    // Left out by older clients: an edit from them keeps the saved description.
+    ...(body?.description === undefined ? {} : { description: paragraph(body.description, LIMITS.description) }),
   };
 }
 

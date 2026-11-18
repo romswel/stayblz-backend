@@ -134,6 +134,29 @@ test("filters cover every field except the name", async () => {
     assert.equal((await call(bob, "/api/marketplace/listings?" + bad)).status, 400);
 });
 
+test("descriptions are optional, keep line breaks, and survive edits that leave them out", async () => {
+  let r = await call(alice, "/api/marketplace/listings", {
+    body: horse({ name: "Described Horse", description: "  Sound and sane.\r\n\n\n\nGreat on trails.  " }),
+  });
+  assert.equal(r.status, 201);
+  const id = r.data.listing.id;
+  assert.equal(r.data.listing.description, "Sound and sane.\n\nGreat on trails.");
+  r = await call(bob, "/api/marketplace/listings/" + id);
+  assert.equal(r.data.listing.description, "Sound and sane.\n\nGreat on trails.");
+  // Cards don't carry it.
+  r = await call(bob, "/api/marketplace/listings");
+  assert.equal("description" in r.data.listings[0], false);
+  // An older client that doesn't send it keeps the saved text; an empty string clears it.
+  r = await call(alice, "/api/marketplace/listings/" + id, { method: "PATCH", body: horse({ name: "Described Horse" }) });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.listing.description, "Sound and sane.\n\nGreat on trails.");
+  r = await call(alice, "/api/marketplace/listings/" + id, { method: "PATCH", body: horse({ name: "Described Horse", description: "" }) });
+  assert.equal(r.data.listing.description, "");
+  for (const bad of ["x".repeat(2001), 42])
+    assert.equal((await call(alice, "/api/marketplace/listings", { body: horse({ description: bad }) })).status, 400);
+  assert.equal((await call(alice, "/api/marketplace/listings/" + id + "/remove", { method: "POST" })).status, 200);
+});
+
 test("only the seller edits; the seller or an admin removes", async () => {
   const path = "/api/marketplace/listings/" + aliceListing.id;
   assert.equal((await call(bob, path, { method: "PATCH", body: horse({ price: 1 }) })).status, 404);
