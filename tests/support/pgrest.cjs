@@ -222,6 +222,7 @@ const MIGRATIONS = [
   "202611170002_notifications.sql",
   "202611170003_paddock_alerts.sql",
   "202611180001_update_reactions.sql",
+  "202611190001_horse_share.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */

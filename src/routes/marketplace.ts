@@ -5,6 +5,7 @@ import { isUuid } from "../middleware/stable";
 import { asyncRoute } from "../middleware/asyncRoute";
 import { authLimit } from "../middleware/authLimits";
 import { supabase } from "../lib/supabase";
+import { peek } from "../lib/streamPeek";
 import { roleRank } from "../lib/accounts";
 import { listingFilters, listingInput, mediaInput, MediaInputError } from "../lib/marketplaceInput";
 import {
@@ -531,30 +532,6 @@ let bufferedVideoUploads = 0;
 
 const dim = (v: unknown) => (typeof v === "string" && /^\d{1,5}$/.test(v) && Number(v) > 0 ? Number(v) : null);
 
-/** Reads the first bytes of a request (to check the file type) and returns a stream of the whole body. */
-async function peek(req: Request, bytes: number): Promise<{ head: Buffer; body: Readable }> {
-  const iterator = (req as Readable)[Symbol.asyncIterator]() as AsyncIterator<Buffer>;
-  const chunks: Buffer[] = [];
-  let have = 0;
-  while (have < bytes) {
-    const { value, done } = await iterator.next();
-    if (done) break;
-    chunks.push(value);
-    have += value.length;
-  }
-  const head = Buffer.concat(chunks);
-  const body = Readable.from(
-    (async function* () {
-      if (head.length) yield head;
-      for (;;) {
-        const { value, done } = await iterator.next();
-        if (done) return;
-        yield value;
-      }
-    })(),
-  );
-  return { head, body };
-}
 
 /**
  * POST /uploads?kind=video&duration=…&width=…&height=…   (body: the video, with Content-Length)

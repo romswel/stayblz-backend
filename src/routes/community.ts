@@ -1,5 +1,8 @@
 import express, { Router, type NextFunction, type Request, type Response } from "express";
 import { randomUUID } from "node:crypto";
+import { Transform } from "node:stream";
+import { peek } from "../lib/streamPeek";
+import { StorageError } from "../lib/r2Storage";
 import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { asyncRoute } from "../middleware/asyncRoute";
 import { authLimit } from "../middleware/authLimits";
@@ -10,6 +13,7 @@ import {
   InputError,
   commentInput,
   horseInput,
+  horseShareInput,
   postEditInput,
   postInput,
   readCursor,
@@ -20,9 +24,14 @@ import {
 import {
   IMAGE_TYPES,
   MAX_HORSE_IMAGES,
+  MAX_HORSE_VIDEOS,
   MAX_IMAGE_BYTES,
   MAX_PENDING_POST_IMAGES,
+  MAX_POSTER_BYTES,
+  MAX_VIDEO_SECONDS,
+  VIDEO_TYPES,
   communityStorage,
+  communityVideos,
 } from "../lib/communityStorage";
 
 /**
@@ -173,7 +182,17 @@ function recordView(r: any, showEarnings: boolean) {
   };
 }
 
-const imageView = (i: any) => ({ id: i.id, width: i.width, height: i.height, caption: i.caption ?? "", position: i.position });
+const IMAGE_COLUMNS = "id,kind,width,height,caption,position,duration_seconds,poster_path";
+const imageView = (i: any) => ({
+  id: i.id,
+  kind: i.kind === "video" ? "video" : "photo",
+  width: i.width,
+  height: i.height,
+  caption: i.caption ?? "",
+  position: i.position,
+  durationSeconds: i.kind === "video" ? (i.duration_seconds ?? null) : null,
+  hasPoster: !!i.poster_path,
+});
 
 /* ============================== Visibility helpers ============================== */
 
@@ -567,7 +586,7 @@ router.get(
     const showEarnings = mine || ctx.showEarnings;
     const [stats, images, records, owner] = await Promise.all([
       loadStats([horse.id]),
-      supabase.from("owner_horse_images").select("id,width,height,caption,position").eq("horse_id", horse.id).order("position").order("created_at"),
+      supabase.from("owner_horse_images").select(IMAGE_COLUMNS).eq("horse_id", horse.id).order("position").order("created_at"),
       supabase
         .from("owner_horse_records")
         .select("id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes")
@@ -665,11 +684,11 @@ router.post(
     const owner = me(req).id;
     const horse = await ownHorse(req.params.id, owner);
     if (!horse) return notFound(res, "That horse");
-    const { data: images, error: imagesError } = await supabase.from("owner_horse_images").select("path").eq("horse_id", horse.id);
+    const { data: images, error: imagesError } = await supabase.from("owner_horse_images").select("path,poster_path").eq("horse_id", horse.id);
     if (imagesError) return unavailable(res, imagesError);
     const { error } = await supabase.from("owner_horses").delete().eq("id", horse.id).eq("owner_id", owner);
     if (error) return unavailable(res, error);
-    await communityStorage.remove((images ?? []).map((i) => i.path)).catch(() => undefined);
+    await communityStorage.remove((images ?? []).flatMap((i) => [i.path, i.poster_path]).filter(Boolean)).catch(() => undefined);
     res.json({ ok: true });
   }),
 );
@@ -689,7 +708,8 @@ router.post(
     const { count, error: countError } = await supabase
       .from("owner_horse_images")
       .select("id", { count: "exact", head: true })
-      .eq("horse_id", horse.id);
+      .eq("horse_id", horse.id)
+      .eq("kind", "photo");
     if (countError) return unavailable(res, countError);
     if ((count ?? 0) >= MAX_HORSE_IMAGES)
       return res.status(409).json({ error: `A horse can have up to ${MAX_HORSE_IMAGES} photos. Remove one first.` });
@@ -711,9 +731,9 @@ router.post(
         width: image.width,
         height: image.height,
         caption,
-        position: count ?? 0,
+        position: await nextPosition(horse.id),
       })
-      .select("id,width,height,caption,position")
+      .select(IMAGE_COLUMNS)
       .single();
     if (error || !data) {
       await communityStorage.remove([path]).catch(() => undefined);
@@ -736,17 +756,18 @@ router.post(
       .delete()
       .eq("id", req.params.image)
       .eq("horse_id", horse.id)
-      .select("path")
+      .select("path,poster_path")
       .maybeSingle();
     if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That photo");
-    await communityStorage.remove([data.path]).catch(() => undefined);
+    await communityStorage.remove([data.path, data.poster_path].filter(Boolean)).catch(() => undefined);
     let cover = horse.cover_image_id === req.params.image ? null : horse.cover_image_id;
     if (!cover) {
       const { data: first } = await supabase
         .from("owner_horse_images")
         .select("id")
         .eq("horse_id", horse.id)
+        .eq("kind", "photo")
         .order("position")
         .limit(1)
         .maybeSingle();
@@ -761,7 +782,7 @@ router.post(
   "/horses/:id/images/order",
   asyncRoute(async (req, res) => {
     const ids = req.body?.ids;
-    if (!Array.isArray(ids) || !ids.length || ids.length > MAX_HORSE_IMAGES || !ids.every(isUuid))
+    if (!Array.isArray(ids) || !ids.length || ids.length > MAX_HORSE_IMAGES + MAX_HORSE_VIDEOS || !ids.every(isUuid))
       return res.status(400).json({ error: "That order couldn't be saved." });
     const owner = me(req).id;
     const horse = await ownHorse(req.params.id, owner);
@@ -784,16 +805,242 @@ router.post(
     const owner = me(req).id;
     const { data: image, error: imageError } = await supabase
       .from("owner_horse_images")
-      .select("id")
+      .select("id,kind")
       .eq("id", imageId)
       .eq("horse_id", req.params.id)
       .eq("owner_id", owner)
       .maybeSingle();
     if (imageError) return unavailable(res, imageError);
     if (!image) return notFound(res, "That photo");
+    if (image.kind === "video") return res.status(400).json({ error: "Choose a photo for the main picture." });
     const { error } = await supabase.from("owner_horses").update({ cover_image_id: imageId }).eq("id", req.params.id).eq("owner_id", owner);
     if (error) return unavailable(res, error);
     res.json({ coverImageId: imageId });
+  }),
+);
+
+/** New photos and videos go after the horse's existing ones. */
+async function nextPosition(horseId: string) {
+  const { data } = await supabase
+    .from("owner_horse_images")
+    .select("position")
+    .eq("horse_id", horseId)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data ? Number(data.position) + 1 : 0;
+}
+
+/* ----- Horse videos ----- */
+
+const whole = (v: unknown) => (typeof v === "string" && /^\d{1,5}$/.test(v) && Number(v) > 0 ? Number(v) : null);
+/** Without R2 a video is read into memory before it goes to Supabase, so only a couple at once. */
+let bufferedVideoUploads = 0;
+const MAX_BUFFERED_VIDEO_UPLOADS = 2;
+
+/**
+ * POST /horses/:id/videos?duration=…&width=…&height=…   (body: the video, with Content-Length)
+ * MP4 / MOV / WebM, up to 100 MB (50 MB while files are kept in Supabase) and 3 minutes; 3 per horse.
+ */
+router.post(
+  "/horses/:id/videos",
+  uploadLimit,
+  asyncRoute(async (req, res) => {
+    const owner = me(req).id;
+    const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+    const spec = VIDEO_TYPES[type];
+    const drop = () => req.resume();
+    if (!spec) {
+      drop();
+      return res.status(415).json({ error: "Videos must be MP4, MOV or WebM.", code: "file_type" });
+    }
+    const length = Number(req.headers["content-length"]);
+    if (!Number.isSafeInteger(length) || length <= 0) {
+      drop();
+      return res.status(411).json({ error: "That video couldn't be read." });
+    }
+    const max = communityVideos.maxBytes();
+    if (length > max) {
+      drop();
+      return res.status(413).json({ error: `Videos can be up to ${Math.round(max / 1024 / 1024)} MB.`, code: "file_too_large" });
+    }
+    const duration = whole(req.query.duration);
+    if (duration !== null && duration > MAX_VIDEO_SECONDS) {
+      drop();
+      return res.status(400).json({ error: "Videos can be up to 3 minutes long.", code: "too_long" });
+    }
+    const horse = await ownHorse(req.params.id, owner);
+    if (!horse) {
+      drop();
+      return notFound(res, "That horse");
+    }
+    const { count, error: countError } = await supabase
+      .from("owner_horse_images")
+      .select("id", { count: "exact", head: true })
+      .eq("horse_id", horse.id)
+      .eq("kind", "video");
+    if (countError) {
+      drop();
+      return unavailable(res, countError);
+    }
+    if ((count ?? 0) >= MAX_HORSE_VIDEOS) {
+      drop();
+      return res.status(409).json({ error: `A horse can have up to ${MAX_HORSE_VIDEOS} videos. Remove one first.` });
+    }
+    const buffered = communityVideos.backend() === "supabase";
+    if (buffered) {
+      if (bufferedVideoUploads >= MAX_BUFFERED_VIDEO_UPLOADS) {
+        drop();
+        return res.status(503).json({ error: "Other videos are uploading right now. Try again in a minute." });
+      }
+      bufferedVideoUploads++;
+      let released = false;
+      const release = () => {
+        if (!released) {
+          released = true;
+          bufferedVideoUploads--;
+        }
+      };
+      res.on("finish", release);
+      res.on("close", release);
+    }
+
+    const { head, body } = await peek(req, 16);
+    if (!spec.looksRight(head)) {
+      drop();
+      return res.status(415).json({ error: "That file doesn't look like the type of video it claims to be.", code: "file_type" });
+    }
+    // Stop at the declared length: a body that runs longer is cut off and the upload fails.
+    let seen = 0;
+    const limited = body.pipe(
+      new Transform({
+        transform(chunk: Buffer, _enc, done) {
+          seen += chunk.length;
+          if (seen > length) return done(new Error("too_long"));
+          done(null, chunk);
+        },
+      }),
+    );
+    const path = `horses/${owner}/${horse.id}/${randomUUID()}.${spec.extension}`;
+    try {
+      await communityVideos.putStream(path, limited, length, type);
+    } catch (e) {
+      drop();
+      const tooBig = e instanceof StorageError && e.code === "too_large";
+      return res
+        .status(tooBig ? 413 : 503)
+        .json({ error: tooBig ? "That video is too large." : "Video storage is busy. Try again in a moment." });
+    }
+    const { data, error } = await supabase
+      .from("owner_horse_images")
+      .insert({
+        horse_id: horse.id,
+        owner_id: owner,
+        kind: "video",
+        path,
+        content_type: type,
+        size_bytes: length,
+        width: whole(req.query.width),
+        height: whole(req.query.height),
+        duration_seconds: duration,
+        position: await nextPosition(horse.id),
+      })
+      .select(IMAGE_COLUMNS)
+      .single();
+    if (error || !data) {
+      await communityStorage.remove([path]).catch(() => undefined);
+      return unavailable(res, error);
+    }
+    res.status(201).json({ image: imageView(data), coverImageId: horse.cover_image_id });
+  }),
+);
+
+/** POST /horses/:id/images/:image/poster   (body: a JPEG frame from the video, captured in the browser) */
+router.post(
+  "/horses/:id/images/:image/poster",
+  uploadLimit,
+  readImage,
+  asyncRoute(async (req, res) => {
+    if (!isUuid(req.params.image)) return notFound(res, "That video");
+    const owner = me(req).id;
+    const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+    const file = req.body;
+    if (type !== "image/jpeg" || !Buffer.isBuffer(file) || !IMAGE_TYPES["image/jpeg"](file))
+      return res.status(415).json({ error: "The video's cover frame must be a JPG." });
+    if (file.length > MAX_POSTER_BYTES) return res.status(413).json({ error: "That cover frame is too large." });
+    const { data: video, error } = await supabase
+      .from("owner_horse_images")
+      .select("id,kind,path,poster_path")
+      .eq("id", req.params.image)
+      .eq("horse_id", req.params.id)
+      .eq("owner_id", owner)
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!video || video.kind !== "video") return notFound(res, "That video");
+    const path = `${video.path}.poster-${randomUUID().slice(0, 8)}.jpg`;
+    try {
+      await communityStorage.upload(path, file, "image/jpeg");
+    } catch {
+      return res.status(503).json({ error: "Photo storage is busy. Try again in a moment." });
+    }
+    const { data, error: saveError } = await supabase
+      .from("owner_horse_images")
+      .update({ poster_path: path })
+      .eq("id", video.id)
+      .eq("owner_id", owner)
+      .select(IMAGE_COLUMNS)
+      .single();
+    if (saveError || !data) {
+      await communityStorage.remove([path]).catch(() => undefined);
+      return unavailable(res, saveError);
+    }
+    if (video.poster_path) await communityStorage.remove([video.poster_path]).catch(() => undefined);
+    res.json({ image: imageView(data) });
+  }),
+);
+
+/* ----- Share a horse to the Feed ----- */
+
+/**
+ * POST /horses/:id/share  { body?, visibility?: "members" | "followers", makeVisible?: true }
+ * Posts the owner's horse to the Feed. The post shows the horse's current photos and videos.
+ * A private horse can't be shared unless the owner agrees to make it visible to everyone
+ * (makeVisible); a followers-only horse is always shared to followers.
+ */
+router.post(
+  "/horses/:id/share",
+  postLimit,
+  asyncRoute(async (req, res) => {
+    let input;
+    try {
+      input = horseShareInput(req.body ?? {});
+    } catch (error) {
+      return bad(res, error);
+    }
+    const owner = me(req).id;
+    const horse = await ownHorse(req.params.id, owner);
+    if (!horse) return notFound(res, "That horse");
+    let audience = await shareAudience(owner, horse.visibility);
+    if (!audience) {
+      if (!input.makeVisible)
+        return res.status(409).json({ error: "Only you can see this horse. Make it visible to share it.", code: "horse_private" });
+      const { error } = await supabase
+        .from("owner_horses")
+        .update({ visibility: "members", updated_at: new Date().toISOString() })
+        .eq("id", horse.id)
+        .eq("owner_id", owner);
+      if (error) return unavailable(res, error);
+      audience = "members";
+    }
+    const visibility = audience === "followers" ? "followers" : input.visibility;
+    const { data: post, error } = await supabase
+      .from("community_posts")
+      .insert({ author_id: owner, kind: "horse_share", body: input.body, horse_id: horse.id, visibility })
+      .select("id")
+      .single();
+    if (error || !post) return unavailable(res, error);
+    const view = await visiblePost(owner, post.id).catch(() => null);
+    res.status(201).json({ post: view });
   }),
 );
 
@@ -1319,26 +1566,69 @@ async function sendImage(res: Response, path: string, type: string) {
   res.end(file);
 }
 
+/** A horse photo or video row, when this viewer may see the horse (answers 404/503 itself otherwise). */
+async function visibleHorseMedia(req: Request, res: Response) {
+  const viewer = me(req).id;
+  const { data: image, error } = await supabase
+    .from("owner_horse_images")
+    .select("path,kind,content_type,size_bytes,poster_path,horse_id,owner_id")
+    .eq("id", req.params.image)
+    .maybeSingle();
+  if (error) return void unavailable(res, error);
+  if (!image) return void notFound(res, "That photo");
+  const { data: horse, error: horseError } = await supabase.from("owner_horses").select("owner_id,visibility").eq("id", image.horse_id).maybeSingle();
+  if (horseError) return void unavailable(res, horseError);
+  if (!horse) return void notFound(res, "That photo");
+  if (viewer !== horse.owner_id) {
+    if (!(await accountActive(horse.owner_id))) return void notFound(res, "That photo");
+    const ctx = await ownerContext(viewer, horse.owner_id);
+    if (!canSeeHorse(viewer, horse, ctx)) return void notFound(res, "That photo");
+  }
+  return image;
+}
+
+/** GET /media/horse/:image — a horse photo, or a video streamed in parts (Range) so it can start and seek quickly. */
 router.get(
   "/media/horse/:image",
   asyncRoute(async (req, res) => {
-    const viewer = me(req).id;
-    const { data: image, error } = await supabase
-      .from("owner_horse_images")
-      .select("path,content_type,horse_id,owner_id")
-      .eq("id", req.params.image)
-      .maybeSingle();
-    if (error) return unavailable(res, error);
-    if (!image) return notFound(res, "That photo");
-    const { data: horse, error: horseError } = await supabase.from("owner_horses").select("owner_id,visibility").eq("id", image.horse_id).maybeSingle();
-    if (horseError) return unavailable(res, horseError);
-    if (!horse) return notFound(res, "That photo");
-    if (viewer !== horse.owner_id) {
-      if (!(await accountActive(horse.owner_id))) return notFound(res, "That photo");
-      const ctx = await ownerContext(viewer, horse.owner_id);
-      if (!canSeeHorse(viewer, horse, ctx)) return notFound(res, "That photo");
+    const image = await visibleHorseMedia(req, res);
+    if (!image) return;
+    if (image.kind !== "video") return sendImage(res, image.path, image.content_type);
+    const range = typeof req.headers.range === "string" ? req.headers.range : undefined;
+    let file;
+    try {
+      file = await communityVideos.open(image.path, range);
+    } catch (e) {
+      if ((e as Error).message === "range_not_satisfiable") {
+        res.setHeader("Content-Range", `bytes */${image.size_bytes}`);
+        return res.status(416).end();
+      }
+      if (e instanceof StorageError && e.code === "not_found") return notFound(res, "That video");
+      return res.status(503).json({ error: "Video storage is busy. Try again in a moment." });
     }
-    await sendImage(res, image.path, image.content_type);
+    res.status(file.partial ? 206 : 200);
+    res.setHeader("Content-Type", VIDEO_TYPES[image.content_type] ? image.content_type : "application/octet-stream");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Accept-Ranges", "bytes");
+    res.setHeader("Content-Disposition", "inline");
+    res.setHeader("Cache-Control", "private, max-age=600");
+    if (file.size !== null) res.setHeader("Content-Length", String(file.size));
+    if (file.partial && file.contentRange) res.setHeader("Content-Range", file.contentRange);
+    // Stop reading from storage as soon as the viewer leaves or skips ahead.
+    res.on("close", () => file.stream.destroy());
+    file.stream.on("error", () => res.destroy());
+    file.stream.pipe(res);
+  }),
+);
+
+/** GET /media/horse/:image/poster — a horse video's cover frame. */
+router.get(
+  "/media/horse/:image/poster",
+  asyncRoute(async (req, res) => {
+    const image = await visibleHorseMedia(req, res);
+    if (!image) return;
+    if (image.kind !== "video" || !image.poster_path) return notFound(res, "That picture");
+    await sendImage(res, image.poster_path, "image/jpeg");
   }),
 );
 
