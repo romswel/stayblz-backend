@@ -34,8 +34,8 @@ const text = (value: unknown, max: number, { required = false, multiline = false
   return cleaned;
 };
 
-/** Addresses under /updates/ that belong to app pages, not posts. */
-export const RESERVED_SLUGS = ["manage"];
+/** Addresses under /updates/ that belong to app pages or API routes, not posts. */
+export const RESERVED_SLUGS = ["manage", "reactions"];
 
 export const slugify =(value: string) =>
   value
@@ -83,7 +83,7 @@ export function updateInput(body: unknown): { error: string } | { value: UpdateI
   const slug = input.slug === undefined || input.slug === "" ? slugify(title) : input.slug;
   if (typeof slug !== "string" || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > 80)
     return { error: "The web address can use lowercase letters, numbers and single dashes (up to 80)." };
-  // "/updates/manage" is the admin page in the app, so a post can't use that address.
+  // "/updates/manage" is the admin page in the app and "/api/updates/reactions" an API route, so posts can't use them.
   if (RESERVED_SLUGS.includes(slug))
     return { error: `The web address "${slug}" is used by the site. Choose another one.` };
   let publishedAt: string | undefined;
