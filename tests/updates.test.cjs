@@ -147,6 +147,8 @@ test("posts are validated, editing keeps the date, and changes are audited", asy
     post({ slug: "Bad Slug" }),
     post({ slug: "manage" }),
     post({ slug: "", title: "Manage" }),
+    post({ slug: "reactions" }),
+    post({ slug: "", title: "Reactions" }),
     post({ summary: "", body: "", items: [] }),
   ])
     assert.equal((await call(admin, "/api/admin/updates", { body: bad })).status, 400, JSON.stringify(bad).slice(0, 60));
@@ -190,4 +192,51 @@ test("the release script can publish without an admin session; readers never can
     "select has_table_privilege('anon','public.site_updates','select') a, has_table_privilege('authenticated','public.site_updates','select') b, has_table_privilege('service_role','public.site_updates','insert') c",
   );
   assert.deepEqual(grants.rows[0], { a: false, b: false, c: false });
+});
+
+test("signed-in readers react to posts; everyone who can read a post sees the counts", async () => {
+  const slug = "reaction-post";
+  assert.equal((await call(admin, "/api/admin/updates", { body: post({ title: "Reaction post" }) })).status, 201);
+  assert.equal(
+    (await call(admin, "/api/admin/updates", { body: post({ title: "Members reaction", audience: "members" }) })).status,
+    201,
+  );
+  // Guests can read counts but not react.
+  assert.equal((await call(null, `/api/updates/${slug}/reactions`, { body: { reaction: "like", on: true } })).status, 401);
+  const like = await call(customer, `/api/updates/${slug}/reactions`, { body: { reaction: "like", on: true } });
+  assert.equal(like.status, 200);
+  assert.deepEqual(like.data.reactions, { counts: { like: 1 }, mine: ["like"] });
+  // Saying it twice changes nothing; a second person adds to the count.
+  await call(customer, `/api/updates/${slug}/reactions`, { body: { reaction: "like", on: true } });
+  const both = await call(admin, `/api/updates/${slug}/reactions`, { body: { reaction: "like", on: true } });
+  assert.deepEqual(both.data.reactions.counts, { like: 2 });
+  await call(admin, `/api/updates/${slug}/reactions`, { body: { reaction: "horse", on: true } });
+  const guest = await call(null, `/api/updates/reactions?slugs=${slug},members-reaction`);
+  assert.equal(guest.status, 200);
+  assert.deepEqual(Object.keys(guest.data.reactions), [slug], "members-only posts stay hidden from guests");
+  assert.deepEqual(guest.data.reactions[slug], { counts: { like: 2, horse: 1 }, mine: [] });
+  const mine = await call(customer, `/api/updates/reactions?slugs=${slug},members-reaction`);
+  assert.deepEqual(mine.data.reactions[slug].mine, ["like"]);
+  assert.deepEqual(mine.data.reactions["members-reaction"], { counts: {}, mine: [] });
+  // Taking a reaction back.
+  const undo = await call(customer, `/api/updates/${slug}/reactions`, { body: { reaction: "like", on: false } });
+  assert.deepEqual(undo.data.reactions, { counts: { like: 1, horse: 1 }, mine: [] });
+  // Bad input, unknown or unpublished posts.
+  for (const body of [{ reaction: "angry", on: true }, { reaction: "like" }, { reaction: "like", on: "yes" }])
+    assert.equal((await call(customer, `/api/updates/${slug}/reactions`, { body })).status, 400);
+  assert.equal((await call(customer, "/api/updates/no-such-post/reactions", { body: { reaction: "like", on: true } })).status, 404);
+  assert.equal((await call(admin, "/api/admin/updates", { body: post({ title: "Quiet draft", status: "draft" }) })).status, 201);
+  assert.equal((await call(customer, "/api/updates/quiet-draft/reactions", { body: { reaction: "like", on: true } })).status, 404);
+  assert.equal((await call(null, "/api/updates/reactions?slugs=Bad_Slug")).status, 400);
+  const many = Array.from({ length: 31 }, (_, i) => `post-${i}`).join(",");
+  assert.equal((await call(null, `/api/updates/reactions?slugs=${many}`)).status, 400);
+  // A suspended account can't react.
+  await db.query("update public.accounts set status = 'suspended' where id = $1", [customer]);
+  const suspended = await call(customer, `/api/updates/${slug}/reactions`, { body: { reaction: "love", on: true } });
+  assert.notEqual(suspended.status, 200);
+  await db.query("update public.accounts set status = 'active' where id = $1", [customer]);
+  // Deleting the post removes its reactions.
+  const id = (await call(admin, "/api/admin/updates")).data.updates.find((u) => u.slug === slug).id;
+  await call(admin, `/api/admin/updates/${id}`, { method: "DELETE" });
+  assert.equal((await db.query("select count(*)::int as n from public.site_update_reactions")).rows[0].n, 0);
 });
