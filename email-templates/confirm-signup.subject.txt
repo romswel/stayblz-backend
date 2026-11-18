@@ -1,1 +1,1 @@
-Your Stayblz code: {{ .Token }}
+Verify your email for Stayblz

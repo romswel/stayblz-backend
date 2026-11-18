@@ -5,6 +5,7 @@ import { asyncRoute } from "../middleware/asyncRoute";
 import { supabase } from "../lib/supabase";
 import { scope, participantIds } from "../lib/workspace";
 import { chatError, chatRoutes, loadThread } from "./chat";
+import { notifyChat } from "../lib/chatAlerts";
 
 /** Team chats inside the selected stable (X-Stayblz-Stable). Only teammates can be added. */
 const router = Router();
@@ -72,6 +73,7 @@ router.post(
     const thread = await loadThread(req, "team", data.id);
     if (thread.error) return chatError(res, thread.error);
     res.status(201).json(thread.data);
+    if (members.length) void notifyChat("team", data.id, user.id, { type: "group_added", ids: members });
   }),
 );
 

@@ -262,6 +262,8 @@ test("notification settings: off by default, saved per account, checked input", 
     enabled: false,
     chatMessages: true,
     chatRequests: true,
+    chatMentions: true,
+    chatReactions: true,
     paddockCalls: true,
     previews: true,
     sound: true,
@@ -306,10 +308,10 @@ test("web push: alerts the right devices with the right words, respects mute/off
     pushed.length = 0;
     await say(ann, annBen, "Saddle up");
     assert.ok(await until(() => pushed.length === 1));
-    assert.deepEqual(pushed[0], {
-      endpoint: "https://fcm.googleapis.com/fcm/send/ben-phone",
-      payload: { kind: "chat", tag: `chat-${annBen}`, url: `/messages/${annBen}`, title: "Ann Archer", body: "Saddle up" },
-    });
+    assert.equal(pushed[0].endpoint, "https://fcm.googleapis.com/fcm/send/ben-phone");
+    const { alertId, ...words } = pushed[0].payload;
+    assert.match(alertId, /^[0-9a-f-]{36}$/);
+    assert.deepEqual(words, { kind: "chat", alert: "message", tag: `chat-${annBen}`, url: `/messages/${annBen}`, title: "Ann Archer", body: "Saddle up" });
 
     // Group: title = group name, body = "Name: text"; Cat's dead subscription is removed.
     pushed.length = 0;
@@ -337,7 +339,8 @@ test("web push: alerts the right devices with the right words, respects mute/off
     await call(ben, "/api/notifications/settings", { body: { previews: false } });
     await say(ann, annBen, "private plans");
     assert.ok(await until(() => pushed.length === 1));
-    assert.equal(pushed[0].payload.body, "New message");
+    // Ben hasn't opened the chat since the earlier ones, so the alert counts them all (and shows no text).
+    assert.match(pushed[0].payload.body, /^\d+ new messages$/);
     pushed.length = 0;
     push.resetPush();
     await call(ben, "/api/notifications/settings", { body: { enabled: false } });

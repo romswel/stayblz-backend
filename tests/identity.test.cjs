@@ -202,17 +202,21 @@ test('signup saves only profile fields and requires a confirmation before any se
     },
   });
   try {
-    const r = await fetch(origin + '/api/auth/signup', post(signup));
+    // The sign-up page asks only for the name; the rest is added on "Finish your profile" after verifying.
+    const { country, racingRole, ...nameOnly } = signup;
+    const r = await fetch(origin + '/api/auth/signup', post(nameOnly));
     assert.equal(r.status, 202);
-    assert.equal((await r.json()).requiresVerification, true);
+    const answer = await r.json();
+    assert.equal(answer.requiresVerification, true);
+    assert.match(answer.message, /link/);
     assert.equal(r.headers.getSetCookie().length, 0);
     const { terms_accepted_at, ...data } = saved.options.data;
     assert.match(terms_accepted_at, /^\d{4}-\d{2}-\d{2}T/);
     assert.deepEqual(data, {
       first_name: 'Member',
       last_name: 'User',
-      country: 'PH',
-      racing_role: 'fan',
+      country: '',
+      racing_role: '',
       community_roles: [],
       organisation: '',
       city: '',
@@ -389,8 +393,16 @@ test('sign-up requires the current Terms, the age confirmation and valid communi
   const r = await fetch(origin + '/api/auth/signup', post({ ...signup, acceptTerms: false }));
   assert.equal(r.status, 400);
   assert.equal((await r.json()).code, 'terms_required');
-  const { profileInput } = require('../dist/lib/profileInput');
+  const { profileInput, signupDetails } = require('../dist/lib/profileInput');
   assert.ok(profileInput({ ...signup, communityRoles: ['vet', 'media'], organisation: 'Ridge Farm', city: 'Lexington' }));
+  // Sign-up: a name is enough; anything extra that is sent is still checked like a profile.
+  assert.deepEqual(signupDetails({ firstName: ' Ann ', lastName: 'Ames' }), {
+    first_name: 'Ann', last_name: 'Ames', country: '', racing_role: '', community_roles: [], organisation: '', city: '', bio: '',
+  });
+  assert.equal(signupDetails({ firstName: 'Ann' }), null);
+  assert.equal(signupDetails({ firstName: 'Ann', lastName: 'Ames', country: 'nowhere' }), null);
+  assert.equal(signupDetails({ ...signup, racingRole: 'superadmin' }), null);
+  assert.equal(signupDetails(signup).country, 'PH');
   for (const body of [
     { ...signup, communityRoles: ['vet', 'vet'] },
     { ...signup, communityRoles: ['vet', 'media', 'breeder', 'farrier'] },
@@ -403,28 +415,19 @@ test('sign-up requires the current Terms, the age confirmation and valid communi
     { ...signup, firstName: 'Line' + String.fromCharCode(10) + 'break' },
   ]) assert.equal(profileInput(body), null, JSON.stringify(body).slice(0, 90));
 });
-test('a 6-digit email code confirms an account and a wrong code is refused', async () => {
-  let calls = [];
+test('email codes are no longer accepted: only the link in the email confirms', async () => {
+  let calls = 0;
   const restore = mockClient({
-    verifyOtp: async (input) => {
-      calls.push(input);
-      return input.token === '123456'
-        ? { data: { user: member, session }, error: null }
-        : { data: {}, error: { status: 403, code: 'otp_expired', message: 'expired' } };
+    verifyOtp: async () => {
+      calls++;
+      return { data: { user: member, session }, error: null };
     },
   });
   try {
-    let r = await fetch(origin + '/api/auth/confirm', post({ email: 'Member@Example.test', code: '000000', type: 'signup' }));
+    const r = await fetch(origin + '/api/auth/confirm', post({ email: 'member@example.test', code: '123456', type: 'signup' }));
     assert.equal(r.status, 400);
-    assert.equal((await r.json()).code, 'code_invalid');
     assert.equal(r.headers.getSetCookie().length, 0);
-    assert.deepEqual(calls[0], { email: 'member@example.test', token: '000000', type: 'email' });
-    calls = [];
-    r = await fetch(origin + '/api/auth/confirm', post({ email: 'member@example.test', code: '123456', type: 'signup' }));
-    assert.equal(r.status, 200);
-    assert.equal(r.headers.getSetCookie().filter((c) => /^stayblz_(access|refresh)=/.test(c)).length, 2);
-    r = await fetch(origin + '/api/auth/confirm', post({ email: 'member@example.test', code: '12345', type: 'signup' }));
-    assert.equal(r.status, 400);
+    assert.equal(calls, 0, 'a code never reaches the provider');
   } finally {
     restore();
   }

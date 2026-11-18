@@ -63,3 +63,25 @@ export function profileInput(body: Record<string, unknown>): ProfileDetails | nu
     bio: clean(body.bio).replace(/\n{3,}/g, "\n\n"),
   };
 }
+
+/**
+ * Sign-up asks only for a name (with email, password and the agreements); country, racing role and the rest are added
+ * after the email is verified, on "Finish your profile". Pages that still send the full profile are checked as before.
+ */
+export function signupDetails(body: Record<string, unknown>): ProfileDetails | null {
+  const extras = ["country", "racingRole", "communityRoles", "organisation", "city", "bio"].some(
+    (key) => body[key] !== undefined && body[key] !== "" && !(Array.isArray(body[key]) && !(body[key] as unknown[]).length),
+  );
+  if (extras) return profileInput(body);
+  if (!text(body.firstName, 1, 60) || !text(body.lastName, 1, 60)) return null;
+  return {
+    first_name: (body.firstName as string).trim(),
+    last_name: (body.lastName as string).trim(),
+    country: "",
+    racing_role: "",
+    community_roles: [],
+    organisation: "",
+    city: "",
+    bio: "",
+  };
+}

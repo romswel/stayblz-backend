@@ -26,7 +26,7 @@ import {
   tokenAal,
 } from "../lib/identity";
 import { accountStore, AccountError } from "../lib/accounts";
-import { profileInput, TERMS_VERSION } from "../lib/profileInput";
+import { profileInput, signupDetails, TERMS_VERSION } from "../lib/profileInput";
 import { startSession } from "../lib/session";
 import accountSecurity from "./accountSecurity";
 import { supabase } from "../lib/supabase";
@@ -52,12 +52,7 @@ const bodyEmail = (req: Request) =>
   typeof req.body?.email === "string" && req.body.email.length <= 254
     ? req.body.email.trim().toLowerCase()
     : null;
-// A 6-digit code has a million values, so guesses are capped per address as well as per network
-// address: someone spreading guesses over many connections still gets only a few per code.
-const codeAttempts = authLimit("code", 5, 15 * 60_000, (req) =>
-  typeof req.body?.code === "string" ? bodyEmail(req) : null,
-);
-// Stops one inbox from being flooded with codes requested from many places.
+// Stops one inbox from being flooded with emails requested from many places.
 const emailsToAddress = authLimit("email-to", 3, 15 * 60_000, bodyEmail);
 const genericMail = {
   ok: true,
@@ -137,7 +132,7 @@ router.post(
           res.status(403).json({
             code: "email_not_confirmed",
             error:
-              "Confirm your email before logging in. Enter the 6-digit code from your sign-up email, or send a new one.",
+              "Verify your email before logging in. Open the link in the email we sent you, or send a new one.",
           });
           return;
         }
@@ -166,7 +161,7 @@ router.post(
   authLimit("signup", 5, 60 * 60_000),
   asyncRoute(async (req, res) => {
     const body = req.body ?? {};
-    const details = profileInput(body);
+    const details = signupDetails(body);
     if (
       !details ||
       !emailValid(body.email) ||
@@ -175,7 +170,7 @@ router.post(
     ) {
       res.status(400).json({
         error:
-          "Enter your name, country, role in racing, valid email, and matching passwords of 12–128 characters with uppercase, lowercase, and a number.",
+          "Enter your name, a valid email, and matching passwords of 12–128 characters with uppercase, lowercase, and a number.",
       });
       return;
     }
@@ -252,7 +247,7 @@ router.post(
         ok: true,
         requiresVerification: true,
         message:
-          "We emailed you a 6-digit code. Enter it here to confirm your email.",
+          "We sent a verification link to your email. Open it to finish creating your account.",
       });
     } catch (error) {
       sendAuthEmailError(
@@ -342,41 +337,24 @@ router.post(
   }),
 );
 
+/**
+ * Opening the link in a sign-up, password reset, invitation or email-change email. The page at /auth/confirm sends
+ * the link's one-time token here (a mail scanner that only fetches the link can't use it up: that needs the page's script).
+ */
 router.post(
   "/confirm",
   authLimit("confirm", 10, 10 * 60_000),
-  codeAttempts,
   asyncRoute(async (req, res) => {
     const {
       tokenHash,
       type,
       accessToken: providedAccess,
       refreshToken,
-      email,
-      code,
     } = req.body ?? {};
     const client = identity.client();
     try {
       let result;
       if (
-        emailValid(email) &&
-        typeof code === "string" &&
-        /^\d{6}$/.test(code) &&
-        ["signup", "recovery"].includes(type)
-      ) {
-        // The 6-digit code from the email, typed on the "Check your email" screen.
-        result = await client.auth.verifyOtp({
-          email: email.trim().toLowerCase(),
-          token: code,
-          type: type === "recovery" ? "recovery" : "email",
-        });
-        if (result.error && type === "signup" && !providerUnavailable(result.error))
-          result = await client.auth.verifyOtp({
-            email: email.trim().toLowerCase(),
-            token: code,
-            type: "signup",
-          });
-      } else if (
         typeof tokenHash === "string" &&
         tokenHash.length >= 16 &&
         tokenHash.length <= 512 &&
@@ -423,18 +401,11 @@ router.post(
         !result.data.session ||
         !result.data.user?.email_confirmed_at
       ) {
-        res.status(400).json(
-          typeof code === "string"
-            ? {
-                code: "code_invalid",
-                error:
-                  "That code is wrong or has expired. Check the latest email or request a new one.",
-              }
-            : {
-                error:
-                  "The confirmation link has expired or was already used. Request a new email.",
-              },
-        );
+        res.status(400).json({
+          code: "link_invalid",
+          error:
+            "This link has expired or was already used. Request a new email and use the newest link.",
+        });
         return;
       }
       const user = await startSession(
@@ -595,7 +566,7 @@ router.post(
               }
             : {
                 error:
-                  "The password could not be changed. Start the reset again to get a new code.",
+                  "The password could not be changed. Start the reset again to get a new link.",
               },
       );
       return;

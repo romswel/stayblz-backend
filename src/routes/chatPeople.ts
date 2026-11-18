@@ -5,6 +5,7 @@ import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { isActive, touch } from "../lib/presence";
 import { chatError, loadThread } from "./chat";
+import { notifyPerson } from "../lib/chatAlerts";
 import { chatLimits } from "../lib/chatStorage";
 
 /**
@@ -91,6 +92,9 @@ const friendAction = (action: "request" | "accept" | "decline" | "remove") =>
     const { data, error } = await call;
     if (error) return fail(res, error);
     res.json({ status: data });
+    // "X wants to be friends" for a new request; "X accepted" when this made you friends.
+    if (action === "request" && data === "outgoing") void notifyPerson(user, req.params.person, "friend_request");
+    else if ((action === "request" || action === "accept") && data === "friends") void notifyPerson(user, req.params.person, "friend_accepted");
   });
 router.post("/friends/:person/request", friendAction("request"));
 router.post("/friends/:person/accept", friendAction("accept"));

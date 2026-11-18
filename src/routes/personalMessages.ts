@@ -8,6 +8,7 @@ import { text } from "../lib/workspace";
 import { touch } from "../lib/presence";
 import { chatError, chatRoutes, loadThread } from "./chat";
 import chatPeople from "./chatPeople";
+import { notifyPerson } from "../lib/chatAlerts";
 import chatFolders from "./chatFolders";
 const router = Router();
 router.use(requireAuth);
@@ -48,7 +49,9 @@ const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d
 /**
  * Menu badge: unread personal chats, message requests, and unread team chats.
  * With `?since=<time from the previous answer>` it also lists the newest unread message per chat that arrived
- * since then (`incoming`), which the browser turns into notifications, and returns `now` for the next poll.
+ * since then (`incoming`, kept for older pages), every Stayblz Chat alert new or updated since then (`alerts`: messages,
+ * mentions, replies, reactions, requests, friends — what the browser turns into notifications), how many alerts are unread
+ * (`alertsUnread`), and `now` for the next poll.
  */
 router.get(
   "/unread",
@@ -66,8 +69,18 @@ router.get(
     // A few seconds of overlap so a clock difference between this server and the database never drops a message;
     // the browser ignores ones it already showed.
     const overlap = new Date(Date.parse(since) - 5_000).toISOString();
-    const incoming = await supabase.rpc("chat_incoming", { p_user: user(req).id, p_since: overlap });
-    res.json({ ...data, incoming: incoming.error ? [] : (incoming.data ?? []), now });
+    const [incoming, alerts] = await Promise.all([
+      supabase.rpc("chat_incoming", { p_user: user(req).id, p_since: overlap }),
+      // Everything new for the bell and on-screen alerts: messages, mentions, replies, reactions, requests, friends.
+      supabase.rpc("chat_alerts_list", { p_user: user(req).id, p_since: overlap, p_limit: 20 }),
+    ]);
+    res.json({
+      ...data,
+      incoming: incoming.error ? [] : (incoming.data ?? []),
+      alerts: alerts.error ? [] : (alerts.data?.items ?? []),
+      alertsUnread: alerts.error ? null : (alerts.data?.unread ?? 0),
+      now,
+    });
   }),
 );
 
@@ -253,12 +266,18 @@ router.post(
   asyncRoute(async (req, res) => {
     if (!isUuid(req.params.id))
       return res.status(404).json({ error: "Conversation not found." });
+    const me = user(req).id;
+    const { data: chat } = await supabase.rpc("chat_get", { p_kind: "personal", p_user: me, p_stable: null, p_conversation: req.params.id });
     const { error } = await supabase.rpc("chat_accept", {
-      p_user: user(req).id,
+      p_user: me,
       p_conversation: req.params.id,
     });
     if (error) return chatError(res, error);
     res.json({ ok: true });
+    // One-to-one: tell the person who wrote first that their request was accepted.
+    const others: string[] = Array.isArray(chat?.member_ids) ? chat.member_ids.filter((id: string) => id !== me) : [];
+    if (chat?.kind === "direct" && others.length === 1 && (chat.requested_ids ?? []).includes(me))
+      void notifyPerson(me, others[0], "request_accepted", req.params.id);
   }),
 );
 router.use("/people", chatPeople);

@@ -1,4 +1,4 @@
-// 6-digit email codes: per-address limits, password reset errors, and where email links point.
+// Email links: per-address limits, password reset errors, and where email links point. (Codes were removed 2026-11-19.)
 const { test, before, after } = require("node:test");
 const assert = require("node:assert/strict");
 process.env.SUPABASE_URL = "http://127.0.0.1:1";
@@ -58,37 +58,7 @@ function mockClient(auth) {
   };
 }
 
-test("code guesses for one address are capped even when they come from different networks", async () => {
-  let checks = 0;
-  const restore = mockClient({
-    verifyOtp: async () => {
-      checks++;
-      return { data: {}, error: { status: 403, code: "otp_expired", message: "expired" } };
-    },
-  });
-  try {
-    const guess = (ip, email = "target@example.test") =>
-      fetch(origin + "/api/auth/confirm", from(ip, { email, code: "111111", type: "recovery" }));
-    for (let i = 1; i <= 5; i++) {
-      const r = await guess(`203.0.113.${i}`);
-      assert.equal(r.status, 400, `guess ${i}`);
-      assert.equal((await r.json()).code, "code_invalid");
-    }
-    const blocked = await guess("203.0.113.99");
-    assert.equal(blocked.status, 429);
-    assert.equal((await blocked.json()).code, "auth_rate_limited");
-    assert.ok(Number(blocked.headers.get("Retry-After")) > 0);
-    assert.equal(checks, 5, "the blocked guess never reaches the provider");
-    // Same address in other letter case is the same address.
-    assert.equal((await guess("203.0.113.100", " Target@Example.test ")).status, 429);
-    // Other people are unaffected.
-    assert.equal((await guess("203.0.113.101", "someone@example.test")).status, 400);
-  } finally {
-    restore();
-  }
-});
-
-test("emailed links are not limited by the code cap", async () => {
+test("emailed links: an expired one says so, from any network", async () => {
   const restore = mockClient({
     verifyOtp: async () => ({ data: {}, error: { status: 403, code: "otp_expired", message: "expired" } }),
   });
@@ -99,13 +69,14 @@ test("emailed links are not limited by the code cap", async () => {
         from(`198.51.100.${i}`, { tokenHash: "x".repeat(40), type: "recovery", email: "links@example.test" }),
       );
       assert.equal(r.status, 400);
+      assert.equal((await r.json()).code, "link_invalid");
     }
   } finally {
     restore();
   }
 });
 
-test("one inbox can't be flooded with codes requested from many networks", async () => {
+test("one inbox can't be flooded with emails requested from many networks", async () => {
   const sent = [];
   const restore = mockClient({
     resend: async ({ email }) => {

@@ -15,7 +15,7 @@ import {
 } from "../lib/chatStorage";
 import { IMAGE_TYPES } from "../lib/communityStorage";
 import { allow, allowed, isActive, seenAt, setTyping, touch, typers } from "../lib/presence";
-import { pushChatMessage } from "../lib/push";
+import { notifyChat } from "../lib/chatAlerts";
 
 /**
  * Stayblz Chat endpoints shared by personal chats (/api/messages) and team chats (/api/team-messages).
@@ -232,7 +232,7 @@ export function chatRoutes(kind: ChatKind) {
         return res.status(503).json({ error: "Message not sent. The chat server is busy — tap Retry in a moment." });
       }
       res.status(201).json({ message: data });
-      void pushChatMessage(kind, req.params.id, user(req), data ?? {});
+      if (data?.id) void notifyChat(kind, req.params.id, user(req).id, { type: "message", messageId: data.id });
     }),
   );
 
@@ -318,7 +318,7 @@ export function chatRoutes(kind: ChatKind) {
         return chatError(res, error);
       }
       res.status(201).json({ message: data });
-      if (!existing) void pushChatMessage(kind, req.params.id, me, data ?? {});
+      if (!existing && data?.id) void notifyChat(kind, req.params.id, me.id, { type: "message", messageId: data.id });
     }),
   );
 
@@ -356,6 +356,8 @@ export function chatRoutes(kind: ChatKind) {
     asyncRoute(async (req, res) => {
       const { error } = await supabase.rpc("chat_read", { ...chatScope(req, kind), p_conversation: req.params.id });
       if (error) return chatError(res, error);
+      // Opening the chat also reads its alerts (the bell list), on every device.
+      await supabase.rpc("chat_alerts_read_chat", { p_user: user(req).id, p_kind: kind, p_conversation: req.params.id });
       res.json({ ok: true });
     }),
   );
@@ -382,6 +384,10 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ message: data });
+      // Only adding (or changing to) a reaction tells the author; taking one back stays quiet.
+      const me = user(req).id;
+      if (emoji && data?.reactions?.some((r: { emoji: string; ids?: string[] }) => r.emoji === emoji && r.ids?.includes(me)))
+        void notifyChat(kind, req.params.id, me, { type: "reaction", messageId: req.params.message, emoji });
     }),
   );
 
@@ -449,7 +455,7 @@ export function chatRoutes(kind: ChatKind) {
         });
         const code = error ? Object.keys(ERRORS).find((k) => error.message?.includes(k)) : undefined;
         results.push(error ? { to: target, ok: false, error: code ? ERRORS[code][1] : "Not sent." } : { to: target, ok: true });
-        if (!error && sent) void pushChatMessage(kind, target, user(req), sent);
+        if (!error && sent?.id) void notifyChat(kind, target, user(req).id, { type: "message", messageId: sent.id });
       }
       res.json({ results });
     }),
@@ -618,6 +624,9 @@ export function chatRoutes(kind: ChatKind) {
       const ids = req.body?.ids;
       if (!Array.isArray(ids) || !ids.length || ids.length > 29 || !ids.every(isUuid))
         return res.status(400).json({ error: "Choose up to 29 people." });
+      // Who was already here, so only the people really added hear "X added you".
+      const { data: before } = await supabase.rpc("chat_get", { ...chatScope(req, kind), p_conversation: req.params.id });
+      const already = new Set<string>(Array.isArray(before?.member_ids) ? before.member_ids : []);
       const { data, error } = await supabase.rpc("chat_add_members", {
         ...chatScope(req, kind),
         p_conversation: req.params.id,
@@ -626,6 +635,8 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ added: data });
+      const added = (ids as string[]).filter((id) => !already.has(id));
+      if (data && added.length) void notifyChat(kind, req.params.id, user(req).id, { type: "group_added", ids: added });
     }),
   );
 
