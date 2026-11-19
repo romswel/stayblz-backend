@@ -314,10 +314,18 @@ function conditionsOf(src: any, going: string) {
     .slice(0, 500);
 }
 
+/** Long sponsor names are cut at a word, with an ellipsis, to fit the 100-character race name. */
+export function raceName(raw: unknown) {
+  const full = clean(raw, 400);
+  if (full.length <= 100) return full;
+  const cut = full.slice(0, 99);
+  return (cut.slice(0, cut.lastIndexOf(" ") > 60 ? cut.lastIndexOf(" ") : 99).replace(/[\s,;:(/-]+$/, "") + "…").slice(0, 100);
+}
+
 function raceOf(number: number, card: any | undefined, result: any | undefined) {
   const src = card ?? result;
   const region = String(src.region ?? "").toUpperCase();
-  const name = clean(src.race_name, 100);
+  const name = raceName(src.race_name);
   const { type, grade } = raceTypeOf(name, src.pattern);
   const going = clean(result?.going || card?.going_detailed || card?.going, 40);
   const runners = new Map<string, ReturnType<typeof racecardRunner>>();
@@ -453,7 +461,7 @@ export function historyFromRacingApi(horseId: string, results: any[]) {
       trackCode: track.code,
       trackName: track.name,
       race: null,
-      name: clean(race.race_name, 100),
+      name: raceName(race.race_name),
       type: [race.pattern || race.class, race.type].map((p) => clean(p, 30)).filter(Boolean).join(" · ").slice(0, 60),
       breed: "thoroughbred",
       distanceValue: furlongs(race.dist_f),

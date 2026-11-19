@@ -217,7 +217,7 @@ test("results are checked, saved together, and feed charts, profiles and leaders
   assert.match(results[0].detail, /Jockey Jo Rider · Trainer Tess Trainer · 4.2-1/);
 
   const horse = await call(null, `/api/public/racing/horses/${ids.alpha}`);
-  assert.deepEqual(horse.data.stats, { starts: 1, wins: 1, places: 0, shows: 0, earnings: 30000 });
+  assert.deepEqual(horse.data.stats, { starts: 1, wins: 1, places: 0, shows: 0, earnings: 30000, currency: "USD" });
   const person = await call(null, `/api/public/racing/people/${ids.jo}`);
   assert.equal(person.data.person.kind, "jockey");
   assert.equal(person.data.stats.wins, 1);

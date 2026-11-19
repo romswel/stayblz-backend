@@ -162,6 +162,8 @@ test("the adapter reads the provider's names, tracks, times and going, and keeps
   assert.deepEqual(api.raceTypeOf("Fixture Stakes", "Group 1"), { type: "stakes", grade: 1 });
   assert.deepEqual(api.raceTypeOf("Fixture Selling Stakes", ""), { type: "claiming", grade: null });
   assert.deepEqual(api.raceTypeOf("Fixture Nursery Handicap", ""), { type: "handicap", grade: null });
+  const long = api.raceName("Fixture Sponsor British Stallion Studs EBF Restricted Novice Stakes (For Horses In Bands B, C And D) (Rider Restricted Race)");
+  assert.ok(long.length <= 100 && long.endsWith("…") && !long.includes("(Rider R…"), long);
 
   const cards = api.cardsFromRacingApi(cardsV2(), [result()]);
   assert.equal(cards.length, 1);
@@ -278,6 +280,10 @@ test("an admin pull publishes the day; results, non-runners and alerts follow on
   assert.equal(page.history[0].rider, "J Fixture");
   assert.equal(page.history[0].race, null);
   assert.equal(page.horse.sire, "Sire Fixture");
+  assert.equal(page.stats.currency, "GBP", "prize money keeps its currency");
+  assert.equal(page.starts[0].currency, "GBP");
+  const leaders = await db.query("select public.racing_leaders('trainer', null, null, 5) as l");
+  assert.equal(leaders.rows[0].l[0].currency, "GBP");
   const due = await db.query("select public.racing_feed_history_due('theracingapi', 50) as due");
   assert.deepEqual(due.rows[0].due, [], "read this week: not asked for again");
 });
