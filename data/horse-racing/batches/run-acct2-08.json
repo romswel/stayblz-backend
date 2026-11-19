@@ -1,0 +1,20 @@
+
+{
+  "ok": true,
+  "operation": "call",
+  "actor": {
+    "id": "TqVGBKN1wwU0p0QdN",
+    "url": "https://console.apify.com/actors/TqVGBKN1wwU0p0QdN"
+  },
+  "run": {
+    "id": "oyfFm1iWKSP0m1egj",
+    "status": "SUCCEEDED",
+    "url": "https://console.apify.com/actors/TqVGBKN1wwU0p0QdN/runs/oyfFm1iWKSP0m1egj"
+  },
+  "storage": {
+    "defaultDatasetId": "84NBkNASF2guL5cyH",
+    "defaultKeyValueStoreId": "abkuGaLaeb03zO2e1",
+    "datasetUrl": "https://console.apify.com/storage/datasets/84NBkNASF2guL5cyH"
+  },
+  "exitCode": 0
+}

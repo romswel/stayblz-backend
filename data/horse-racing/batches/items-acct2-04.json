@@ -1,0 +1,5658 @@
+[{
+  "record_type": "horse_history",
+  "horse_refno": "11555242",
+  "horse_registry": "T",
+  "horse_name": "Northlondonforever (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 41
+    },
+    {
+      "race_id": "PRX-2026-10-31-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-31",
+      "race_number": 6,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 41
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-24",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.76",
+      "note": "Breezing",
+      "rank": "2/51"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-17",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.54",
+      "note": "Breezing from the gate",
+      "rank": "3/22"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.33",
+      "note": "Breezing",
+      "rank": "79/85"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11555242&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11462604",
+  "horse_registry": "T",
+  "horse_name": "Venti Americano (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 16
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.77",
+      "note": "Breezing",
+      "rank": "4/8"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-31",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.02",
+      "note": "Breezing",
+      "rank": "2/10"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-21",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.09",
+      "note": "Breezing",
+      "rank": "15/32"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.24",
+      "note": "Breezing from the gate",
+      "rank": "40/85"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.01",
+      "note": "Breezing",
+      "rank": "38/84"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11462604&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11539744",
+  "horse_registry": "T",
+  "horse_name": "Cali Connection (NY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 34
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-10",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.30",
+      "note": "Breezing",
+      "rank": "32/53"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-24",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.94",
+      "note": "Breezing",
+      "rank": "19/51"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-16",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:03.95",
+      "note": "Breezing",
+      "rank": "7/7"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-07",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.81",
+      "note": "Breezing from the gate",
+      "rank": "4/36"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.76",
+      "note": "Breezing from the gate",
+      "rank": "63/84"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-20",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.42",
+      "note": "Breezing",
+      "rank": "29/58"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11539744&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11504792",
+  "horse_registry": "T",
+  "horse_name": "You Burn So Hot (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 36
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-12",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "35.81",
+      "note": "Breezing",
+      "rank": "2/7"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-05",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.17",
+      "note": "Breezing",
+      "rank": "4/9"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-28",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.65",
+      "note": "Breezing from the gate",
+      "rank": "20/39"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-22",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.10",
+      "note": "Breezing",
+      "rank": "6/8"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-11",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.00",
+      "note": "Breezing from the gate",
+      "rank": "4/10"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-04",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.00",
+      "note": "Handily",
+      "rank": "1/52"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-09-25",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing from the gate",
+      "rank": "25/71"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11504792&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11490132",
+  "horse_registry": "T",
+  "horse_name": "Globe Runner (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "BEL-2026-10-18-R4",
+      "track_code": "BEL",
+      "track_name": "Belmont Park",
+      "race_date": "2026-10-18",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 38
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-12",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.02",
+      "note": "Breezing",
+      "rank": "2/2"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-31",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.49",
+      "note": "Breezing",
+      "rank": "13/56"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.01",
+      "note": "Breezing",
+      "rank": "3/22"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "59.72",
+      "note": "Breezing",
+      "rank": "1/29"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-20",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.78",
+      "note": "Breezing",
+      "rank": "1/8"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11490132&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11495318",
+  "horse_registry": "T",
+  "horse_name": "Tiz It Is (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "PRX-2026-10-19-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-19",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 68
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:03.40",
+      "note": "Breezing",
+      "rank": "7/8"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-31",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.02",
+      "note": "Breezing",
+      "rank": "2/10"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-14",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.89",
+      "note": "Breezing",
+      "rank": "24/34"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.80",
+      "note": "Breezing",
+      "rank": "29/84"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11495318&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11527613",
+  "horse_registry": "T",
+  "horse_name": "Sorrengail (PA)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 6
+    },
+    {
+      "race_id": "PRX-2026-10-28-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-28",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 51
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.04",
+      "note": "Breezing",
+      "rank": "32/85"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:02.87",
+      "note": "Breezing from the gate",
+      "rank": "26/29"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11527613&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11496190",
+  "horse_registry": "T",
+  "horse_name": "Show's Last Gift (PA)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "DEL-2026-10-01-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-10-01",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 52
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-11-05",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing",
+      "rank": "1/28"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-10-29",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.00",
+      "note": "Breezing",
+      "rank": "15/19"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-09-19",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:03.20",
+      "note": "Breezing from the gate",
+      "rank": "6/7"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11496190&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11096107",
+  "horse_registry": "T",
+  "horse_name": "Volleyballprincess (NC)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2026-10-26-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-26",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "PRX-2026-09-19-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-19",
+      "race_number": 9,
+      "race_type": "Liberty Bell Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 30
+    },
+    {
+      "race_id": "AQU-2025-12-07-R6",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-12-07",
+      "race_number": 6,
+      "race_type": "Garland of Roses Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "AQU-2025-11-08-R4",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-11-08",
+      "race_number": 4,
+      "race_type": "Pumpkin Pie Stakes (Listed)",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "PRX-2025-09-20-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-20",
+      "race_number": 10,
+      "race_type": "Liberty Bell Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 96
+    },
+    {
+      "race_id": "CT-2025-08-22-R10",
+      "track_code": "CT",
+      "track_name": "Charles Town",
+      "race_date": "2025-08-22",
+      "race_number": 10,
+      "race_type": "Charles Town Oaks (Gr. 2)",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "MTH-2025-06-29-R8",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-06-29",
+      "race_number": 8,
+      "race_type": "Maryfield Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PIM-2025-05-16-R10",
+      "track_code": "PIM",
+      "track_name": "Pimlico",
+      "race_date": "2025-05-16",
+      "race_number": 10,
+      "race_type": "Miss Preakness Stakes (Gr. 3)",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "KEE-2025-04-06-R9",
+      "track_code": "KEE",
+      "track_name": "Keeneland",
+      "race_date": "2025-04-06",
+      "race_number": 9,
+      "race_type": "MiddleGround Capital Beaumont Stakes (Gr. 2)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "AQU-2025-03-01-R7",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-03-01",
+      "race_number": 7,
+      "race_type": "Busher Stakes (Listed)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "AQU-2025-02-01-R3",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-02-01",
+      "race_number": 3,
+      "race_type": "Ruthless Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2024-12-30-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-12-30",
+      "race_number": 7,
+      "race_type": "Parx Future Stars Filly Division Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "PRX-2024-10-22-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-10-22",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 60
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-09",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "46.53",
+      "note": "Breezing",
+      "rank": "1/21"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-18",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.52",
+      "note": "Breezing",
+      "rank": "2/4"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11096107&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10965097",
+  "horse_registry": "T",
+  "horse_name": "Missy Sixtysix (PA)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2026-10-26-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-26",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "PRX-2026-09-28-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-28",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "PEN-2026-09-02-R5",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-09-02",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "DEL-2026-08-15-R2",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-08-15",
+      "race_number": 2,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "LRL-2026-06-13-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-06-13",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "PEN-2026-04-17-R5",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-04-17",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PRX-2026-03-12-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-03-12",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "PRX-2026-02-04-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-02-04",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "PRX-2026-01-13-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-01-13",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2025-12-08-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-08",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "PEN-2025-10-30-R7",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2025-10-30",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "PRX-2025-10-14-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-14",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2025-09-20-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-20",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "PRX-2025-09-03-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-03",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "MTH-2025-08-10-R8",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-08-10",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "PRX-2025-07-08-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-07-08",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2025-06-09-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-06-09",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PRX-2025-05-21-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-05-21",
+      "race_number": 9,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PRX-2025-04-29-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-04-29",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2025-04-09-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-04-09",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "PRX-2025-03-31-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-03-31",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2025-02-04-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-02-04",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PRX-2025-01-08-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-01-08",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "PRX-2024-11-20-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-11-20",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2024-11-04-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-11-04",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "PRX-2024-10-09-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-10-09",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "PRX-2024-09-10-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-09-10",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "PRX-2024-08-19-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-08-19",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "PRX-2024-07-22-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-07-22",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PRX-2024-07-03-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-07-03",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 41
+    },
+    {
+      "race_id": "PRX-2024-06-10-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-06-10",
+      "race_number": 3,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "PRX-2024-05-06-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-05-06",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "PRX-2024-03-18-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-03-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 40
+    },
+    {
+      "race_id": "PRX-2024-02-27-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-02-27",
+      "race_number": 8,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 66
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-19",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "36.41",
+      "note": "Breezing",
+      "rank": "2/7"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10965097&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11329635",
+  "horse_registry": "T",
+  "horse_name": "Project Maximus (MD)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "DEL-2026-09-10-R6",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-09-10",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "LRL-2025-12-06-R8",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-12-06",
+      "race_number": 8,
+      "race_type": "Maryland Juvenile Filly Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 15
+    },
+    {
+      "race_id": "PRX-2025-10-22-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-22",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "DEL-2025-09-27-R4",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-09-27",
+      "race_number": 4,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "PRX-2025-08-20-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-08-20",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 75
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-31",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.58",
+      "note": "Breezing",
+      "rank": "33/56"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-20",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.87",
+      "note": "Breezing",
+      "rank": "25/38"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11329635&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11012837",
+  "horse_registry": "T",
+  "horse_name": "Eclair Blanc (FL)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "PRX-2026-09-30-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-30",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2026-09-19-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-19",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "PEN-2026-08-14-R8",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-08-14",
+      "race_number": 8,
+      "race_type": "Ratings Handicap",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "PEN-2026-08-06-R3",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-08-06",
+      "race_number": 3,
+      "race_type": "Ratings Handicap",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "PRX-2026-07-21-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-07-21",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "MTH-2026-07-05-R5",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-05",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2026-06-10-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-06-10",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "PRX-2026-04-14-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-04-14",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PRX-2025-12-31-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-31",
+      "race_number": 9,
+      "race_type": "Mrs. Claus Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "PRX-2025-11-26-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-11-26",
+      "race_number": 7,
+      "race_type": "Cornucopia Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2025-11-05-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-11-05",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2025-10-07-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-07",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2025-08-19-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-08-19",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2025-07-22-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-07-22",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "PRX-2025-06-02-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-06-02",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "PRX-2025-05-06-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-05-06",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2025-04-08-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-04-08",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PRX-2025-03-11-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-03-11",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PRX-2025-02-11-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-02-11",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PRX-2025-01-13-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-01-13",
+      "race_number": 10,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "PRX-2024-12-18-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-12-18",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2024-11-13-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-11-13",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "PRX-2024-10-19-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-10-19",
+      "race_number": 4,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "PRX-2024-09-21-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-09-21",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "PRX-2024-08-27-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-08-27",
+      "race_number": 8,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2024-07-01-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-07-01",
+      "race_number": 10,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "PRX-2024-06-04-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-06-04",
+      "race_number": 8,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "PRX-2024-05-22-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-05-22",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "PRX-2024-04-24-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-04-24",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2024-04-01-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-04-01",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "PRX-2024-03-05-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-03-05",
+      "race_number": 8,
+      "race_type": "Main Line Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 50
+    },
+    {
+      "race_id": "PRX-2024-01-24-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-01-24",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "PRX-2023-12-26-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-12-26",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "PRX-2023-10-24-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-10-24",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 52
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-09",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.28",
+      "note": "Breezing",
+      "rank": "6/21"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-19",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.27",
+      "note": "Breezing",
+      "rank": "8/17"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11012837&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10484302",
+  "horse_registry": "T",
+  "horse_name": "Centre Court Champ (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PRX-2026-10-26-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-26",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PEN-2026-10-08-R1",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-10-08",
+      "race_number": 1,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "PEN-2026-05-08-R6",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-05-08",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "PRX-2026-04-08-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-04-08",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "PRX-2025-12-29-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-29",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2025-12-01-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-01",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 94
+    },
+    {
+      "race_id": "PRX-2025-10-06-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-06",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PRX-2025-09-20-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-20",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 97
+    },
+    {
+      "race_id": "DEL-2025-08-09-R3",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-08-09",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "CNL-2025-07-31-R6",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-07-31",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2025-07-09-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-07-09",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "LRL-2025-04-27-R9",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-04-27",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "LRL-2024-04-13-R8",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-04-13",
+      "race_number": 8,
+      "race_type": "Primonetta Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2024-03-13-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-03-13",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "PRX-2024-02-28-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-02-28",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 100
+    },
+    {
+      "race_id": "PRX-2024-01-10-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-01-10",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 95
+    },
+    {
+      "race_id": "AQU-2023-11-24-R6",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2023-11-24",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2023-10-31-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-10-31",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "PRX-2023-07-18-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-07-18",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "LRL-2023-07-01-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2023-07-01",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "MTH-2023-05-28-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2023-05-28",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "PRX-2023-05-08-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-05-08",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "PRX-2023-03-07-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-03-07",
+      "race_number": 9,
+      "race_type": "Penn's Landing Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PRX-2023-02-15-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-02-15",
+      "race_number": 10,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2023-01-24-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-01-24",
+      "race_number": 10,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2023-01-04-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-01-04",
+      "race_number": 10,
+      "race_type": "Mrs. Claus Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2022-12-12-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-12-12",
+      "race_number": 10,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 97
+    },
+    {
+      "race_id": "PRX-2022-10-31-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-10-31",
+      "race_number": 10,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "DEL-2022-10-14-R2",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2022-10-14",
+      "race_number": 2,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PRX-2022-08-30-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-08-30",
+      "race_number": 10,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PRX-2022-07-13-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-07-13",
+      "race_number": 8,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PRX-2022-06-21-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-06-21",
+      "race_number": 7,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2022-05-25-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-05-25",
+      "race_number": 9,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PRX-2022-04-12-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-04-12",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PRX-2022-03-21-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-03-21",
+      "race_number": 9,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "PRX-2022-03-01-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2022-03-01",
+      "race_number": 8,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "DEL-2021-08-07-R6",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2021-08-07",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2021-07-06-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2021-07-06",
+      "race_number": 1,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "PRX-2021-06-07-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2021-06-07",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "PRX-2021-05-17-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2021-05-17",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:03.57",
+      "note": "Breezing",
+      "rank": "28/29"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10484302&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11130364",
+  "horse_registry": "T",
+  "horse_name": "Allenhurst (NJ)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "PRX-2026-10-20-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-20",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "PRX-2026-09-30-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-30",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PRX-2026-09-18-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-18",
+      "race_number": 10,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "MTH-2026-08-23-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-08-23",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "MTH-2026-07-19-R5",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-19",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "PRX-2026-07-13-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-07-13",
+      "race_number": 2,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2026-06-21-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-06-21",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "MTH-2026-05-31-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-05-31",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "PRX-2026-05-26-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-05-26",
+      "race_number": 3,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "PRX-2026-05-04-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-05-04",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "PRX-2026-04-06-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-04-06",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "AQU-2025-04-27-R2",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-04-27",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "AQU-2025-03-09-R7",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-03-09",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "TAM-2025-02-05-R3",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-05",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "TAM-2025-01-01-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-01",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "TAM-2024-12-13-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-12-13",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "DEL-2024-10-12-R1",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2024-10-12",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "MED-2024-09-20-R1",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2024-09-20",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 25
+    },
+    {
+      "race_id": "MTH-2024-09-14-R4",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-09-14",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 43
+    },
+    {
+      "race_id": "MTH-2024-08-25-R4",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-08-25",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 14
+    },
+    {
+      "race_id": "MTH-2024-07-21-R2",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-07-21",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 55
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-15",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.14",
+      "note": "Breezing",
+      "rank": "6/14"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11130364&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10966871",
+  "horse_registry": "T",
+  "horse_name": "Dewey Doit (PA)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "PRX-2026-11-10-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-10",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "PRX-2026-09-30-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-30",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "PRX-2026-09-19-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-19",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 12,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "PRX-2026-07-21-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-07-21",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "DEL-2026-07-11-R4",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-07-11",
+      "race_number": 4,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "LRL-2026-06-13-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-06-13",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "PRX-2025-12-29-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-29",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "PRX-2025-12-01-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-01",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PRX-2025-11-12-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-11-12",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "PRX-2025-10-06-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-06",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "PRX-2025-09-20-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-20",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "PRX-2025-08-26-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-08-26",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "PRX-2025-07-23-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-07-23",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "PRX-2025-07-02-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-07-02",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "PRX-2025-06-02-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-06-02",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 40
+    },
+    {
+      "race_id": "PRX-2024-11-05-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-11-05",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 33
+    },
+    {
+      "race_id": "PRX-2024-10-08-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-10-08",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "LRL-2024-09-22-R8",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-09-22",
+      "race_number": 8,
+      "race_type": "Weather Vane Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 11,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "LRL-2024-07-19-R6",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-07-19",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "PRX-2024-06-12-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-06-12",
+      "race_number": 10,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "PRX-2024-04-22-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-04-22",
+      "race_number": 9,
+      "race_type": "Unique Bella Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "PRX-2024-04-01-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-04-01",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PEN-2024-03-15-R4",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2024-03-15",
+      "race_number": 4,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "PRX-2024-01-10-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-01-10",
+      "race_number": 4,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "PEN-2023-11-22-R7",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2023-11-22",
+      "race_number": 7,
+      "race_type": "Shamrock Rose Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "PID-2023-10-16-R7",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2023-10-16",
+      "race_number": 7,
+      "race_type": "Finest City Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "PRX-2023-09-19-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-09-19",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "PRX-2023-08-21-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-08-21",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 54
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-31",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.18",
+      "note": "Breezing",
+      "rank": "42/56"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-20",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.02",
+      "note": "Breezing",
+      "rank": "20/38"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10966871&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11313734",
+  "horse_registry": "T",
+  "horse_name": "Red Zone Runner (PA)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "PRX-2026-11-03-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-03",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 96
+    },
+    {
+      "race_id": "LRL-2026-10-03-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-10-03",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PEN-2026-08-14-R2",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-08-14",
+      "race_number": 2,
+      "race_type": "Crowd Pleaser Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "PEN-2026-06-24-R2",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-06-24",
+      "race_number": 2,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PEN-2026-06-11-R2",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-06-11",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2026-05-12-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-05-12",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 20
+    },
+    {
+      "race_id": "AQU-2026-04-04-R12",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2026-04-04",
+      "race_number": 12,
+      "race_type": "Wood Memorial S. Presented by Resorts World Casino (Gr. 2)",
+      "breed": "TB",
+      "finish_position": 12,
+      "speed_figure": 24
+    },
+    {
+      "race_id": "PRX-2026-03-03-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-03-03",
+      "race_number": 10,
+      "race_type": "City of Brotherly Love Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "LRL-2025-12-27-R8",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-12-27",
+      "race_number": 8,
+      "race_type": "Heft Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "PRX-2025-11-26-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-11-26",
+      "race_number": 6,
+      "race_type": "Pennsylvania Nursery Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "PEN-2025-10-30-R4",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2025-10-30",
+      "race_number": 4,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "PRX-2025-09-19-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-19",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 75
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-24",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.97",
+      "note": "Breezing",
+      "rank": "4/51"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11313734&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10969429",
+  "horse_registry": "T",
+  "horse_name": "Wicked Melody (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "PRX-2026-10-19-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-19",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "PRX-2026-09-14-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-14",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "PRX-2025-09-20-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-20",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PRX-2025-09-08-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-09-08",
+      "race_number": 2,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "PRX-2025-08-19-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-08-19",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "MTH-2025-07-27-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-07-27",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "CD-2025-06-22-R9",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-06-22",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "CD-2025-05-16-R5",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-05-16",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "OP-2025-04-27-R3",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-04-27",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "OP-2025-04-12-R9",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-04-12",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "OP-2025-03-16-R1",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-03-16",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "OP-2025-01-05-R1",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-01-05",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "CD-2024-11-23-R3",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2024-11-23",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "CD-2024-10-30-R10",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2024-10-30",
+      "race_number": 10,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "IND-2024-09-18-R2",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2024-09-18",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "ELP-2024-08-25-R2",
+      "track_code": "ELP",
+      "track_name": "Ellis Park",
+      "race_date": "2024-08-25",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "IND-2024-08-13-R4",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2024-08-13",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "IND-2024-07-06-R3",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2024-07-06",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "CD-2024-06-16-R4",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2024-06-16",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "IND-2024-05-21-R6",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2024-05-21",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "IND-2024-05-04-R4",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2024-05-04",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "TP-2024-03-08-R7",
+      "track_code": "TP",
+      "track_name": "Turfway Park",
+      "race_date": "2024-03-08",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "TP-2024-02-15-R9",
+      "track_code": "TP",
+      "track_name": "Turfway Park",
+      "race_date": "2024-02-15",
+      "race_number": 9,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "TP-2024-01-12-R5",
+      "track_code": "TP",
+      "track_name": "Turfway Park",
+      "race_date": "2024-01-12",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "TP-2023-12-01-R5",
+      "track_code": "TP",
+      "track_name": "Turfway Park",
+      "race_date": "2023-12-01",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "CD-2023-11-09-R6",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2023-11-09",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 64
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-14",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.56",
+      "note": "Breezing",
+      "rank": "5/9"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-07",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.61",
+      "note": "Breezing",
+      "rank": "9/10"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10969429&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10975028",
+  "horse_registry": "T",
+  "horse_name": "Paco the Taco Man (MD)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "LRL-2026-10-10-R10",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-10-10",
+      "race_number": 10,
+      "race_type": "Ratings Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 99
+    },
+    {
+      "race_id": "PRX-2026-09-19-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-19",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "PRX-2026-08-18-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-08-18",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 99
+    },
+    {
+      "race_id": "PRX-2026-07-06-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-07-06",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "PRX-2026-06-08-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-06-08",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 95
+    },
+    {
+      "race_id": "LRL-2026-05-14-R8",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-05-14",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "LRL-2026-04-26-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-04-26",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 102
+    },
+    {
+      "race_id": "LRL-2026-04-11-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-04-11",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 103
+    },
+    {
+      "race_id": "LRL-2026-03-13-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-03-13",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "LRL-2026-02-13-R3",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-02-13",
+      "race_number": 3,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "LRL-2026-01-23-R9",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-01-23",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "LRL-2025-12-26-R8",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-12-26",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 97
+    },
+    {
+      "race_id": "LRL-2025-11-14-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-11-14",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "LRL-2025-10-18-R9",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-10-18",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 96
+    },
+    {
+      "race_id": "LRL-2025-10-10-R9",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-10-10",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "DEL-2025-09-06-R2",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-09-06",
+      "race_number": 2,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "DEL-2025-08-21-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-08-21",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "LRL-2024-12-13-R1",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-12-13",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "LRL-2024-11-17-R5",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-11-17",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "LRL-2024-10-12-R12",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-10-12",
+      "race_number": 12,
+      "race_type": "Starter Handicap",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 94
+    },
+    {
+      "race_id": "LRL-2024-09-29-R6",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-09-29",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "LRL-2024-09-08-R4",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-09-08",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "DEL-2024-08-17-R4",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2024-08-17",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "DEL-2024-07-08-R5",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2024-07-08",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "LRL-2024-06-02-R2",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-06-02",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "LRL-2024-05-05-R4",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-05-05",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "LRL-2024-04-05-R5",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-04-05",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "LRL-2024-03-10-R5",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-03-10",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "LRL-2024-02-09-R6",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-02-09",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 47
+    },
+    {
+      "race_id": "LRL-2024-01-07-R3",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2024-01-07",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "LRL-2023-12-03-R5",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2023-12-03",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2023-11-06-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-11-06",
+      "race_number": 1,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "DEL-2023-09-22-R1",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2023-09-22",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "DEL-2023-08-30-R5",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2023-08-30",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 36
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10975028&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11150476",
+  "horse_registry": "T",
+  "horse_name": "Handsome Pants (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "PRX-2026-11-11-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-11",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "TDN-2026-06-11-R1",
+      "track_code": "TDN",
+      "track_name": "Thistledown",
+      "race_date": "2026-06-11",
+      "race_number": 1,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "TDN-2026-05-19-R7",
+      "track_code": "TDN",
+      "track_name": "Thistledown",
+      "race_date": "2026-05-19",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "MVR-2026-03-24-R8",
+      "track_code": "MVR",
+      "track_name": "Mahoning Valley Race Course",
+      "race_date": "2026-03-24",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "MVR-2026-03-09-R2",
+      "track_code": "MVR",
+      "track_name": "Mahoning Valley Race Course",
+      "race_date": "2026-03-09",
+      "race_number": 2,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "MVR-2026-02-19-R4",
+      "track_code": "MVR",
+      "track_name": "Mahoning Valley Race Course",
+      "race_date": "2026-02-19",
+      "race_number": 4,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 58
+    },
+    {
+      "race_id": "MVR-2026-02-05-R9",
+      "track_code": "MVR",
+      "track_name": "Mahoning Valley Race Course",
+      "race_date": "2026-02-05",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "TP-2025-12-18-R9",
+      "track_code": "TP",
+      "track_name": "Turfway Park",
+      "race_date": "2025-12-18",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "CD-2025-11-20-R3",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-11-20",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "KEE-2025-10-08-R1",
+      "track_code": "KEE",
+      "track_name": "Keeneland",
+      "race_date": "2025-10-08",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "CNL-2025-09-03-R7",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-09-03",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "CNL-2025-08-09-R12",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-08-09",
+      "race_number": 12,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "SAR-2025-07-27-R4",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2025-07-27",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "SAR-2025-07-11-R10",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2025-07-11",
+      "race_number": 10,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "OP-2025-03-14-R7",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-03-14",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "FG-2025-02-17-R5",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2025-02-17",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "OP-2025-01-26-R9",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-01-26",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "KEE-2024-10-05-R9",
+      "track_code": "KEE",
+      "track_name": "Keeneland",
+      "race_date": "2024-10-05",
+      "race_number": 9,
+      "race_type": "Claiborne Breeders' Futurity (Gr. 1)",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "CD-2024-09-14-R11",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2024-09-14",
+      "race_number": 11,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-06",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "35.03",
+      "note": "Breezing",
+      "rank": "1/1"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-24",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.77",
+      "note": "Breezing from the gate",
+      "rank": "2/10"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-14",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.96",
+      "note": "Breezing",
+      "rank": "4/34"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-01",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.77",
+      "note": "Breezing",
+      "rank": "2/17"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11150476&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11139773",
+  "horse_registry": "T",
+  "horse_name": "Profound (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PRX-2026-10-06-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-06",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "DEL-2026-09-12-R4",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-09-12",
+      "race_number": 4,
+      "race_type": "DTHA Governors Day Handicap",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "DEL-2026-08-20-R8",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-08-20",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "MTH-2026-07-18-R2",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-18",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 99
+    },
+    {
+      "race_id": "PRX-2026-06-06-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-06-06",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 99
+    },
+    {
+      "race_id": "PRX-2026-05-18-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-05-18",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 96
+    },
+    {
+      "race_id": "KEE-2026-04-10-R4",
+      "track_code": "KEE",
+      "track_name": "Keeneland",
+      "race_date": "2026-04-10",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "GP-2026-03-07-R12",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-03-07",
+      "race_number": 12,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "GP-2026-01-31-R9",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-01-31",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "TP-2025-12-26-R10",
+      "track_code": "TP",
+      "track_name": "Turfway Park",
+      "race_date": "2025-12-26",
+      "race_number": 10,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "SAR-2025-07-04-R4",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2025-07-04",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "CD-2025-05-02-R3",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-05-02",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "SAR-2024-07-20-R1",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2024-07-20",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 75
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-11-10",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.89",
+      "note": "Breezing",
+      "rank": "5/10"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.97",
+      "note": "Breezing",
+      "rank": "6/29"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11139773&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:53.947Z"
+},
+{
+  "record_type": "race",
+  "race_id": "PRX-2026-11-18-R6",
+  "race_date": "2026-11-18",
+  "track_code": "PRX",
+  "track_name": "Parx Racing",
+  "race_number": 6,
+  "race_name": "Maiden Special Weight",
+  "race_type": "Maiden Special Weight",
+  "distance": "Six Furlongs",
+  "distance_furlongs": 6,
+  "surface": "Dirt",
+  "purse_usd": 50000,
+  "track_condition": null,
+  "post_time": "2:20 PM",
+  "age_sex_restriction": null,
+  "entries_count": 8,
+  "entries": "1|You Burn So Hot (KY)|S Gonzalez|K A Demasi|120|6/1 | 2|Northlondonforever (KY)|F Pennington|J C Servis|120|5/1 | 3|Venti Americano (KY)|J Rodriguez|E Padilla-Preciado|120|8/1 | 4|Cali Connection (NY)|M Sanchez|J C Servis|1137|4/1 | 5|Globe Runner (KY)|E Ruiz|A Velazquez|120|8/1 | 6|Show's Last Gift (PA)|C Hargrove|D Velazquez|1137|6/1 | 7|Sorrengail (PA)|N Herman|M A Rodriguez|1137|10/1 | 8|Tiz It Is (KY)|R Silvera|E Padilla-Preciado|120|3/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "You Burn So Hot (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11504792",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "S Gonzalez",
+      "trainer": "K A Demasi",
+      "weight_lbs": 120,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": 5,
+      "dead_heat": false,
+      "live_odds": "12/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Northlondonforever (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11555242",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "F Pennington",
+      "trainer": "J C Servis",
+      "weight_lbs": 120,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": 4,
+      "dead_heat": false,
+      "live_odds": "8/1"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Venti Americano (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11462604",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "J Rodriguez",
+      "trainer": "E Padilla-Preciado",
+      "weight_lbs": 120,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": 7,
+      "dead_heat": false,
+      "live_odds": "3/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Cali Connection (NY)",
+      "state_bred": "NY",
+      "horse_refno": "11539744",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "M Sanchez",
+      "trainer": "J C Servis",
+      "weight_lbs": 113,
+      "ml_odds": "4/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": 6,
+      "dead_heat": false,
+      "live_odds": "19/1"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Globe Runner (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11490132",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "E Ruiz",
+      "trainer": "A Velazquez",
+      "weight_lbs": 120,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": 3,
+      "dead_heat": false,
+      "live_odds": "4/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Show's Last Gift (PA)",
+      "state_bred": "PA",
+      "horse_refno": "11496190",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "C Hargrove",
+      "trainer": "D Velazquez",
+      "weight_lbs": 113,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": 2,
+      "dead_heat": false,
+      "live_odds": "6/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Sorrengail (PA)",
+      "state_bred": "PA",
+      "horse_refno": "11527613",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "N Herman",
+      "trainer": "M A Rodriguez",
+      "weight_lbs": 113,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": 8,
+      "dead_heat": false,
+      "live_odds": "32/1"
+    },
+    {
+      "program_number": "8",
+      "post_position": "8",
+      "horse_name": "Tiz It Is (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11495318",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "R Silvera",
+      "trainer": "E Padilla-Preciado",
+      "weight_lbs": 120,
+      "ml_odds": "3/1",
+      "is_scratched": false,
+      "coupled_group": "8",
+      "finish_position": 1,
+      "dead_heat": false,
+      "live_odds": "7/5"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": true,
+  "winner_horse": "Tiz It Is",
+  "winner_jockey": "Ruben Silvera",
+  "winner_trainer": "Ernesto Padilla-Preciado",
+  "winning_time": "1:12.97",
+  "finish_order": "1. Tiz It Is, 2. Show's Last Gift, 3. Globe Runner, 4. Northlondonforever, 5. You Burn So Hot, 6. Cali Connection, 7. Venti Americano, 8. Sorrengail",
+  "win_payout": 5,
+  "place_payout": 2.8,
+  "show_payout": 2.2,
+  "exotic_payouts": "{\"pick_3\":25.2,\"daily_double\":11.8,\"exacta\":29.6,\"superfecta\":23.31,\"trifecta\":28.6}",
+  "winner_program_number": "8",
+  "payouts_by_horse": [
+    {
+      "finish_position": 1,
+      "program_number": "8",
+      "horse_name": "Tiz It Is",
+      "horse_refno": "11495318",
+      "horse_registry": "T",
+      "win_payout": 5,
+      "place_payout": 2.8,
+      "show_payout": 2.2,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "6",
+      "horse_name": "Show's Last Gift",
+      "horse_refno": "11496190",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": 4.6,
+      "show_payout": 3,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "5",
+      "horse_name": "Globe Runner",
+      "horse_refno": "11490132",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": null,
+      "show_payout": 4,
+      "dead_heat": false
+    }
+  ],
+  "exotic_payouts_by_type": {
+    "pick_3": {
+      "payoff": 25.2,
+      "raw_label": "$1 Pick 3",
+      "wager_unit_usd": 1,
+      "winning_numbers": "5-7-8 (3 correct)",
+      "payoffs": [
+        {
+          "payoff": 25.2,
+          "winning_numbers": "5-7-8 (3 correct)"
+        }
+      ]
+    },
+    "daily_double": {
+      "payoff": 11.8,
+      "raw_label": "$2 Daily Double",
+      "wager_unit_usd": 2,
+      "winning_numbers": "7-8",
+      "payoffs": [
+        {
+          "payoff": 11.8,
+          "winning_numbers": "7-8"
+        }
+      ]
+    },
+    "exacta": {
+      "payoff": 29.6,
+      "raw_label": "$2 Exacta",
+      "wager_unit_usd": 2,
+      "winning_numbers": "8-6",
+      "payoffs": [
+        {
+          "payoff": 29.6,
+          "winning_numbers": "8-6"
+        }
+      ]
+    },
+    "superfecta": {
+      "payoff": 23.31,
+      "raw_label": "$0.10 Superfecta",
+      "wager_unit_usd": 0.1,
+      "winning_numbers": "8-6-5-2",
+      "payoffs": [
+        {
+          "payoff": 23.31,
+          "winning_numbers": "8-6-5-2"
+        }
+      ]
+    },
+    "trifecta": {
+      "payoff": 28.6,
+      "raw_label": "$0.50 Trifecta",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "8-6-5",
+      "payoffs": [
+        {
+          "payoff": 28.6,
+          "winning_numbers": "8-6-5"
+        }
+      ]
+    }
+  },
+  "finish_order_detail": [
+    {
+      "finish_position": 1,
+      "program_number": "8",
+      "horse_name": "Tiz It Is",
+      "horse_refno": "11495318",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "6",
+      "horse_name": "Show's Last Gift",
+      "horse_refno": "11496190",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "5",
+      "horse_name": "Globe Runner",
+      "horse_refno": "11490132",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 4,
+      "program_number": "2",
+      "horse_name": "Northlondonforever",
+      "horse_refno": "11555242",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 5,
+      "program_number": "1",
+      "horse_name": "You Burn So Hot",
+      "horse_refno": "11504792",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 6,
+      "program_number": "4",
+      "horse_name": "Cali Connection",
+      "horse_refno": "11539744",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 7,
+      "program_number": "3",
+      "horse_name": "Venti Americano",
+      "horse_refno": "11462604",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 8,
+      "program_number": "7",
+      "horse_name": "Sorrengail",
+      "horse_refno": "11527613",
+      "horse_registry": "T",
+      "dead_heat": false
+    }
+  ],
+  "result_revision": "cb2cc015375f0f12",
+  "entry_url": "https://www.equibase.com/static/entry/PRX111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/PRX111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:33:58.952Z",
+  "live_odds_as_of": "02:23 PM",
+  "live_odds_final": true
+},
+{
+  "record_type": "race",
+  "race_id": "PRX-2026-11-18-R7",
+  "race_date": "2026-11-18",
+  "track_code": "PRX",
+  "track_name": "Parx Racing",
+  "race_number": 7,
+  "race_name": "Allowance Optional Claiming",
+  "race_type": "Maiden",
+  "distance": "Six Furlongs",
+  "distance_furlongs": 6,
+  "surface": "Dirt",
+  "purse_usd": 52000,
+  "track_condition": null,
+  "post_time": "2:47 PM",
+  "age_sex_restriction": null,
+  "entries_count": 7,
+  "entries": "1|Missy Sixtysix (PA)|M Sanchez|M M Moore|1157|3/1 | 2|Volleyballprincess (NC)|A Wolfsont|L C Linder, Jr.|122|12/1 | 3|Project Maximus (MD)|A Adorno|R E Reid, Jr.|119|10/1 | 4|Eclair Blanc (FL)|E Ruiz|M M Moore|122|5/1 | 5|Centre Court Champ (KY)|M J Sanchez|R Mosco|122|6/1 | 6|Allenhurst (NJ)|A Castillo|A Castillo, Jr.|122|6/5 | 7|Dewey Doit (PA)|A Hernandez|S A Lake|122|10/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Missy Sixtysix (PA)",
+      "state_bred": "PA",
+      "horse_refno": "10965097",
+      "horse_registry": "T",
+      "age_sex": "5/M",
+      "age": 5,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "M Sanchez",
+      "trainer": "M M Moore",
+      "weight_lbs": 115,
+      "ml_odds": "3/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": 4,
+      "dead_heat": false,
+      "live_odds": "6/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Volleyballprincess (NC)",
+      "state_bred": "NC",
+      "horse_refno": "11096107",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "A Wolfsont",
+      "trainer": "L C Linder, Jr.",
+      "weight_lbs": 122,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": 2,
+      "dead_heat": false,
+      "live_odds": "7/5"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Project Maximus (MD)",
+      "state_bred": "MD",
+      "horse_refno": "11329635",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "A Adorno",
+      "trainer": "R E Reid, Jr.",
+      "weight_lbs": 119,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": 7,
+      "dead_heat": false,
+      "live_odds": "8/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Eclair Blanc (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11012837",
+      "horse_registry": "T",
+      "age_sex": "5/M",
+      "age": 5,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "E Ruiz",
+      "trainer": "M M Moore",
+      "weight_lbs": 122,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": 3,
+      "dead_heat": false,
+      "live_odds": "9/2"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Centre Court Champ (KY)",
+      "state_bred": "KY",
+      "horse_refno": "10484302",
+      "horse_registry": "T",
+      "age_sex": "8/M",
+      "age": 8,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "M J Sanchez",
+      "trainer": "R Mosco",
+      "weight_lbs": 122,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": 1,
+      "dead_heat": false,
+      "live_odds": "7/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Allenhurst (NJ)",
+      "state_bred": "NJ",
+      "horse_refno": "11130364",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "A Castillo",
+      "trainer": "A Castillo, Jr.",
+      "weight_lbs": 122,
+      "ml_odds": "6/5",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": 5,
+      "dead_heat": false,
+      "live_odds": "7/2"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Dewey Doit (PA)",
+      "state_bred": "PA",
+      "horse_refno": "10966871",
+      "horse_registry": "T",
+      "age_sex": "5/M",
+      "age": 5,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "A Hernandez",
+      "trainer": "S A Lake",
+      "weight_lbs": 122,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": 6,
+      "dead_heat": false,
+      "live_odds": "19/1"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": true,
+  "winner_horse": "Centre Court Champ",
+  "winner_jockey": "Mychel J. Sanchez",
+  "winner_trainer": "Robert Mosco",
+  "winning_time": "1:11.26",
+  "finish_order": "1. Centre Court Champ, 2. Volleyballprincess, 3. Eclair Blanc, 4. Missy Sixtysix, 5. Allenhurst, 6. Dewey Doit, 7. Project Maximus",
+  "win_payout": 17,
+  "place_payout": 5.4,
+  "show_payout": 4.8,
+  "exotic_payouts": "{\"pick_3\":75.2,\"pick_4\":82.4,\"daily_double\":32,\"exacta\":95,\"superfecta\":26.27,\"trifecta\":76.65}",
+  "winner_program_number": "5",
+  "payouts_by_horse": [
+    {
+      "finish_position": 1,
+      "program_number": "5",
+      "horse_name": "Centre Court Champ",
+      "horse_refno": "10484302",
+      "horse_registry": "T",
+      "win_payout": 17,
+      "place_payout": 5.4,
+      "show_payout": 4.8,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "2",
+      "horse_name": "Volleyballprincess",
+      "horse_refno": "11096107",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": 3.6,
+      "show_payout": 3.4,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "4",
+      "horse_name": "Eclair Blanc",
+      "horse_refno": "11012837",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": null,
+      "show_payout": 3.4,
+      "dead_heat": false
+    }
+  ],
+  "exotic_payouts_by_type": {
+    "pick_3": {
+      "payoff": 75.2,
+      "raw_label": "$1 Pick 3",
+      "wager_unit_usd": 1,
+      "winning_numbers": "7-8-5 (3 correct)",
+      "payoffs": [
+        {
+          "payoff": 75.2,
+          "winning_numbers": "7-8-5 (3 correct)"
+        }
+      ]
+    },
+    "pick_4": {
+      "payoff": 82.4,
+      "raw_label": "$0.50 Pick 4",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "5-7-8-5 (4 correct)",
+      "payoffs": [
+        {
+          "payoff": 82.4,
+          "winning_numbers": "5-7-8-5 (4 correct)"
+        }
+      ]
+    },
+    "daily_double": {
+      "payoff": 32,
+      "raw_label": "$2 Daily Double",
+      "wager_unit_usd": 2,
+      "winning_numbers": "8-5",
+      "payoffs": [
+        {
+          "payoff": 32,
+          "winning_numbers": "8-5"
+        }
+      ]
+    },
+    "exacta": {
+      "payoff": 95,
+      "raw_label": "$2 Exacta",
+      "wager_unit_usd": 2,
+      "winning_numbers": "5-2",
+      "payoffs": [
+        {
+          "payoff": 95,
+          "winning_numbers": "5-2"
+        }
+      ]
+    },
+    "superfecta": {
+      "payoff": 26.27,
+      "raw_label": "$0.10 Superfecta",
+      "wager_unit_usd": 0.1,
+      "winning_numbers": "5-2-4-1",
+      "payoffs": [
+        {
+          "payoff": 26.27,
+          "winning_numbers": "5-2-4-1"
+        }
+      ]
+    },
+    "trifecta": {
+      "payoff": 76.65,
+      "raw_label": "$0.50 Trifecta",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "5-2-4",
+      "payoffs": [
+        {
+          "payoff": 76.65,
+          "winning_numbers": "5-2-4"
+        }
+      ]
+    }
+  },
+  "finish_order_detail": [
+    {
+      "finish_position": 1,
+      "program_number": "5",
+      "horse_name": "Centre Court Champ",
+      "horse_refno": "10484302",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "2",
+      "horse_name": "Volleyballprincess",
+      "horse_refno": "11096107",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "4",
+      "horse_name": "Eclair Blanc",
+      "horse_refno": "11012837",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 4,
+      "program_number": "1",
+      "horse_name": "Missy Sixtysix",
+      "horse_refno": "10965097",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 5,
+      "program_number": "6",
+      "horse_name": "Allenhurst",
+      "horse_refno": "11130364",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 6,
+      "program_number": "7",
+      "horse_name": "Dewey Doit",
+      "horse_refno": "10966871",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 7,
+      "program_number": "3",
+      "horse_name": "Project Maximus",
+      "horse_refno": "11329635",
+      "horse_registry": "T",
+      "dead_heat": false
+    }
+  ],
+  "result_revision": "efab0e9d29a7b094",
+  "entry_url": "https://www.equibase.com/static/entry/PRX111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/PRX111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:33:58.952Z",
+  "live_odds_as_of": "02:49 PM",
+  "live_odds_final": true
+},
+{
+  "record_type": "race",
+  "race_id": "PRX-2026-11-18-R8",
+  "race_date": "2026-11-18",
+  "track_code": "PRX",
+  "track_name": "Parx Racing",
+  "race_number": 8,
+  "race_name": "Allowance Optional Claiming",
+  "race_type": "Maiden",
+  "distance": "One Mile",
+  "distance_furlongs": 8,
+  "surface": "Dirt",
+  "purse_usd": 52000,
+  "track_condition": null,
+  "post_time": "3:14 PM",
+  "age_sex_restriction": null,
+  "entries_count": 6,
+  "entries": "1|Red Zone Runner (PA)|J Torres|H O Padilla|119|3/1 | 2|Paco the Taco Man (MD)|M J Sanchez|J Ness|122|9/2 | 3|Wicked Melody (KY)|J A Vargas, Jr.|E Padilla-Preciado|125|5/1 | 4|Handsome Pants (KY)|L M Ocasio|T Gallimore|122|20/1 | 5|Profound (KY)|F Pennington|H Wyner|122|6/1 | 6|Waitlist (KY)|F Martinez|B J Dunn|122|4/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Red Zone Runner (PA)",
+      "state_bred": "PA",
+      "horse_refno": "11313734",
+      "horse_registry": "T",
+      "age_sex": "3/C",
+      "age": 3,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "J Torres",
+      "trainer": "H O Padilla",
+      "weight_lbs": 119,
+      "ml_odds": "3/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": 1,
+      "dead_heat": false,
+      "live_odds": "1/2"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Paco the Taco Man (MD)",
+      "state_bred": "MD",
+      "horse_refno": "10975028",
+      "horse_registry": "T",
+      "age_sex": "5/G",
+      "age": 5,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "M J Sanchez",
+      "trainer": "J Ness",
+      "weight_lbs": 122,
+      "ml_odds": "9/2",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": 3,
+      "dead_heat": false,
+      "live_odds": "7/2"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Wicked Melody (KY)",
+      "state_bred": "KY",
+      "horse_refno": "10969429",
+      "horse_registry": "T",
+      "age_sex": "5/G",
+      "age": 5,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "J A Vargas, Jr.",
+      "trainer": "E Padilla-Preciado",
+      "weight_lbs": 125,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": 5,
+      "dead_heat": false,
+      "live_odds": "5/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Handsome Pants (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11150476",
+      "horse_registry": "T",
+      "age_sex": "4/G",
+      "age": 4,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "L M Ocasio",
+      "trainer": "T Gallimore",
+      "weight_lbs": 122,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": 6,
+      "dead_heat": false,
+      "live_odds": "61/1"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Profound (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11139773",
+      "horse_registry": "T",
+      "age_sex": "4/C",
+      "age": 4,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "F Pennington",
+      "trainer": "H Wyner",
+      "weight_lbs": 122,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": 4,
+      "dead_heat": false,
+      "live_odds": "11/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Waitlist (KY)",
+      "state_bred": "KY",
+      "horse_refno": "10973236",
+      "horse_registry": "T",
+      "age_sex": "5/G",
+      "age": 5,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "F Martinez",
+      "trainer": "B J Dunn",
+      "weight_lbs": 122,
+      "ml_odds": "4/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": 2,
+      "dead_heat": false,
+      "live_odds": "9/2"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "J D Factor (KY)",
+      "state_bred": "KY",
+      "horse_refno": "10940142",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "7/2",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": true,
+  "winner_horse": "Red Zone Runner",
+  "winner_jockey": "Jomar Torres",
+  "winner_trainer": "Hugo O. Padilla",
+  "winning_time": "1:38.75",
+  "finish_order": "1. Red Zone Runner, 2. Waitlist, 3. Paco the Taco Man, 4. Profound, 5. Wicked Melody, 6. Handsome Pants",
+  "win_payout": 3.4,
+  "place_payout": 2.6,
+  "show_payout": 2.4,
+  "exotic_payouts": "{\"pick_3\":66.7,\"daily_double\":77.2,\"exacta\":10.4,\"superfecta\":7.3,\"trifecta\":11.4}",
+  "winner_program_number": "1",
+  "payouts_by_horse": [
+    {
+      "finish_position": 1,
+      "program_number": "1",
+      "horse_name": "Red Zone Runner",
+      "horse_refno": "11313734",
+      "horse_registry": "T",
+      "win_payout": 3.4,
+      "place_payout": 2.6,
+      "show_payout": 2.4,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "6",
+      "horse_name": "Waitlist",
+      "horse_refno": "10973236",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": 4,
+      "show_payout": 2.6,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "2",
+      "horse_name": "Paco the Taco Man",
+      "horse_refno": "10975028",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": null,
+      "show_payout": 2.6,
+      "dead_heat": false
+    }
+  ],
+  "exotic_payouts_by_type": {
+    "pick_3": {
+      "payoff": 66.7,
+      "raw_label": "$1 Pick 3",
+      "wager_unit_usd": 1,
+      "winning_numbers": "8-5-1 (3 correct)",
+      "payoffs": [
+        {
+          "payoff": 66.7,
+          "winning_numbers": "8-5-1 (3 correct)"
+        }
+      ]
+    },
+    "daily_double": {
+      "payoff": 77.2,
+      "raw_label": "$2 Daily Double",
+      "wager_unit_usd": 2,
+      "winning_numbers": "5-1",
+      "payoffs": [
+        {
+          "payoff": 77.2,
+          "winning_numbers": "5-1"
+        }
+      ]
+    },
+    "exacta": {
+      "payoff": 10.4,
+      "raw_label": "$2 Exacta",
+      "wager_unit_usd": 2,
+      "winning_numbers": "1-6",
+      "payoffs": [
+        {
+          "payoff": 10.4,
+          "winning_numbers": "1-6"
+        }
+      ]
+    },
+    "superfecta": {
+      "payoff": 7.3,
+      "raw_label": "$0.10 Superfecta",
+      "wager_unit_usd": 0.1,
+      "winning_numbers": "1-6-2-5",
+      "payoffs": [
+        {
+          "payoff": 7.3,
+          "winning_numbers": "1-6-2-5"
+        }
+      ]
+    },
+    "trifecta": {
+      "payoff": 11.4,
+      "raw_label": "$0.50 Trifecta",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "1-6-2",
+      "payoffs": [
+        {
+          "payoff": 11.4,
+          "winning_numbers": "1-6-2"
+        }
+      ]
+    }
+  },
+  "finish_order_detail": [
+    {
+      "finish_position": 1,
+      "program_number": "1",
+      "horse_name": "Red Zone Runner",
+      "horse_refno": "11313734",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "6",
+      "horse_name": "Waitlist",
+      "horse_refno": "10973236",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "2",
+      "horse_name": "Paco the Taco Man",
+      "horse_refno": "10975028",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 4,
+      "program_number": "5",
+      "horse_name": "Profound",
+      "horse_refno": "11139773",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 5,
+      "program_number": "3",
+      "horse_name": "Wicked Melody",
+      "horse_refno": "10969429",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 6,
+      "program_number": "4",
+      "horse_name": "Handsome Pants",
+      "horse_refno": "11150476",
+      "horse_registry": "T",
+      "dead_heat": false
+    }
+  ],
+  "result_revision": "8af5347316701368",
+  "entry_url": "https://www.equibase.com/static/entry/PRX111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/PRX111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:33:58.952Z",
+  "live_odds_as_of": "03:16 PM",
+  "live_odds_final": true
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10973236",
+  "horse_registry": "T",
+  "horse_name": "Waitlist (KY)",
+  "entered_race_ids": [
+    "PRX-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "PRX-2026-11-18-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PRX-2026-11-03-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-11-03",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PRX-2026-10-06-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-06",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PRX-2026-09-19-R10",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-19",
+      "race_number": 10,
+      "race_type": "Greenwood Cup Stakes (Listed)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "SAR-2026-08-13-R8",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2026-08-13",
+      "race_number": 8,
+      "race_type": "Birdstone Stakes (Listed)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 100
+    },
+    {
+      "race_id": "SAR-2026-07-25-R6",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2026-07-25",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "SAR-2026-07-17-R6",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2026-07-17",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "BAQ-2026-05-23-R8",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2026-05-23",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 96
+    },
+    {
+      "race_id": "AQU-2026-04-04-R4",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2026-04-04",
+      "race_number": 4,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 94
+    },
+    {
+      "race_id": "AQU-2026-03-21-R3",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2026-03-21",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "AQU-2026-02-14-R8",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2026-02-14",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "AQU-2025-12-26-R3",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-12-26",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 95
+    },
+    {
+      "race_id": "AQU-2025-12-06-R7",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-12-06",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "AQU-2025-11-08-R6",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-11-08",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 95
+    },
+    {
+      "race_id": "BAQ-2025-10-11-R9",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2025-10-11",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "BAQ-2025-09-13-R9",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2025-09-13",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "SAR-2025-08-30-R13",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2025-08-30",
+      "race_number": 13,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "SAR-2025-07-17-R8",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2025-07-17",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "SAR-2025-06-06-R5",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2025-06-06",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "BAQ-2025-05-23-R3",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2025-05-23",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 100
+    },
+    {
+      "race_id": "BAQ-2025-05-10-R4",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2025-05-10",
+      "race_number": 4,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 97
+    },
+    {
+      "race_id": "AQU-2025-02-22-R9",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-02-22",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "AQU-2025-02-02-R7",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-02-02",
+      "race_number": 7,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "AQU-2025-01-11-R6",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2025-01-11",
+      "race_number": 6,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "BAQ-2024-10-19-R6",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2024-10-19",
+      "race_number": 6,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "SAR-2024-09-01-R4",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2024-09-01",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "SAR-2024-07-24-R5",
+      "track_code": "SAR",
+      "track_name": "Saratoga",
+      "race_date": "2024-07-24",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "MTH-2024-06-09-R9",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-06-09",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "MTH-2024-05-12-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-05-12",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "GP-2024-04-12-R7",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-04-12",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 93
+    },
+    {
+      "race_id": "GP-2024-03-09-R2",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-03-09",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "TAM-2024-02-03-R4",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-02-03",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-28",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "46.68",
+      "note": "Breezing",
+      "rank": "1/39"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.93",
+      "note": "Breezing",
+      "rank": "8/84"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10973236&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:33:59.033Z"
+}]

@@ -1,0 +1,5806 @@
+[{
+  "record_type": "horse_history",
+  "horse_refno": "11159680",
+  "horse_registry": "T",
+  "horse_name": "Stillthinkingofyou (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "BEL-2026-10-09-R1",
+      "track_code": "BEL",
+      "track_name": "Belmont Park",
+      "race_date": "2026-10-09",
+      "race_number": 1,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "CNL-2026-08-22-R9",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-08-22",
+      "race_number": 9,
+      "race_type": "Handicap",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "MTH-2026-07-05-R5",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-05",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "BAQ-2026-05-22-R3",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2026-05-22",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 94
+    },
+    {
+      "race_id": "TAM-2026-03-20-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-20",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 93
+    },
+    {
+      "race_id": "TAM-2026-02-25-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-25",
+      "race_number": 7,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "TAM-2026-02-06-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-06",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "TAM-2026-01-09-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-09",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "TAM-2025-12-05-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-12-05",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "TAM-2025-11-19-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-11-19",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "MED-2025-10-17-R4",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2025-10-17",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "CNL-2025-09-06-R9",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-09-06",
+      "race_number": 9,
+      "race_type": "Old Dominion Oaks (Listed)",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "MTH-2025-06-29-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-06-29",
+      "race_number": 7,
+      "race_type": "Boiling Springs Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "MTH-2025-06-01-R10",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-06-01",
+      "race_number": 10,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "TAM-2025-03-30-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-03-30",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "TAM-2025-03-19-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-03-19",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "TAM-2025-02-08-R10",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-08",
+      "race_number": 10,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "TAM-2025-01-04-R3",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-04",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "MED-2024-09-21-R4",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2024-09-21",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "MTH-2024-08-17-R3",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-08-17",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 60
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-08",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing",
+      "rank": "20/44"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-01",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.00",
+      "note": "Handily",
+      "rank": "3/5"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11159680&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11120244",
+  "horse_registry": "T",
+  "horse_name": "Dynamic Actress (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "DEL-2026-09-23-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-09-23",
+      "race_number": 7,
+      "race_type": "Ratings Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "CNL-2026-08-22-R9",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-08-22",
+      "race_number": 9,
+      "race_type": "Handicap",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "CNL-2026-07-18-R6",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-07-18",
+      "race_number": 6,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "CNL-2026-06-26-R7",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-06-26",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "TAM-2026-05-01-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-05-01",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "TAM-2026-04-19-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-04-19",
+      "race_number": 7,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "TAM-2026-03-20-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-20",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "TAM-2026-02-25-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-25",
+      "race_number": 7,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "TAM-2026-02-06-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-06",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "TAM-2026-01-17-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-17",
+      "race_number": 9,
+      "race_type": "Starter Handicap",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "TAM-2025-12-27-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-12-27",
+      "race_number": 5,
+      "race_type": "Starter Handicap",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "TAM-2025-12-12-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-12-12",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "DEL-2025-09-13-R3",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-09-13",
+      "race_number": 3,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 49
+    },
+    {
+      "race_id": "DEL-2025-08-16-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-08-16",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "DEL-2025-07-05-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-07-05",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "TAM-2025-05-04-R4",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-05-04",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "TAM-2025-02-28-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-28",
+      "race_number": 9,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "TAM-2025-02-05-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-05",
+      "race_number": 9,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "TAM-2025-01-04-R3",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-04",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "TAM-2024-12-07-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-12-07",
+      "race_number": 9,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "DEL-2024-10-11-R4",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2024-10-11",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 57
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.20",
+      "note": "Breezing",
+      "rank": "6/62"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11120244&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10966480",
+  "horse_registry": "T",
+  "horse_name": "One Fine Wine (NJ)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 52
+    },
+    {
+      "race_id": "MED-2026-10-03-R5",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2026-10-03",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "MTH-2026-09-06-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-09-06",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "MTH-2026-08-23-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-08-23",
+      "race_number": 1,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "MTH-2026-08-01-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-08-01",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "MTH-2026-07-10-R2",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-10",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "MTH-2026-06-20-R5",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-06-20",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "MTH-2026-05-31-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-05-31",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 52
+    },
+    {
+      "race_id": "MTH-2026-05-10-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-05-10",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "TAM-2026-04-24-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-04-24",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 48
+    },
+    {
+      "race_id": "MED-2025-10-10-R4",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2025-10-10",
+      "race_number": 4,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "MED-2025-09-26-R4",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2025-09-26",
+      "race_number": 4,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "MTH-2025-09-07-R5",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-09-07",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "MTH-2025-08-24-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-08-24",
+      "race_number": 1,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "MTH-2025-08-02-R3",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-08-02",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "MTH-2025-07-13-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-07-13",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "MTH-2025-06-22-R8",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-06-22",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "MTH-2025-05-26-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-05-26",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "MTH-2025-05-10-R2",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-05-10",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "MED-2024-10-11-R4",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2024-10-11",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 45
+    },
+    {
+      "race_id": "MTH-2024-09-07-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-09-07",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "MTH-2024-08-25-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-08-25",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "MTH-2024-07-26-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-07-26",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 58
+    },
+    {
+      "race_id": "MTH-2024-07-06-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-07-06",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "MTH-2024-06-08-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-06-08",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 58
+    },
+    {
+      "race_id": "MTH-2024-05-18-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-05-18",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 42
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-08",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.20",
+      "note": "Breezing",
+      "rank": "11/44"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-23",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "54.00",
+      "note": "Breezing",
+      "rank": "60/62"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-09-24",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing",
+      "rank": "2/17"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10966480&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11293625",
+  "horse_registry": "T",
+  "horse_name": "Nancy's Shawl (MN)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "GP-2026-10-23-R8",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-10-23",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "CBY-2026-09-05-R1",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-09-05",
+      "race_number": 1,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "CBY-2026-08-15-R7",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-08-15",
+      "race_number": 7,
+      "race_type": "Minnesota Oaks",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "CBY-2026-08-08-R6",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-08-08",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "CBY-2026-07-12-R4",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-07-12",
+      "race_number": 4,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "CBY-2026-06-27-R8",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-06-27",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "CBY-2026-06-04-R6",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-06-04",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "CBY-2026-05-24-R5",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2026-05-24",
+      "race_number": 5,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "HAW-2025-10-26-R3",
+      "track_code": "HAW",
+      "track_name": "Hawthorne",
+      "race_date": "2025-10-26",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 6
+    },
+    {
+      "race_id": "CBY-2025-09-06-R7",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2025-09-06",
+      "race_number": 7,
+      "race_type": "Northern Lights Debutante Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "CBY-2025-08-24-R7",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2025-08-24",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "CBY-2025-08-13-R7",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2025-08-13",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "CBY-2025-07-23-R6",
+      "track_code": "CBY",
+      "track_name": "Canterbury Park",
+      "race_date": "2025-07-23",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 58
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-10-12",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.45",
+      "note": "Breezing",
+      "rank": "23/28"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11293625&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11345051",
+  "horse_registry": "T",
+  "horse_name": "La Rodada (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "GP-2026-08-02-R4",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-08-02",
+      "race_number": 4,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "GP-2026-06-12-R9",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-06-12",
+      "race_number": 9,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 31
+    },
+    {
+      "race_id": "GP-2026-05-15-R7",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-05-15",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "TAM-2026-04-22-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-04-22",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "TAM-2026-03-22-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-22",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "TAM-2026-03-01-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-01",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "TAM-2026-02-01-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-01",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "TAM-2026-01-21-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-21",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "GP-2025-12-11-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-12-11",
+      "race_number": 6,
+      "race_type": "Maiden Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 26
+    },
+    {
+      "race_id": "GP-2025-10-25-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-10-25",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "GP-2025-10-03-R8",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-10-03",
+      "race_number": 8,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "GP-2025-08-31-R3",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-08-31",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "GP-2025-07-19-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-07-19",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "GP-2025-07-05-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-07-05",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 61
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "NJF",
+      "track_name": "Nelson Jones Farms And Training Center, Inc.",
+      "workout_date": "2026-11-06",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.34",
+      "note": "Breezing",
+      "rank": "2/6"
+    },
+    {
+      "track_code": "NJF",
+      "track_name": "Nelson Jones Farms And Training Center, Inc.",
+      "workout_date": "2026-10-16",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.37",
+      "note": "Breezing",
+      "rank": "4/4"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11345051&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10964947",
+  "horse_registry": "T",
+  "horse_name": "Nuedorf (CA)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "PRX-2026-09-08-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-09-08",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "PEN-2026-08-13-R7",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2026-08-13",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "PRX-2026-07-21-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-07-21",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2026-07-08-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-07-08",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2026-06-22-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-06-22",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "PRX-2026-05-27-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-05-27",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2026-04-27-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-04-27",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 27
+    },
+    {
+      "race_id": "PRX-2026-03-31-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-03-31",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "PRX-2026-02-17-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-02-17",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "PRX-2026-02-10-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-02-10",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 95
+    },
+    {
+      "race_id": "PRX-2026-01-15-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-01-15",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "PRX-2025-12-30-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-12-30",
+      "race_number": 2,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "PRX-2025-11-25-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-11-25",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2025-10-28-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-28",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 93
+    },
+    {
+      "race_id": "PRX-2025-10-01-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-10-01",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 95
+    },
+    {
+      "race_id": "PRX-2025-07-14-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-07-14",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PRX-2025-06-10-R9",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-06-10",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "PRX-2025-05-28-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-05-28",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "PRX-2025-04-28-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-04-28",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "PRX-2025-03-26-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-03-26",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "PRX-2025-02-27-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-02-27",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PRX-2025-02-04-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-02-04",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "PRX-2025-01-14-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2025-01-14",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "PRX-2024-12-10-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-12-10",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PRX-2024-11-29-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-11-29",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PRX-2024-11-12-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-11-12",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "PRX-2024-10-21-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-10-21",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 48
+    },
+    {
+      "race_id": "PRX-2024-09-25-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-09-25",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "PRX-2024-09-09-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-09-09",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "PEN-2024-08-30-R5",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2024-08-30",
+      "race_number": 5,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "PRX-2024-08-19-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-08-19",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "PRX-2024-07-09-R4",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-07-09",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "PRX-2024-06-17-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-06-17",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "PRX-2024-06-04-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-06-04",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "PRX-2024-05-08-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-05-08",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "PRX-2024-04-17-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-04-17",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 58
+    },
+    {
+      "race_id": "PRX-2024-03-25-R6",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-03-25",
+      "race_number": 6,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "PRX-2024-03-06-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-03-06",
+      "race_number": 2,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "PEN-2024-02-14-R1",
+      "track_code": "PEN",
+      "track_name": "Penn National",
+      "race_date": "2024-02-14",
+      "race_number": 1,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "PRX-2024-01-09-R3",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2024-01-09",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "PRX-2023-12-19-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-12-19",
+      "race_number": 2,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 31
+    },
+    {
+      "race_id": "PRX-2023-11-28-R8",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-11-28",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 36
+    },
+    {
+      "race_id": "PRX-2023-11-06-R1",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-11-06",
+      "race_number": 1,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "PRX-2023-10-10-R5",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-10-10",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "PRX-2023-10-03-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-10-03",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 26
+    },
+    {
+      "race_id": "PRX-2023-09-18-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-09-18",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 19
+    },
+    {
+      "race_id": "PRX-2023-09-05-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2023-09-05",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 55
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.46",
+      "note": "Breezing",
+      "rank": "1/3"
+    },
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-11-02",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.41",
+      "note": "Breezing",
+      "rank": "17/33"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-09",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "36.12",
+      "note": "Breezing",
+      "rank": "2/7"
+    },
+    {
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "workout_date": "2026-10-03",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.01",
+      "note": "Breezing",
+      "rank": "16/56"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10964947&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11145231",
+  "horse_registry": "T",
+  "horse_name": "Dyna Soar (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "PRX-2026-10-20-R7",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-10-20",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "LRL-2026-09-20-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-09-20",
+      "race_number": 7,
+      "race_type": "Ratings Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "DEL-2026-08-13-R9",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-08-13",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "CNL-2026-06-27-R2",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-06-27",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "MTH-2026-05-25-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-05-25",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "TAM-2026-04-12-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-04-12",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "MTH-2025-07-06-R3",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-07-06",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "DEL-2025-06-14-R9",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2025-06-14",
+      "race_number": 9,
+      "race_type": "Delaware Oaks (Gr. 3)",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "MTH-2025-05-18-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-05-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "MTH-2025-05-10-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2025-05-10",
+      "race_number": 1,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "TAM-2025-03-21-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-03-21",
+      "race_number": 6,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "TAM-2025-02-21-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-21",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "TAM-2025-01-25-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-25",
+      "race_number": 9,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "TAM-2024-12-28-R4",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-12-28",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "TAM-2024-12-07-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-12-07",
+      "race_number": 9,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "MED-2024-09-21-R4",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2024-09-21",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 17
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-08",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.40",
+      "note": "Breezing",
+      "rank": "25/44"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-15",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.60",
+      "note": "Breezing",
+      "rank": "7/16"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11145231&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10971872",
+  "horse_registry": "T",
+  "horse_name": "Chilling Factor (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R5"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "LRL-2026-10-31-R7",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-10-31",
+      "race_number": 7,
+      "race_type": "Ratings Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "DEL-2026-09-19-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-09-19",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "CNL-2026-08-06-R8",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-08-06",
+      "race_number": 8,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "CNL-2026-07-18-R6",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-07-18",
+      "race_number": 6,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "GP-2026-06-12-R5",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-06-12",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "TAM-2026-05-01-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-05-01",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "TAM-2026-04-17-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-04-17",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "TAM-2026-03-18-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-18",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "TAM-2026-03-01-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-01",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "TAM-2026-02-12-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-12",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "TAM-2025-12-19-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-12-19",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 37
+    },
+    {
+      "race_id": "GP-2025-11-07-R3",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-11-07",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 31
+    },
+    {
+      "race_id": "GP-2025-10-17-R3",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-10-17",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "GP-2025-09-27-R5",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-09-27",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "GP-2025-09-05-R7",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-09-05",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "GP-2025-08-24-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-08-24",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "GP-2025-08-03-R7",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-08-03",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 45
+    },
+    {
+      "race_id": "GP-2025-05-23-R5",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-05-23",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "TAM-2025-05-04-R1",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-05-04",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "TAM-2025-04-12-R1",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-04-12",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "TAM-2025-03-28-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-03-28",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "TAM-2025-02-23-R10",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-23",
+      "race_number": 10,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 12,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "TAM-2025-02-14-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-14",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "TAM-2025-01-12-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-12",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "TAM-2024-12-29-R4",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-12-29",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "TAM-2024-11-27-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-11-27",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "GP-2024-08-31-R9",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-08-31",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 48
+    },
+    {
+      "race_id": "GP-2024-07-26-R9",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-07-26",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "GP-2024-05-19-R3",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-05-19",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 44
+    },
+    {
+      "race_id": "GP-2024-04-19-R4",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-04-19",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "GP-2024-03-28-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-03-28",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "TAM-2024-02-23-R1",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-02-23",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "TAM-2024-02-10-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-02-10",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "TAM-2023-12-30-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2023-12-30",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 40
+    },
+    {
+      "race_id": "GP-2023-11-05-R7",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2023-11-05",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "GP-2023-10-07-R10",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2023-10-07",
+      "race_number": 10,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "GP-2023-09-02-R10",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2023-09-02",
+      "race_number": 10,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 34
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-10-07",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.80",
+      "note": "Breezing",
+      "rank": "2/5"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10971872&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11313606",
+  "horse_registry": "T",
+  "horse_name": "No Bees (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 96
+    },
+    {
+      "race_id": "GP-2026-03-27-R7",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-03-27",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "AQU-2026-02-27-R7",
+      "track_code": "AQU",
+      "track_name": "Aqueduct",
+      "race_date": "2026-02-27",
+      "race_number": 7,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "CD-2025-11-13-R1",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-11-13",
+      "race_number": 1,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "KEE-2025-10-11-R1",
+      "track_code": "KEE",
+      "track_name": "Keeneland",
+      "race_date": "2025-10-11",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-11-13",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "35.60",
+      "note": "Breezing",
+      "rank": "1/11"
+    },
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-10-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.55",
+      "note": "Breezing",
+      "rank": "4/56"
+    },
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-10-23",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.05",
+      "note": "Breezing",
+      "rank": "20/40"
+    },
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-10-16",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.45",
+      "note": "Breezing",
+      "rank": "10/20"
+    },
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-10-09",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.90",
+      "note": "Breezing",
+      "rank": "11/41"
+    },
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-10-02",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.45",
+      "note": "Breezing",
+      "rank": "9/15"
+    },
+    {
+      "track_code": "PMM",
+      "track_name": "Palm Meadows Training Center",
+      "workout_date": "2026-09-25",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "34.00",
+      "note": "Breezing",
+      "rank": "1/9"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11313606&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11320556",
+  "horse_registry": "T",
+  "horse_name": "Shozan (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "MTH-2026-08-21-R2",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-08-21",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 66
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-10",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.00",
+      "note": "Breezing",
+      "rank": "3/4"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.60",
+      "note": "Handily from the gate",
+      "rank": "2/43"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-04",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.60",
+      "note": "Breezing",
+      "rank": "50/52"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-09-23",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.00",
+      "note": "Handily from the gate",
+      "rank": "1/8"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11320556&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10769344",
+  "horse_registry": "T",
+  "horse_name": "Top Recruit (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "PID-2026-10-22-R8",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-10-22",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 89
+    },
+    {
+      "race_id": "PID-2026-09-21-R6",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-09-21",
+      "race_number": 6,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "PID-2026-07-29-R6",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-07-29",
+      "race_number": 6,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "PID-2026-07-03-R1",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-07-03",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "PID-2026-06-15-R6",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-06-15",
+      "race_number": 6,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "PID-2026-05-18-R5",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-05-18",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "PID-2025-09-22-R3",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2025-09-22",
+      "race_number": 3,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "PID-2025-08-25-R6",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2025-08-25",
+      "race_number": 6,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PID-2025-07-29-R6",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2025-07-29",
+      "race_number": 6,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "PID-2025-06-18-R1",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2025-06-18",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "PID-2025-05-19-R6",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2025-05-19",
+      "race_number": 6,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "TAM-2025-04-11-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-04-11",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 93
+    },
+    {
+      "race_id": "TAM-2025-01-31-R3",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-31",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 79
+    },
+    {
+      "race_id": "GP-2024-12-22-R8",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-12-22",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "GP-2024-03-10-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-03-10",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "CNL-2023-08-12-R7",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2023-08-12",
+      "race_number": 7,
+      "race_type": "Handicap",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 86
+    },
+    {
+      "race_id": "CD-2023-06-04-R7",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2023-06-04",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 85
+    },
+    {
+      "race_id": "PIM-2023-05-20-R12",
+      "track_code": "PIM",
+      "track_name": "Pimlico",
+      "race_date": "2023-05-20",
+      "race_number": 12,
+      "race_type": "James W. Murphy S. Presented by Four Seasons of Baltimore (Listed)",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 81
+    },
+    {
+      "race_id": "CD-2022-11-26-R9",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2022-11-26",
+      "race_number": 9,
+      "race_type": "Ed Brown Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "CD-2022-10-30-R10",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2022-10-30",
+      "race_number": 10,
+      "race_type": "Street Sense Stakes (Gr. 3)",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 78
+    },
+    {
+      "race_id": "BAQ-2022-10-01-R10",
+      "track_code": "BAQ",
+      "track_name": "Belmont At The Big A",
+      "race_date": "2022-10-01",
+      "race_number": 10,
+      "race_type": "Champagne Stakes (Gr. 1)",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 34
+    },
+    {
+      "race_id": "ELP-2022-08-14-R5",
+      "track_code": "ELP",
+      "track_name": "Ellis Park",
+      "race_date": "2022-08-14",
+      "race_number": 5,
+      "race_type": "Runhappy Ellis Park Juvenile Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 92
+    },
+    {
+      "race_id": "PRM-2022-07-09-R6",
+      "track_code": "PRM",
+      "track_name": "Prairie Meadows",
+      "race_date": "2022-07-09",
+      "race_number": 6,
+      "race_type": "Prairie Gold Juvenile Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "CD-2022-06-09-R2",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2022-06-09",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 74
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-08",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.00",
+      "note": "Breezing",
+      "rank": "7/15"
+    },
+    {
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "workout_date": "2026-10-09",
+      "surface": "All Weather Track",
+      "distance": "4F",
+      "time": "47.00",
+      "note": "Breezing",
+      "rank": "1/11"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10769344&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11156973",
+  "horse_registry": "T",
+  "horse_name": "P Four (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "GP-2026-10-17-R9",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-10-17",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "TAM-2026-04-19-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-04-19",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 84
+    },
+    {
+      "race_id": "TAM-2026-03-22-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-22",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 88
+    },
+    {
+      "race_id": "TAM-2026-02-14-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-14",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "TAM-2026-01-31-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-31",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 11,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "TAM-2026-01-03-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-03",
+      "race_number": 9,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "TAM-2025-11-19-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-11-19",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "TAM-2025-03-30-R4",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-03-30",
+      "race_number": 4,
+      "race_type": "Ocala Breeders' Sales Sophomore Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "TAM-2025-02-09-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-09",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "GP-2025-01-19-R2",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-01-19",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "GP-2024-12-20-R3",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-12-20",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "GP-2024-10-19-R2",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-10-19",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 57
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-11-08",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.47",
+      "note": "Breezing",
+      "rank": "3/11"
+    },
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-10-08",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "59.90",
+      "note": "Breezing",
+      "rank": "2/2"
+    },
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-09-20",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "47.20",
+      "note": "Breezing",
+      "rank": "2/38"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11156973&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "10982845",
+  "horse_registry": "T",
+  "horse_name": "Celtic Pride (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 93
+    },
+    {
+      "race_id": "GP-2026-11-06-R8",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-11-06",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "GP-2026-10-02-R8",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-10-02",
+      "race_number": 8,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "TIM-2026-09-06-R5",
+      "track_code": "TIM",
+      "track_name": "Timonium",
+      "race_date": "2026-09-06",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "CNL-2026-08-22-R3",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-08-22",
+      "race_number": 3,
+      "race_type": "Handicap",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 93
+    },
+    {
+      "race_id": "CT-2026-08-01-R5",
+      "track_code": "CT",
+      "track_name": "Charles Town",
+      "race_date": "2026-08-01",
+      "race_number": 5,
+      "race_type": "Starter Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "CNL-2026-07-13-R5",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-07-13",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "CNL-2026-06-25-R7",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-06-25",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "DED-2026-01-28-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-01-28",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "DED-2026-01-02-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-01-02",
+      "race_number": 6,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 83
+    },
+    {
+      "race_id": "DED-2025-12-18-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-12-18",
+      "race_number": 5,
+      "race_type": "Starter Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "DED-2025-12-06-R9",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-12-06",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "DED-2025-11-13-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-11-13",
+      "race_number": 7,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "CT-2025-09-18-R3",
+      "track_code": "CT",
+      "track_name": "Charles Town",
+      "race_date": "2025-09-18",
+      "race_number": 3,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "TIM-2025-08-24-R2",
+      "track_code": "TIM",
+      "track_name": "Timonium",
+      "race_date": "2025-08-24",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "CT-2025-08-08-R4",
+      "track_code": "CT",
+      "track_name": "Charles Town",
+      "race_date": "2025-08-08",
+      "race_number": 4,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "CT-2025-08-02-R3",
+      "track_code": "CT",
+      "track_name": "Charles Town",
+      "race_date": "2025-08-02",
+      "race_number": 3,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "CNL-2025-07-10-R4",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-07-10",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "GP-2025-03-29-R2",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-03-29",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "GP-2024-05-19-R8",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-05-19",
+      "race_number": 8,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "GP-2024-03-01-R9",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-03-01",
+      "race_number": 9,
+      "race_type": "Maiden Optional Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 82
+    },
+    {
+      "race_id": "GP-2024-01-13-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-01-13",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "GP-2023-06-17-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2023-06-17",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 57
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-11-01",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "36.28",
+      "note": "Breezing",
+      "rank": "1/6"
+    },
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-10-21",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.14",
+      "note": "Breezing",
+      "rank": "2/4"
+    },
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-09-27",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.66",
+      "note": "Breezing",
+      "rank": "19/30"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=10982845&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11141567",
+  "horse_registry": "T",
+  "horse_name": "Cockeyed (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R6"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R6",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 91
+    },
+    {
+      "race_id": "DEL-2026-09-17-R6",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-09-17",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 94
+    },
+    {
+      "race_id": "MTH-2026-09-06-R6",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-09-06",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "TAM-2025-02-12-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-12",
+      "race_number": 2,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 87
+    },
+    {
+      "race_id": "TAM-2025-01-11-R4",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-11",
+      "race_number": 4,
+      "race_type": "Pasco Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "TAM-2024-12-07-R2",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2024-12-07",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "MTH-2024-09-15-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2024-09-15",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 54
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-10",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:00.00",
+      "note": "Breezing",
+      "rank": "3/4"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-04",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.60",
+      "note": "Breezing",
+      "rank": "50/52"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11141567&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11625118",
+  "horse_registry": "T",
+  "horse_name": "Great Polo (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": null
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "OTC",
+      "track_name": "Ocala Training Ctr",
+      "workout_date": "2026-11-16",
+      "surface": "All Weather Track",
+      "distance": "3F",
+      "time": "38.40",
+      "note": "Breezing",
+      "rank": "1/2"
+    },
+    {
+      "track_code": "OTC",
+      "track_name": "Ocala Training Ctr",
+      "workout_date": "2026-10-31",
+      "surface": "All Weather Track",
+      "distance": "4F",
+      "time": "51.40",
+      "note": "Breezing",
+      "rank": "2/4"
+    },
+    {
+      "track_code": "OTC",
+      "track_name": "Ocala Training Ctr",
+      "workout_date": "2026-10-17",
+      "surface": "All Weather Track",
+      "distance": "4F",
+      "time": "51.40",
+      "note": "Breezing",
+      "rank": "2/3"
+    },
+    {
+      "track_code": "OTC",
+      "track_name": "Ocala Training Ctr",
+      "workout_date": "2026-09-20",
+      "surface": "All Weather Track",
+      "distance": "4F",
+      "time": "51.40",
+      "note": "Breezing from the gate",
+      "rank": "1/1"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11625118&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11544080",
+  "horse_registry": "T",
+  "horse_name": "Distinctly Red (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 11,
+      "speed_figure": null
+    },
+    {
+      "race_id": "GP-2026-10-09-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-10-09",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 20
+    },
+    {
+      "race_id": "GP-2026-09-13-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-09-13",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 35
+    },
+    {
+      "race_id": "GP-2026-08-29-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-08-29",
+      "race_number": 6,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 20
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "workout_date": "2026-09-27",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "36.48",
+      "note": "Breezing",
+      "rank": "11/30"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11544080&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11785287",
+  "horse_registry": "T",
+  "horse_name": "Penelope Style (NJ)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": null
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing from the gate",
+      "rank": "20/62"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-10-27",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.60",
+      "note": "Breezing from the gate",
+      "rank": "14/40"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-10-18",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.40",
+      "note": "Breezing",
+      "rank": "11/18"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-10-06",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.80",
+      "note": "Breezing",
+      "rank": "22/30"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-09-25",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.20",
+      "note": "Breezing",
+      "rank": "9/20"
+    },
+    {
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "workout_date": "2026-09-19",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.40",
+      "note": "Breezing",
+      "rank": "9/32"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11785287&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11485052",
+  "horse_registry": "T",
+  "horse_name": "Razin (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": null
+    },
+    {
+      "race_id": "DEL-2026-10-01-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-10-01",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 46
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "OEC",
+      "track_name": "Oakridge Training Center",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.03",
+      "note": "Breezing",
+      "rank": "7/21"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11485052&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11502239",
+  "horse_registry": "T",
+  "horse_name": "Sisu Spirit (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": null
+    },
+    {
+      "race_id": "CNL-2026-08-21-R3",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-08-21",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "CNL-2026-07-31-R1",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-07-31",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 50
+    },
+    {
+      "race_id": "CNL-2026-07-16-R3",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-07-16",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "GP-2026-05-15-R2",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2026-05-15",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 53
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "OEC",
+      "track_name": "Oakridge Training Center",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:01.78",
+      "note": "Breezing",
+      "rank": "1/1"
+    },
+    {
+      "track_code": "OEC",
+      "track_name": "Oakridge Training Center",
+      "workout_date": "2026-11-05",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.07",
+      "note": "Breezing",
+      "rank": "1/3"
+    },
+    {
+      "track_code": "OEC",
+      "track_name": "Oakridge Training Center",
+      "workout_date": "2026-10-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "52.69",
+      "note": "Breezing",
+      "rank": "5/5"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11502239&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11555257",
+  "horse_registry": "T",
+  "horse_name": "Credit Spreads (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": null
+    },
+    {
+      "race_id": "BTP-2026-10-03-R1",
+      "track_code": "BTP",
+      "track_name": "Belterra Park",
+      "race_date": "2026-10-03",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 32
+    },
+    {
+      "race_id": "BTP-2026-09-18-R5",
+      "track_code": "BTP",
+      "track_name": "Belterra Park",
+      "race_date": "2026-09-18",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 41
+    },
+    {
+      "race_id": "CNL-2026-08-27-R3",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2026-08-27",
+      "race_number": 3,
+      "race_type": "Maiden Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 22
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-12",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "38.40",
+      "note": "Breezing",
+      "rank": "12/15"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11555257&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:03:58.843Z"
+},
+{
+  "record_type": "race",
+  "race_id": "TAM-2026-11-18-R5",
+  "race_date": "2026-11-18",
+  "track_code": "TAM",
+  "track_name": "TAM",
+  "race_number": 5,
+  "race_name": "Allowance Optional Claiming",
+  "race_type": "Maiden",
+  "distance": "One Mile",
+  "distance_furlongs": 8,
+  "surface": "Turf",
+  "purse_usd": 57000,
+  "track_condition": null,
+  "post_time": "2:42 PM",
+  "age_sex_restriction": null,
+  "entries_count": 7,
+  "entries": "1|Stillthinkingofyou (KY)|P Lopez|D S Ryan|121|2/1 | 2|Nancy's Shawl (MN)|A Santos|T P Padilla|118|30/1 | 3|One Fine Wine (NJ)|E Gonzalez|P B McBurney|121|20/1 | 5|Dynamic Actress (KY)|S Leon|J I Pimental|121|6/1 | 6|La Rodada (FL)|J A Gomez|H Dominguez|118|12/1 | 7|Dyna Soar (KY)|D Centeno|M Dini|121|8/1 | 9|Chilling Factor (FL)|G A Martinez|M McGoey|121|15/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Stillthinkingofyou (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11159680",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "P Lopez",
+      "trainer": "D S Ryan",
+      "weight_lbs": 121,
+      "ml_odds": "2/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": 1,
+      "dead_heat": false,
+      "live_odds": "2/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Nancy's Shawl (MN)",
+      "state_bred": "MN",
+      "horse_refno": "11293625",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "A Santos",
+      "trainer": "T P Padilla",
+      "weight_lbs": 118,
+      "ml_odds": "30/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": 2,
+      "dead_heat": false,
+      "live_odds": "28/1"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "One Fine Wine (NJ)",
+      "state_bred": "NJ",
+      "horse_refno": "10966480",
+      "horse_registry": "T",
+      "age_sex": "5/M",
+      "age": 5,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "E Gonzalez",
+      "trainer": "P B McBurney",
+      "weight_lbs": 121,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": 6,
+      "dead_heat": false,
+      "live_odds": "13/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Starts Now (NY)",
+      "state_bred": "NY",
+      "horse_refno": "10786554",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "5/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Dynamic Actress (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11120244",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "S Leon",
+      "trainer": "J I Pimental",
+      "weight_lbs": 121,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": 3,
+      "dead_heat": false,
+      "live_odds": "5/2"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "La Rodada (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11345051",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 32000,
+      "jockey": "J A Gomez",
+      "trainer": "H Dominguez",
+      "weight_lbs": 118,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": 5,
+      "dead_heat": false,
+      "live_odds": "35/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Dyna Soar (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11145231",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "D Centeno",
+      "trainer": "M Dini",
+      "weight_lbs": 121,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": 4,
+      "dead_heat": false,
+      "live_odds": "1/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Thankfulness (IRE)",
+      "state_bred": "IRE",
+      "horse_refno": "11369407",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "5/2",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "9",
+      "post_position": "9",
+      "horse_name": "Chilling Factor (FL)",
+      "state_bred": "FL",
+      "horse_refno": "10971872",
+      "horse_registry": "T",
+      "age_sex": "5/M",
+      "age": 5,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "G A Martinez",
+      "trainer": "M McGoey",
+      "weight_lbs": 121,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "9",
+      "finish_position": 7,
+      "dead_heat": false,
+      "live_odds": "28/1"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": true,
+  "winner_horse": "Stillthinkingofyou",
+  "winner_jockey": "Paco Lopez",
+  "winner_trainer": "Derek S. Ryan",
+  "winning_time": "1:40.48",
+  "finish_order": "1. Stillthinkingofyou, 2. Nancy's Shawl, 3. Dynamic Actress, 4. Dyna Soar, 5. La Rodada, 6. One Fine Wine, 7. Chilling Factor",
+  "win_payout": 6.8,
+  "place_payout": 5,
+  "show_payout": 3.4,
+  "exotic_payouts": "{\"pick_3\":14.75,\"pick_4\":242.55,\"pick_5\":1,\"daily_double\":5.9,\"exacta\":68.1,\"superfecta\":36.98,\"trifecta\":94.9,\"x-5_super_high_five\":975.9}",
+  "winner_program_number": "1",
+  "payouts_by_horse": [
+    {
+      "finish_position": 1,
+      "program_number": "1",
+      "horse_name": "Stillthinkingofyou",
+      "horse_refno": "11159680",
+      "horse_registry": "T",
+      "win_payout": 6.8,
+      "place_payout": 5,
+      "show_payout": 3.4,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "2",
+      "horse_name": "Nancy's Shawl",
+      "horse_refno": "11293625",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": 14,
+      "show_payout": 6.4,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "5",
+      "horse_name": "Dynamic Actress",
+      "horse_refno": "11120244",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": null,
+      "show_payout": 2.6,
+      "dead_heat": false
+    }
+  ],
+  "exotic_payouts_by_type": {
+    "pick_3": {
+      "payoff": 14.75,
+      "raw_label": "$0.50 Pick 3",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "2-2-1 (3 correct)",
+      "payoffs": [
+        {
+          "payoff": 14.75,
+          "winning_numbers": "2-2-1 (3 correct)"
+        }
+      ]
+    },
+    "pick_4": {
+      "payoff": 242.55,
+      "raw_label": "$0.50 Pick 4",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "1-2-2-1 (4 correct)",
+      "payoffs": [
+        {
+          "payoff": 242.55,
+          "winning_numbers": "1-2-2-1 (4 correct)"
+        }
+      ]
+    },
+    "pick_5": {
+      "payoff": 1,
+      "raw_label": "$0.50 Pick 5",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "6/8/9-1-2-2-1 (5 correct)",
+      "payoffs": [
+        {
+          "payoff": 1,
+          "winning_numbers": "6/8/9-1-2-2-1 (5 correct)"
+        }
+      ]
+    },
+    "daily_double": {
+      "payoff": 5.9,
+      "raw_label": "$1 Daily Double",
+      "wager_unit_usd": 1,
+      "winning_numbers": "2-1",
+      "payoffs": [
+        {
+          "payoff": 5.9,
+          "winning_numbers": "2-1"
+        }
+      ]
+    },
+    "exacta": {
+      "payoff": 68.1,
+      "raw_label": "$1 Exacta",
+      "wager_unit_usd": 1,
+      "winning_numbers": "1-2",
+      "payoffs": [
+        {
+          "payoff": 68.1,
+          "winning_numbers": "1-2"
+        }
+      ]
+    },
+    "superfecta": {
+      "payoff": 36.98,
+      "raw_label": "$0.10 Superfecta",
+      "wager_unit_usd": 0.1,
+      "winning_numbers": "1-2-5-7",
+      "payoffs": [
+        {
+          "payoff": 36.98,
+          "winning_numbers": "1-2-5-7"
+        }
+      ]
+    },
+    "trifecta": {
+      "payoff": 94.9,
+      "raw_label": "$0.50 Trifecta",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "1-2-5",
+      "payoffs": [
+        {
+          "payoff": 94.9,
+          "winning_numbers": "1-2-5"
+        }
+      ]
+    },
+    "x-5_super_high_five": {
+      "payoff": 975.9,
+      "raw_label": "$1 X-5 Super High Five",
+      "wager_unit_usd": 1,
+      "winning_numbers": "1-2-5-7-6",
+      "payoffs": [
+        {
+          "payoff": 975.9,
+          "winning_numbers": "1-2-5-7-6"
+        }
+      ]
+    }
+  },
+  "finish_order_detail": [
+    {
+      "finish_position": 1,
+      "program_number": "1",
+      "horse_name": "Stillthinkingofyou",
+      "horse_refno": "11159680",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "2",
+      "horse_name": "Nancy's Shawl",
+      "horse_refno": "11293625",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "5",
+      "horse_name": "Dynamic Actress",
+      "horse_refno": "11120244",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 4,
+      "program_number": "7",
+      "horse_name": "Dyna Soar",
+      "horse_refno": "11145231",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 5,
+      "program_number": "6",
+      "horse_name": "La Rodada",
+      "horse_refno": "11345051",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 6,
+      "program_number": "3",
+      "horse_name": "One Fine Wine",
+      "horse_refno": "10966480",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 7,
+      "program_number": "9",
+      "horse_name": "Chilling Factor",
+      "horse_refno": "10971872",
+      "horse_registry": "T",
+      "dead_heat": false
+    }
+  ],
+  "result_revision": "17ae145e270b0c62",
+  "entry_url": "https://www.equibase.com/static/entry/TAM111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/TAM111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:04:03.138Z",
+  "live_odds_as_of": "02:47 PM",
+  "live_odds_final": true
+},
+{
+  "record_type": "race",
+  "race_id": "TAM-2026-11-18-R6",
+  "race_date": "2026-11-18",
+  "track_code": "TAM",
+  "track_name": "TAM",
+  "race_number": 6,
+  "race_name": "Allowance Optional Claiming",
+  "race_type": "Maiden",
+  "distance": "Six Furlongs",
+  "distance_furlongs": 6,
+  "surface": "Dirt",
+  "purse_usd": 56000,
+  "track_condition": null,
+  "post_time": "3:13 PM",
+  "age_sex_restriction": null,
+  "entries_count": 7,
+  "entries": "1|Nuedorf (CA)|A Cruz|J A Gallegos|120|12/1 | 2|No Bees (KY)|E Gonzalez|S A Joseph, Jr.|118|7/5 | 3|Shozan (FL)|L Reyes|T M Pompay|118|12/1 | 4|Top Recruit (KY)|T Hazelwood|J Arriagada|120|9/2 | 5|P Four (FL)|Y Torres|M Yates|120|12/1 | 6|Celtic Pride (FL)|C Martinez|A M Rodriguez|1137|5/1 | 7|Cockeyed (KY)|C Gil|T M Pompay|120|6/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Nuedorf (CA)",
+      "state_bred": "CA",
+      "horse_refno": "10964947",
+      "horse_registry": "T",
+      "age_sex": "5/G",
+      "age": 5,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "A Cruz",
+      "trainer": "J A Gallegos",
+      "weight_lbs": 120,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": 6,
+      "dead_heat": false,
+      "live_odds": "17/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "No Bees (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11313606",
+      "horse_registry": "T",
+      "age_sex": "3/C",
+      "age": 3,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "E Gonzalez",
+      "trainer": "S A Joseph, Jr.",
+      "weight_lbs": 118,
+      "ml_odds": "7/5",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": 1,
+      "dead_heat": false,
+      "live_odds": "9/5"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Shozan (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11320556",
+      "horse_registry": "T",
+      "age_sex": "3/C",
+      "age": 3,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "L Reyes",
+      "trainer": "T M Pompay",
+      "weight_lbs": 118,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": 4,
+      "dead_heat": false,
+      "live_odds": "15/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Top Recruit (KY)",
+      "state_bred": "KY",
+      "horse_refno": "10769344",
+      "horse_registry": "T",
+      "age_sex": "6/G",
+      "age": 6,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 16000,
+      "jockey": "T Hazelwood",
+      "trainer": "J Arriagada",
+      "weight_lbs": 120,
+      "ml_odds": "9/2",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": 7,
+      "dead_heat": false,
+      "live_odds": "7/2"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "P Four (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11156973",
+      "horse_registry": "T",
+      "age_sex": "4/G",
+      "age": 4,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "Y Torres",
+      "trainer": "M Yates",
+      "weight_lbs": 120,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": 5,
+      "dead_heat": false,
+      "live_odds": "8/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Celtic Pride (FL)",
+      "state_bred": "FL",
+      "horse_refno": "10982845",
+      "horse_registry": "T",
+      "age_sex": "5/G",
+      "age": 5,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 16000,
+      "jockey": "C Martinez",
+      "trainer": "A M Rodriguez",
+      "weight_lbs": 113,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": 2,
+      "dead_heat": false,
+      "live_odds": "6/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Cockeyed (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11141567",
+      "horse_registry": "T",
+      "age_sex": "4/C",
+      "age": 4,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "C Gil",
+      "trainer": "T M Pompay",
+      "weight_lbs": 120,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": 3,
+      "dead_heat": false,
+      "live_odds": "2/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "My Voodoo Doll (FL)",
+      "state_bred": "FL",
+      "horse_refno": "10785657",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "12/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Air Invasion (KY)",
+      "state_bred": "KY",
+      "horse_refno": "10998971",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "20/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": true,
+  "winner_horse": "No Bees",
+  "winner_jockey": "Edwin Gonzalez",
+  "winner_trainer": "Saffie A. Joseph, Jr.",
+  "winning_time": "1:09.60",
+  "finish_order": "1. No Bees, 2. Celtic Pride, 3. Cockeyed, 4. Shozan, 5. P Four, 6. Nuedorf, 7. Top Recruit",
+  "win_payout": 5.8,
+  "place_payout": 3.8,
+  "show_payout": 2.8,
+  "exotic_payouts": "{\"pick_3\":8.2,\"pick_4\":42.7,\"daily_double\":11.5,\"exacta\":20.8,\"superfecta\":24.41,\"trifecta\":20.65,\"x-5_super_high_five\":1}",
+  "winner_program_number": "2",
+  "payouts_by_horse": [
+    {
+      "finish_position": 1,
+      "program_number": "2",
+      "horse_name": "No Bees",
+      "horse_refno": "11313606",
+      "horse_registry": "T",
+      "win_payout": 5.8,
+      "place_payout": 3.8,
+      "show_payout": 2.8,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "6",
+      "horse_name": "Celtic Pride",
+      "horse_refno": "10982845",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": 7.2,
+      "show_payout": 3.2,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "7",
+      "horse_name": "Cockeyed",
+      "horse_refno": "11141567",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": null,
+      "show_payout": 2.2,
+      "dead_heat": false
+    }
+  ],
+  "exotic_payouts_by_type": {
+    "pick_3": {
+      "payoff": 8.2,
+      "raw_label": "$0.50 Pick 3",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "2-1-2 (3 correct)",
+      "payoffs": [
+        {
+          "payoff": 8.2,
+          "winning_numbers": "2-1-2 (3 correct)"
+        }
+      ]
+    },
+    "pick_4": {
+      "payoff": 42.7,
+      "raw_label": "$0.50 Pick 4",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "2-2-1-2/8/9 (4 correct)",
+      "payoffs": [
+        {
+          "payoff": 42.7,
+          "winning_numbers": "2-2-1-2/8/9 (4 correct)"
+        }
+      ]
+    },
+    "daily_double": {
+      "payoff": 11.5,
+      "raw_label": "$1 Daily Double",
+      "wager_unit_usd": 1,
+      "winning_numbers": "1-2",
+      "payoffs": [
+        {
+          "payoff": 11.5,
+          "winning_numbers": "1-2"
+        }
+      ]
+    },
+    "exacta": {
+      "payoff": 20.8,
+      "raw_label": "$1 Exacta",
+      "wager_unit_usd": 1,
+      "winning_numbers": "2-6",
+      "payoffs": [
+        {
+          "payoff": 20.8,
+          "winning_numbers": "2-6"
+        }
+      ]
+    },
+    "superfecta": {
+      "payoff": 24.41,
+      "raw_label": "$0.10 Superfecta",
+      "wager_unit_usd": 0.1,
+      "winning_numbers": "2-6-7-3",
+      "payoffs": [
+        {
+          "payoff": 24.41,
+          "winning_numbers": "2-6-7-3"
+        }
+      ]
+    },
+    "trifecta": {
+      "payoff": 20.65,
+      "raw_label": "$0.50 Trifecta",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "2-6-7",
+      "payoffs": [
+        {
+          "payoff": 20.65,
+          "winning_numbers": "2-6-7"
+        }
+      ]
+    },
+    "x-5_super_high_five": {
+      "payoff": 1,
+      "raw_label": "$1 X-5 Super High Five",
+      "wager_unit_usd": 1,
+      "winning_numbers": "2-6-7-3-5",
+      "payoffs": [
+        {
+          "payoff": 1,
+          "winning_numbers": "2-6-7-3-5"
+        }
+      ]
+    }
+  },
+  "finish_order_detail": [
+    {
+      "finish_position": 1,
+      "program_number": "2",
+      "horse_name": "No Bees",
+      "horse_refno": "11313606",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "6",
+      "horse_name": "Celtic Pride",
+      "horse_refno": "10982845",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "7",
+      "horse_name": "Cockeyed",
+      "horse_refno": "11141567",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 4,
+      "program_number": "3",
+      "horse_name": "Shozan",
+      "horse_refno": "11320556",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 5,
+      "program_number": "5",
+      "horse_name": "P Four",
+      "horse_refno": "11156973",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 6,
+      "program_number": "1",
+      "horse_name": "Nuedorf",
+      "horse_refno": "10964947",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 7,
+      "program_number": "4",
+      "horse_name": "Top Recruit",
+      "horse_refno": "10769344",
+      "horse_registry": "T",
+      "dead_heat": false
+    }
+  ],
+  "result_revision": "e07c743305d520f3",
+  "entry_url": "https://www.equibase.com/static/entry/TAM111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/TAM111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:04:03.138Z",
+  "live_odds_as_of": "03:16 PM",
+  "live_odds_final": true
+},
+{
+  "record_type": "race",
+  "race_id": "TAM-2026-11-18-R8",
+  "race_date": "2026-11-18",
+  "track_code": "TAM",
+  "track_name": "TAM",
+  "race_number": 8,
+  "race_name": "Maiden Claiming",
+  "race_type": "Maiden Claiming",
+  "distance": "Five And One Half Furlongs",
+  "distance_furlongs": 5.5,
+  "surface": "Dirt",
+  "purse_usd": 23500,
+  "track_condition": null,
+  "post_time": "4:13 PM",
+  "age_sex_restriction": null,
+  "entries_count": 11,
+  "entries": "2|Great Polo (FL)|R Montanez|B Ramos|119|20/1 | 3|Distinctly Red (FL)|W Rengifo|A W Dobber|10910|30/1 | 4|Penelope Style (NJ)|S Camacho|G D Sacco|119|5/1 | 5|Razin (FL)|M Fernandez|J Collins|1127|6/1 | 6|Credit Spreads (KY)|U Casique|G Ochoa|119|20/1 | 7|Sisu Spirit (FL)|S Leon|M Lightner|119|7/2 | 8|Triple Point (KY)|M Meneses|J G Arnett|119|20/1 | 9|Last Hot Lover (FL)|A Cruz|K O'Connell|119|6/1 | 11|Tell It Like It Is (FL)|J A Gomez|T M Pompay|119|8/1 | 12|She's a Gray (KY)|I O Rodriguez|J H Delgado|119|10/1 | 14|Melly B. Good (KY)|G A Martinez|K Rice|119|15/1",
+  "entries_detail": [
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Little Sister (NY)",
+      "state_bred": "NY",
+      "horse_refno": "11454846",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "20/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Great Polo (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11625118",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "R Montanez",
+      "trainer": "B Ramos",
+      "weight_lbs": 119,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": 6,
+      "dead_heat": false,
+      "live_odds": "79/1"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Distinctly Red (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11544080",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "W Rengifo",
+      "trainer": "A W Dobber",
+      "weight_lbs": 109,
+      "ml_odds": "30/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": 11,
+      "dead_heat": false,
+      "live_odds": "99/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Penelope Style (NJ)",
+      "state_bred": "NJ",
+      "horse_refno": "11785287",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "S Camacho",
+      "trainer": "G D Sacco",
+      "weight_lbs": 119,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": 1,
+      "dead_heat": false,
+      "live_odds": "9/2"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Razin (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11485052",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "M Fernandez",
+      "trainer": "J Collins",
+      "weight_lbs": 112,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": 10,
+      "dead_heat": false,
+      "live_odds": "9/2"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Credit Spreads (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11555257",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "U Casique",
+      "trainer": "G Ochoa",
+      "weight_lbs": 119,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": 8,
+      "dead_heat": false,
+      "live_odds": "78/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Sisu Spirit (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11502239",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "S Leon",
+      "trainer": "M Lightner",
+      "weight_lbs": 119,
+      "ml_odds": "7/2",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": 5,
+      "dead_heat": false,
+      "live_odds": "2/1"
+    },
+    {
+      "program_number": "8",
+      "post_position": "8",
+      "horse_name": "Triple Point (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11472694",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "M Meneses",
+      "trainer": "J G Arnett",
+      "weight_lbs": 119,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "8",
+      "finish_position": 4,
+      "dead_heat": false,
+      "live_odds": "42/1"
+    },
+    {
+      "program_number": "9",
+      "post_position": "9",
+      "horse_name": "Last Hot Lover (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11455655",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "A Cruz",
+      "trainer": "K O'Connell",
+      "weight_lbs": 119,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "9",
+      "finish_position": 7,
+      "dead_heat": false,
+      "live_odds": "5/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Pining (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11479692",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "3/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "11",
+      "post_position": "11",
+      "horse_name": "Tell It Like It Is (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11505053",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "J A Gomez",
+      "trainer": "T M Pompay",
+      "weight_lbs": 119,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "11",
+      "finish_position": 2,
+      "dead_heat": false,
+      "live_odds": "9/2"
+    },
+    {
+      "program_number": "12",
+      "post_position": "12",
+      "horse_name": "She's a Gray (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11501478",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "I O Rodriguez",
+      "trainer": "J H Delgado",
+      "weight_lbs": 119,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "12",
+      "finish_position": 3,
+      "dead_heat": false,
+      "live_odds": "9/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Sonny (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11476828",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "30/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "14",
+      "post_position": "14",
+      "horse_name": "Melly B. Good (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11524438",
+      "horse_registry": "T",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 25000,
+      "jockey": "G A Martinez",
+      "trainer": "K Rice",
+      "weight_lbs": 119,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "14",
+      "finish_position": 9,
+      "dead_heat": false,
+      "live_odds": "18/1"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": true,
+  "winner_horse": "Penelope Style",
+  "winner_jockey": "Samy Camacho",
+  "winner_trainer": "Gregory D. Sacco",
+  "winning_time": "1:05.16",
+  "finish_order": "1. Penelope Style, 2. Tell It Like It Is, 3. She's a Gray, 4. Triple Point, 5. Sisu Spirit, 6. Great Polo, 7. Last Hot Lover, 8. Credit Spreads, 9. Melly B. Good, 10. Razin, 11. Distinctly Red",
+  "win_payout": 11,
+  "place_payout": 6.8,
+  "show_payout": 4.6,
+  "exotic_payouts": "{\"pick_3\":43.3,\"daily_double\":32.4,\"exacta\":41.8,\"superfecta\":347.51,\"trifecta\":173.7,\"x-5_super_high_five\":0}",
+  "winner_program_number": "4",
+  "payouts_by_horse": [
+    {
+      "finish_position": 1,
+      "program_number": "4",
+      "horse_name": "Penelope Style",
+      "horse_refno": "11785287",
+      "horse_registry": "T",
+      "win_payout": 11,
+      "place_payout": 6.8,
+      "show_payout": 4.6,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "11",
+      "horse_name": "Tell It Like It Is",
+      "horse_refno": "11505053",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": 6.8,
+      "show_payout": 3.8,
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "12",
+      "horse_name": "She's a Gray",
+      "horse_refno": "11501478",
+      "horse_registry": "T",
+      "win_payout": null,
+      "place_payout": null,
+      "show_payout": 5.2,
+      "dead_heat": false
+    }
+  ],
+  "exotic_payouts_by_type": {
+    "pick_3": {
+      "payoff": 43.3,
+      "raw_label": "$0.50 Pick 3",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "2-11-4 (3 correct)",
+      "payoffs": [
+        {
+          "payoff": 43.3,
+          "winning_numbers": "2-11-4 (3 correct)"
+        }
+      ]
+    },
+    "daily_double": {
+      "payoff": 32.4,
+      "raw_label": "$1 Daily Double",
+      "wager_unit_usd": 1,
+      "winning_numbers": "11-4",
+      "payoffs": [
+        {
+          "payoff": 32.4,
+          "winning_numbers": "11-4"
+        }
+      ]
+    },
+    "exacta": {
+      "payoff": 41.8,
+      "raw_label": "$1 Exacta",
+      "wager_unit_usd": 1,
+      "winning_numbers": "4-11",
+      "payoffs": [
+        {
+          "payoff": 41.8,
+          "winning_numbers": "4-11"
+        }
+      ]
+    },
+    "superfecta": {
+      "payoff": 347.51,
+      "raw_label": "$0.10 Superfecta",
+      "wager_unit_usd": 0.1,
+      "winning_numbers": "4-11-12-8",
+      "payoffs": [
+        {
+          "payoff": 347.51,
+          "winning_numbers": "4-11-12-8"
+        }
+      ]
+    },
+    "trifecta": {
+      "payoff": 173.7,
+      "raw_label": "$0.50 Trifecta",
+      "wager_unit_usd": 0.5,
+      "winning_numbers": "4-11-12",
+      "payoffs": [
+        {
+          "payoff": 173.7,
+          "winning_numbers": "4-11-12"
+        }
+      ]
+    },
+    "x-5_super_high_five": {
+      "payoff": 0,
+      "raw_label": "$1 X-5 Super High Five",
+      "wager_unit_usd": 1,
+      "winning_numbers": "4-11-12-8-7",
+      "payoffs": [
+        {
+          "payoff": 0,
+          "winning_numbers": "4-11-12-8-7"
+        }
+      ]
+    }
+  },
+  "finish_order_detail": [
+    {
+      "finish_position": 1,
+      "program_number": "4",
+      "horse_name": "Penelope Style",
+      "horse_refno": "11785287",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 2,
+      "program_number": "11",
+      "horse_name": "Tell It Like It Is",
+      "horse_refno": "11505053",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 3,
+      "program_number": "12",
+      "horse_name": "She's a Gray",
+      "horse_refno": "11501478",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 4,
+      "program_number": "8",
+      "horse_name": "Triple Point",
+      "horse_refno": "11472694",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 5,
+      "program_number": "7",
+      "horse_name": "Sisu Spirit",
+      "horse_refno": "11502239",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 6,
+      "program_number": "2",
+      "horse_name": "Great Polo",
+      "horse_refno": "11625118",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 7,
+      "program_number": "9",
+      "horse_name": "Last Hot Lover",
+      "horse_refno": "11455655",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 8,
+      "program_number": "6",
+      "horse_name": "Credit Spreads",
+      "horse_refno": "11555257",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 9,
+      "program_number": "14",
+      "horse_name": "Melly B. Good",
+      "horse_refno": "11524438",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 10,
+      "program_number": "5",
+      "horse_name": "Razin",
+      "horse_refno": "11485052",
+      "horse_registry": "T",
+      "dead_heat": false
+    },
+    {
+      "finish_position": 11,
+      "program_number": "3",
+      "horse_name": "Distinctly Red",
+      "horse_refno": "11544080",
+      "horse_registry": "T",
+      "dead_heat": false
+    }
+  ],
+  "result_revision": "152e53e4da20587e",
+  "entry_url": "https://www.equibase.com/static/entry/TAM111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/TAM111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:04:03.138Z",
+  "live_odds_as_of": "04:22 PM",
+  "live_odds_final": true
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11472694",
+  "horse_registry": "T",
+  "horse_name": "Triple Point (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": null
+    },
+    {
+      "race_id": "PRM-2026-06-21-R7",
+      "track_code": "PRM",
+      "track_name": "Prairie Meadows",
+      "race_date": "2026-06-21",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 8
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "FL",
+      "track_name": "Finger Lakes",
+      "workout_date": "2026-11-10",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.40",
+      "note": "Breezing from the gate",
+      "rank": "8/14"
+    },
+    {
+      "track_code": "FL",
+      "track_name": "Finger Lakes",
+      "workout_date": "2026-11-03",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.30",
+      "note": "Breezing",
+      "rank": "2/16"
+    },
+    {
+      "track_code": "FL",
+      "track_name": "Finger Lakes",
+      "workout_date": "2026-10-22",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.30",
+      "note": "Breezing",
+      "rank": "1/2"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11472694&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:04:03.221Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11455655",
+  "horse_registry": "T",
+  "horse_name": "Last Hot Lover (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": null
+    },
+    {
+      "race_id": "LRL-2026-10-18-R1",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2026-10-18",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "MED-2026-10-02-R6",
+      "track_code": "MED",
+      "track_name": "Meadowlands",
+      "race_date": "2026-10-02",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 41
+    },
+    {
+      "race_id": "MTH-2026-09-06-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-09-06",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "MTH-2026-07-17-R1",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-17",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 54
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.60",
+      "note": "Breezing",
+      "rank": "35/62"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11455655&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:04:03.221Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11505053",
+  "horse_registry": "T",
+  "horse_name": "Tell It Like It Is (FL)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": null
+    },
+    {
+      "race_id": "DEL-2026-10-08-R2",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-10-08",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 38
+    },
+    {
+      "race_id": "MTH-2026-09-12-R4",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-09-12",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 45
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-10",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "59.40",
+      "note": "Breezing",
+      "rank": "1/4"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "48.40",
+      "note": "Handily from the gate",
+      "rank": "1/8"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11505053&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:04:03.221Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11501478",
+  "horse_registry": "T",
+  "horse_name": "She's a Gray (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": null
+    },
+    {
+      "race_id": "MTH-2026-09-12-R4",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-09-12",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 43
+    },
+    {
+      "race_id": "PRX-2026-08-25-R2",
+      "track_code": "PRX",
+      "track_name": "Parx Racing",
+      "race_date": "2026-08-25",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 22
+    },
+    {
+      "race_id": "MTH-2026-08-08-R5",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-08-08",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 41
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing",
+      "rank": "20/62"
+    },
+    {
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "workout_date": "2026-10-23",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "53.00",
+      "note": "Breezing",
+      "rank": "59/62"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11501478&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:04:03.221Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11524438",
+  "horse_registry": "T",
+  "horse_name": "Melly B. Good (KY)",
+  "entered_race_ids": [
+    "TAM-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "TAM-2026-11-18-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-11-18",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": null
+    },
+    {
+      "race_id": "MNR-2026-11-01-R3",
+      "track_code": "MNR",
+      "track_name": "Mountaineer",
+      "race_date": "2026-11-01",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "PID-2026-10-21-R1",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-10-21",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 40
+    },
+    {
+      "race_id": "PID-2026-10-08-R4",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-10-08",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 30
+    },
+    {
+      "race_id": "PID-2026-09-22-R1",
+      "track_code": "PID",
+      "track_name": "Presque Isle Downs",
+      "race_date": "2026-09-22",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 40
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11524438&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:04:03.221Z"
+}]

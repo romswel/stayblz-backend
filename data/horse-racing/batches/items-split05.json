@@ -1,0 +1,1814 @@
+[{
+  "record_type": "race",
+  "race_id": "DED-2026-11-18-R8",
+  "race_date": "2026-11-18",
+  "track_code": "DED",
+  "track_name": "Delta Downs",
+  "race_number": 8,
+  "race_name": "Allowance Optional Claiming",
+  "race_type": "Allowance Optional Claiming",
+  "distance": "Six And One Half Furlongs",
+  "distance_furlongs": 6.5,
+  "surface": "Dirt",
+  "purse_usd": 36000,
+  "track_condition": null,
+  "post_time": "7:56 PM",
+  "age_sex_restriction": null,
+  "entries_count": 10,
+  "entries": "1|Taste of Freedom (AR)|K Roman|I V Gonzalez|118|10/1 | 2|Dagwoods Legacy (TX)|A Birzer|N Eschete|120|15/1 | 3|Caroom's Croupier (AR)|J Inirio|C D Pomier|118|6/1 | 4|Armaleese (KY)|J Ramirez, Jr.|R Courville|120|8/1 | 5|Echo Juliet (KY)|T L Pompell|B A Brinkman|118|12/1 | 6|Hit Song (FL)|J P Vargas|S J Zenon, Sr.|120|12/1 | 7|The Long Embrace (KY)|C Fusilier|A Landry|118|4/1 | 8|Sister Speaker (TX)|J L Rodriguez|D W Payne|120|12/1 | 9|Above the World (MD)|E Del Cid|A Romero|1135|20/1 | 10|Irish Punch (KY)|H Hernandez|S M Asmussen|118|8/5",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Taste of Freedom (AR)",
+      "state_bred": "AR",
+      "horse_refno": "11315242",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "K Roman",
+      "trainer": "I V Gonzalez",
+      "weight_lbs": 118,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "10/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Dagwoods Legacy (TX)",
+      "state_bred": "TX",
+      "horse_refno": "11296365",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "A Birzer",
+      "trainer": "N Eschete",
+      "weight_lbs": 120,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "15/1"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Caroom's Croupier (AR)",
+      "state_bred": "AR",
+      "horse_refno": "11307993",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "J Inirio",
+      "trainer": "C D Pomier",
+      "weight_lbs": 118,
+      "ml_odds": "6/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "6/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Armaleese (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11126448",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "J Ramirez, Jr.",
+      "trainer": "R Courville",
+      "weight_lbs": 120,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "8/1"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Echo Juliet (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11297627",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "T L Pompell",
+      "trainer": "B A Brinkman",
+      "weight_lbs": 118,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "12/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Hit Song (FL)",
+      "state_bred": "FL",
+      "horse_refno": "11110427",
+      "horse_registry": "T",
+      "age_sex": "4/F",
+      "age": 4,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "J P Vargas",
+      "trainer": "S J Zenon, Sr.",
+      "weight_lbs": 120,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "12/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "The Long Embrace (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11343151",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "C Fusilier",
+      "trainer": "A Landry",
+      "weight_lbs": 118,
+      "ml_odds": "4/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "4/1"
+    },
+    {
+      "program_number": "8",
+      "post_position": "8",
+      "horse_name": "Sister Speaker (TX)",
+      "state_bred": "TX",
+      "horse_refno": "11609155",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "J L Rodriguez",
+      "trainer": "D W Payne",
+      "weight_lbs": 120,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "8",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "12/1"
+    },
+    {
+      "program_number": "9",
+      "post_position": "9",
+      "horse_name": "Above the World (MD)",
+      "state_bred": "MD",
+      "horse_refno": "11284880",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 50000,
+      "jockey": "E Del Cid",
+      "trainer": "A Romero",
+      "weight_lbs": 113,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "9",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "20/1"
+    },
+    {
+      "program_number": "10",
+      "post_position": "10",
+      "horse_name": "Irish Punch (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11293193",
+      "horse_registry": "T",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 0,
+      "jockey": "H Hernandez",
+      "trainer": "S M Asmussen",
+      "weight_lbs": 118,
+      "ml_odds": "8/5",
+      "is_scratched": false,
+      "coupled_group": "10",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "8/5"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Opaque (KY)",
+      "state_bred": "KY",
+      "horse_refno": "11120170",
+      "horse_registry": "T",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "15/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": false,
+  "winner_horse": null,
+  "winner_jockey": null,
+  "winner_trainer": null,
+  "winning_time": null,
+  "finish_order": null,
+  "win_payout": null,
+  "place_payout": null,
+  "show_payout": null,
+  "exotic_payouts": null,
+  "winner_program_number": null,
+  "payouts_by_horse": null,
+  "exotic_payouts_by_type": null,
+  "finish_order_detail": null,
+  "result_revision": null,
+  "entry_url": "https://www.equibase.com/static/entry/DED111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/DED111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:09:54.653Z",
+  "live_odds_as_of": "12:44 PM",
+  "live_odds_final": false
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11296365",
+  "horse_registry": "T",
+  "horse_name": "Dagwoods Legacy (TX)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-09-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-09",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 43
+    },
+    {
+      "race_id": "LAD-2026-09-23-R5",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-09-23",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "EVD-2026-09-07-R2",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-09-07",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "EVD-2026-08-13-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-13",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 46
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.60",
+      "note": "Breezing",
+      "rank": "51/63"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-29",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.40",
+      "note": "Breezing",
+      "rank": "24/31"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11296365&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11126448",
+  "horse_registry": "T",
+  "horse_name": "Armaleese (KY)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-09-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-09",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "EVD-2026-08-20-R5",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-20",
+      "race_number": 5,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "EVD-2026-07-25-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-07-25",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "EVD-2026-06-18-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-06-18",
+      "race_number": 6,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "EVD-2026-04-11-R9",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-04-11",
+      "race_number": 9,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "DED-2026-02-21-R2",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-02-21",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "DED-2026-01-22-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-01-22",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "DED-2025-10-30-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-10-30",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "EVD-2025-08-23-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-08-23",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 50
+    },
+    {
+      "race_id": "EVD-2025-08-07-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-08-07",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "EVD-2025-06-14-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-06-14",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "EVD-2025-04-12-R2",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-04-12",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "FG-2025-02-06-R4",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2025-02-06",
+      "race_number": 4,
+      "race_type": "Maiden Optional Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "FG-2025-01-09-R5",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2025-01-09",
+      "race_number": 5,
+      "race_type": "Maiden Optional Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "FG-2024-12-15-R7",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2024-12-15",
+      "race_number": 7,
+      "race_type": "Maiden Optional Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "FG-2024-11-30-R7",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2024-11-30",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 50
+    },
+    {
+      "race_id": "DED-2024-10-12-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2024-10-12",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 49
+    },
+    {
+      "race_id": "EVD-2024-08-17-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2024-08-17",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 45
+    },
+    {
+      "race_id": "EVD-2024-07-19-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2024-07-19",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 45
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-05",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:05.20",
+      "note": "Breezing",
+      "rank": "7/7"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-02",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "53.20",
+      "note": "Breezing",
+      "rank": "55/68"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-25",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.40",
+      "note": "Breezing",
+      "rank": "7/24"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11126448&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11307993",
+  "horse_registry": "T",
+  "horse_name": "Caroom's Croupier (AR)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-09-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-09",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "EVD-2026-08-20-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-20",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "ELP-2026-07-19-R4",
+      "track_code": "ELP",
+      "track_name": "Ellis Park",
+      "race_date": "2026-07-19",
+      "race_number": 4,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "IND-2026-07-06-R2",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2026-07-06",
+      "race_number": 2,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "IND-2026-06-09-R5",
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "race_date": "2026-06-09",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 45
+    },
+    {
+      "race_id": "OP-2026-04-12-R9",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2026-04-12",
+      "race_number": 9,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "OP-2026-04-03-R9",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2026-04-03",
+      "race_number": 9,
+      "race_type": "Rainbow Miss Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 14
+    },
+    {
+      "race_id": "OP-2026-03-08-R9",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2026-03-08",
+      "race_number": 9,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "OP-2026-02-20-R2",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2026-02-20",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "DED-2026-01-16-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-01-16",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "OP-2025-12-12-R10",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2025-12-12",
+      "race_number": 10,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 35
+    },
+    {
+      "race_id": "FG-2025-11-20-R7",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2025-11-20",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 18
+    },
+    {
+      "race_id": "DED-2025-10-25-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-10-25",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "EVD-2025-07-05-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-07-05",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 52
+    },
+    {
+      "race_id": "CD-2025-06-18-R4",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-06-18",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 50
+    },
+    {
+      "race_id": "CD-2025-05-22-R3",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-05-22",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 10,
+      "speed_figure": 29
+    },
+    {
+      "race_id": "CD-2025-05-08-R2",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2025-05-08",
+      "race_number": 2,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 48
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-06",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.60",
+      "note": "Breezing",
+      "rank": "12/56"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-29",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.00",
+      "note": "Breezing",
+      "rank": "14/31"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-01",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "52.60",
+      "note": "Breezing",
+      "rank": "34/49"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-25",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:05.20",
+      "note": "Breezing",
+      "rank": "2/4"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11307993&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11315242",
+  "horse_registry": "T",
+  "horse_name": "Taste of Freedom (AR)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-23-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-23",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "EVD-2026-08-07-R5",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-07",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 49
+    },
+    {
+      "race_id": "EVD-2026-07-25-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-07-25",
+      "race_number": 3,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "EVD-2026-06-27-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-06-27",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 77
+    },
+    {
+      "race_id": "EVD-2026-06-11-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-06-11",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 53
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-14",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "54.80",
+      "note": "Breezing",
+      "rank": "46/46"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11315242&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11297627",
+  "horse_registry": "T",
+  "horse_name": "Echo Juliet (KY)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-09-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-09",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "DEL-2026-07-30-R5",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-07-30",
+      "race_number": 5,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 40
+    },
+    {
+      "race_id": "MTH-2026-07-05-R7",
+      "track_code": "MTH",
+      "track_name": "Monmouth Park",
+      "race_date": "2026-07-05",
+      "race_number": 7,
+      "race_type": "Monmouth County Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "DEL-2026-05-13-R7",
+      "track_code": "DEL",
+      "track_name": "Delaware Park",
+      "race_date": "2026-05-13",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "EVD-2026-04-03-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-04-03",
+      "race_number": 3,
+      "race_type": "Acadiana Stakes (Black Type)",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "FG-2026-03-13-R8",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2026-03-13",
+      "race_number": 8,
+      "race_type": "Allowance Optional Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 90
+    },
+    {
+      "race_id": "DED-2026-02-11-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-02-11",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "DED-2025-12-22-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-12-22",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "DED-2025-11-22-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-11-22",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 69
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-29",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:06.40",
+      "note": "Breezing",
+      "rank": "1/3"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-02",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.40",
+      "note": "Breezing",
+      "rank": "24/68"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-24",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.20",
+      "note": "Breezing",
+      "rank": "3/22"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11297627&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11110427",
+  "horse_registry": "T",
+  "horse_name": "Hit Song (FL)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-09-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-09",
+      "race_number": 7,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "EVD-2026-08-07-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-07",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "EVD-2026-07-18-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-07-18",
+      "race_number": 6,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "TAM-2026-03-11-R8",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-03-11",
+      "race_number": 8,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "TAM-2026-02-14-R3",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-02-14",
+      "race_number": 3,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "TAM-2026-01-21-R7",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-21",
+      "race_number": 7,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "TAM-2026-01-04-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2026-01-04",
+      "race_number": 5,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "TAM-2025-12-27-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-12-27",
+      "race_number": 5,
+      "race_type": "Starter Handicap",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "TAM-2025-12-10-R3",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-12-10",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "GP-2025-11-02-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-11-02",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 52
+    },
+    {
+      "race_id": "LRL-2025-10-05-R6",
+      "track_code": "LRL",
+      "track_name": "Laurel Park",
+      "race_date": "2025-10-05",
+      "race_number": 6,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "CNL-2025-09-13-R5",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-09-13",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "CNL-2025-08-30-R4",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-08-30",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "CNL-2025-08-15-R5",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-08-15",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "CNL-2025-07-30-R5",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-07-30",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 69
+    },
+    {
+      "race_id": "CNL-2025-07-19-R10",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2025-07-19",
+      "race_number": 10,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 11,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "EVD-2025-06-06-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-06-06",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "EVD-2025-05-07-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-05-07",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 45
+    },
+    {
+      "race_id": "TAM-2025-04-05-R5",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-04-05",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "GP-2025-03-06-R2",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2025-03-06",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 60
+    },
+    {
+      "race_id": "TAM-2025-02-08-R10",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-02-08",
+      "race_number": 10,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 67
+    },
+    {
+      "race_id": "TAM-2025-01-25-R9",
+      "track_code": "TAM",
+      "track_name": "Tampa Bay",
+      "race_date": "2025-01-25",
+      "race_number": 9,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "GP-2024-12-22-R5",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-12-22",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 70
+    },
+    {
+      "race_id": "GP-2024-11-17-R6",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-11-17",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 7,
+      "speed_figure": 18
+    },
+    {
+      "race_id": "GP-2024-11-02-R1",
+      "track_code": "GP",
+      "track_name": "Gulfstream Park",
+      "race_date": "2024-11-02",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 47
+    },
+    {
+      "race_id": "CNL-2024-09-05-R8",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2024-09-05",
+      "race_number": 8,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "CNL-2024-08-13-R4",
+      "track_code": "CNL",
+      "track_name": "Colonial Downs",
+      "race_date": "2024-08-13",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 61
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-05",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.20",
+      "note": "Breezing",
+      "rank": "22/24"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-29",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:05.00",
+      "note": "Breezing",
+      "rank": "1/2"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-19",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "52.40",
+      "note": "Breezing",
+      "rank": "12/12"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11110427&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11343151",
+  "horse_registry": "T",
+  "horse_name": "The Long Embrace (KY)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-08-21-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-21",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 80
+    },
+    {
+      "race_id": "CD-2026-05-24-R10",
+      "track_code": "CD",
+      "track_name": "Churchill Downs",
+      "race_date": "2026-05-24",
+      "race_number": 10,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 66
+    },
+    {
+      "race_id": "OP-2026-04-26-R7",
+      "track_code": "OP",
+      "track_name": "Oaklawn Park",
+      "race_date": "2026-04-26",
+      "race_number": 7,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 9,
+      "speed_figure": 45
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-11",
+      "surface": "Dirt",
+      "distance": "5F",
+      "time": "1:05.80",
+      "note": "Breezing",
+      "rank": "8/9"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-30",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.40",
+      "note": "Breezing",
+      "rank": "5/44"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-17",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.00",
+      "note": "Breezing",
+      "rank": "27/46"
+    },
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-03",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.60",
+      "note": "Breezing",
+      "rank": "5/76"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11343151&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11609155",
+  "horse_registry": "T",
+  "horse_name": "Sister Speaker (TX)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-10-17-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-10-17",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 75
+    },
+    {
+      "race_id": "HOU-2026-03-27-R6",
+      "track_code": "HOU",
+      "track_name": "Sam Houston",
+      "race_date": "2026-03-27",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "HOU-2026-03-06-R6",
+      "track_code": "HOU",
+      "track_name": "Sam Houston",
+      "race_date": "2026-03-06",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 18
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.60",
+      "note": "Breezing",
+      "rank": "51/63"
+    },
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-09-29",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.10",
+      "note": "Breezing",
+      "rank": "23/33"
+    },
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-09-22",
+      "surface": "Dirt",
+      "distance": "3F",
+      "time": "37.00",
+      "note": "Breezing",
+      "rank": "1/1"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11609155&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11284880",
+  "horse_registry": "T",
+  "horse_name": "Above the World (MD)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-08-31-R2",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-31",
+      "race_number": 2,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 6,
+      "speed_figure": 50
+    },
+    {
+      "race_id": "EVD-2026-08-07-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-08-07",
+      "race_number": 1,
+      "race_type": "Claiming",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 64
+    },
+    {
+      "race_id": "EVD-2026-07-25-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-07-25",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "EVD-2026-06-27-R6",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-06-27",
+      "race_number": 6,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": null,
+      "speed_figure": null
+    },
+    {
+      "race_id": "EVD-2026-06-11-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-06-11",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 56
+    },
+    {
+      "race_id": "EVD-2026-05-15-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-05-15",
+      "race_number": 1,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 4,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "EVD-2026-04-11-R9",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-04-11",
+      "race_number": 9,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 8,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "DED-2026-02-13-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-02-13",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 47
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-11-13",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "50.00",
+      "note": "Breezing from the gate",
+      "rank": "17/36"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11284880&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11293193",
+  "horse_registry": "T",
+  "horse_name": "Irish Punch (KY)",
+  "entered_race_ids": [
+    "DED-2026-11-18-R8"
+  ],
+  "past_starts": [
+    {
+      "race_id": "LS-2026-06-21-R2",
+      "track_code": "LS",
+      "track_name": "Lone Star",
+      "race_date": "2026-06-21",
+      "race_number": 2,
+      "race_type": "Allowance",
+      "breed": "TB",
+      "finish_position": 2,
+      "speed_figure": 61
+    },
+    {
+      "race_id": "HOU-2026-04-04-R8",
+      "track_code": "HOU",
+      "track_name": "Sam Houston",
+      "race_date": "2026-04-04",
+      "race_number": 8,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 1,
+      "speed_figure": 74
+    },
+    {
+      "race_id": "FG-2026-03-13-R5",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2026-03-13",
+      "race_number": 5,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "FG-2026-02-14-R4",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2026-02-14",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 3,
+      "speed_figure": 73
+    },
+    {
+      "race_id": "FG-2025-12-20-R4",
+      "track_code": "FG",
+      "track_name": "Fair Grounds",
+      "race_date": "2025-12-20",
+      "race_number": 4,
+      "race_type": "Maiden Special Weight",
+      "breed": "TB",
+      "finish_position": 5,
+      "speed_figure": 61
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.00",
+      "note": "Breezing",
+      "rank": "2/20"
+    },
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-10-29",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.10",
+      "note": "Breezing",
+      "rank": "11/26"
+    },
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-10-14",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "51.30",
+      "note": "Breezing",
+      "rank": "20/28"
+    },
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-09-20",
+      "surface": "Dirt",
+      "distance": "4F",
+      "time": "49.40",
+      "note": "Breezing",
+      "rank": "10/29"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11293193&registry=T&rbt=TB",
+  "scraped_at": "2026-11-18T23:09:54.723Z"
+}]
