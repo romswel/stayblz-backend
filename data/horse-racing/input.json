@@ -1,0 +1,10 @@
+{
+  "raceDate": "",
+  "trackCodes": [],
+  "dataMode": "both",
+  "maxItems": 50,
+  "raceTypes": [],
+  "filliesMaresOnly": false,
+  "includeHorseHistory": false,
+  "maxHorseProfiles": 100
+}

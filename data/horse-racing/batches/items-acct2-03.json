@@ -1,0 +1,2945 @@
+[{
+  "record_type": "horse_history",
+  "horse_refno": "11606014",
+  "horse_registry": "Q",
+  "horse_name": "Ss Apollo Road (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-30-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-30",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 33
+    },
+    {
+      "race_id": "DED-2026-08-21-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-21",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "DED-2026-07-18-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-18",
+      "race_number": 5,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "DED-2026-05-23-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-23",
+      "race_number": 3,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 0
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-13",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.41",
+      "note": "Breezing",
+      "rank": "6/13"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11606014&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11681827",
+  "horse_registry": "Q",
+  "horse_name": "Some Royal Charlatan (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-30-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-30",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "EVD-2026-10-15-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-15",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 27
+    },
+    {
+      "race_id": "DED-2026-08-22-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-22",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 37
+    },
+    {
+      "race_id": "DED-2026-07-23-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-23",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 31
+    },
+    {
+      "race_id": "DED-2026-06-26-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-26",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 10
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11681827&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11688976",
+  "horse_registry": "Q",
+  "horse_name": "Memories Cocktail (TX)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-14-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-14",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 20
+    },
+    {
+      "race_id": "GIL-2026-08-29-R2",
+      "track_code": "GIL",
+      "track_name": "Gillespie Fairground",
+      "race_date": "2026-08-29",
+      "race_number": 2,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "GIL-2026-08-16-R1",
+      "track_code": "GIL",
+      "track_name": "Gillespie Fairground",
+      "race_date": "2026-08-16",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 0
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11688976&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11675133",
+  "horse_registry": "Q",
+  "horse_name": "One Sweet Bride (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-28-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-28",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 7
+    },
+    {
+      "race_id": "DED-2026-08-20-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-20",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "DED-2026-05-07-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-07",
+      "race_number": 4,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-10-16",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.95",
+      "note": "Breezing",
+      "rank": "2/5"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11675133&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11624762",
+  "horse_registry": "Q",
+  "horse_name": "Elbow 225 (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.92",
+      "note": "Breezing from the gate",
+      "rank": "9/11"
+    },
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-24",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.99",
+      "note": "Breezing from the gate",
+      "rank": "15/22"
+    },
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.13",
+      "note": "Breezing from the gate",
+      "rank": "23/24"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11624762&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11523479",
+  "horse_registry": "Q",
+  "horse_name": "Fefeisnotleaving (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-09-R2",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-09",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "DED-2026-08-20-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-20",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "DED-2026-07-04-R10",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-04",
+      "race_number": 10,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 63
+    },
+    {
+      "race_id": "DED-2026-05-14-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-14",
+      "race_number": 4,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 51
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11523479&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11650086",
+  "horse_registry": "Q",
+  "horse_name": "A Fabulous Moon (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-30-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-30",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 41
+    },
+    {
+      "race_id": "EVD-2026-10-15-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-15",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 36
+    },
+    {
+      "race_id": "DED-2026-08-21-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-21",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 19
+    },
+    {
+      "race_id": "DED-2026-07-23-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-23",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 43
+    },
+    {
+      "race_id": "DED-2026-06-20-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-20",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 43
+    },
+    {
+      "race_id": "DED-2026-05-20-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-20",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "DED-2026-04-25-R9",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-04-25",
+      "race_number": 9,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 51
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11650086&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11695242",
+  "horse_registry": "Q",
+  "horse_name": "Pk Silver Streak (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R1"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-28-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-28",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "EVD-2026-10-02-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-02",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "DED-2026-08-20-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-20",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 22
+    },
+    {
+      "race_id": "DED-2026-07-23-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-23",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 58
+    },
+    {
+      "race_id": "DED-2026-07-02-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-02",
+      "race_number": 4,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "DED-2026-06-10-R2",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-10",
+      "race_number": 2,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "DED-2026-05-15-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-15",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 35
+    },
+    {
+      "race_id": "DED-2026-05-01-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-01",
+      "race_number": 6,
+      "race_type": "Laddie Futurity Trial",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "LAD-2026-03-20-R2",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-03-20",
+      "race_number": 2,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": null,
+      "speed_figure": null
+    },
+    {
+      "race_id": "LAD-2026-03-08-R4",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-03-08",
+      "race_number": 4,
+      "race_type": "Mardi Gras Futurity Trial",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 41
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11695242&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11499007",
+  "horse_registry": "Q",
+  "horse_name": "Miss Piloto Chrome (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-28-R5",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-28",
+      "race_number": 5,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "EVD-2026-10-17-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-17",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "SRR-2026-09-05-R1",
+      "track_code": "SRR",
+      "track_name": "Sandy Ridge Racing",
+      "race_date": "2026-09-05",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 58
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11499007&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11559368",
+  "horse_registry": "Q",
+  "horse_name": "Dancing Wild Train (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-21-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-21",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 38
+    },
+    {
+      "race_id": "EVD-2026-10-08-R5",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-08",
+      "race_number": 5,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "DED-2026-07-02-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-02",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 49
+    },
+    {
+      "race_id": "DED-2026-05-08-R9",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-08",
+      "race_number": 9,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 15
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11559368&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11827707",
+  "horse_registry": "Q",
+  "horse_name": "San Lorenzo Game (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-23-R5",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-23",
+      "race_number": 5,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 65
+    },
+    {
+      "race_id": "DED-2026-07-17-R9",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-17",
+      "race_number": 9,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 45
+    },
+    {
+      "race_id": "DED-2026-05-14-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-14",
+      "race_number": 8,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 44
+    },
+    {
+      "race_id": "DED-2026-05-01-R12",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-01",
+      "race_number": 12,
+      "race_type": "Laddie Futurity Trial",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 2
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-29",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.25",
+      "note": "Breezing",
+      "rank": "9/10"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11827707&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11539061",
+  "horse_registry": "Q",
+  "horse_name": "Louisiana Tornado (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-31-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-31",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 49
+    },
+    {
+      "race_id": "DED-2026-08-06-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-06",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 25
+    },
+    {
+      "race_id": "DED-2026-06-19-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-19",
+      "race_number": 1,
+      "race_type": "Lee Berwick Memorial Louisiana Bred Futurity Trial",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "DED-2026-05-20-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-20",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "LAD-2026-03-07-R3",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-03-07",
+      "race_number": 3,
+      "race_type": "Mardi Gras Futurity Trial",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 55
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "LS",
+      "track_name": "Lone Star",
+      "workout_date": "2026-10-09",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.87",
+      "note": "Breezing",
+      "rank": "20/28"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11539061&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11681826",
+  "horse_registry": "Q",
+  "horse_name": "Farewell Brenda (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-28-R5",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-28",
+      "race_number": 5,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "EVD-2026-10-07-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-07",
+      "race_number": 3,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 59
+    },
+    {
+      "race_id": "DED-2026-06-04-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-04",
+      "race_number": 8,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 0
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-09-22",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.04",
+      "note": "Breezing",
+      "rank": "3/5"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11681826&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11686783",
+  "horse_registry": "Q",
+  "horse_name": "Eyejesleavinlouisana (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-21-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-21",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 52
+    },
+    {
+      "race_id": "DED-2026-07-23-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-23",
+      "race_number": 6,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "DED-2026-05-16-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-16",
+      "race_number": 3,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 15
+    },
+    {
+      "race_id": "DED-2026-04-30-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-04-30",
+      "race_number": 3,
+      "race_type": "Lassie Futurity Trial",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 35
+    },
+    {
+      "race_id": "LAD-2026-03-07-R2",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-03-07",
+      "race_number": 2,
+      "race_type": "Mardi Gras Futurity Trial",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 71
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-13",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.70",
+      "note": "Breezing from the gate",
+      "rank": "9/13"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11686783&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11592149",
+  "horse_registry": "Q",
+  "horse_name": "Life On the Train (TX)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-24-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-24",
+      "race_number": 7,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 55
+    },
+    {
+      "race_id": "DED-2026-07-04-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-04",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "DED-2026-06-12-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-12",
+      "race_number": 5,
+      "race_type": "Firecracker Futurity Trial",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 54
+    },
+    {
+      "race_id": "DED-2026-05-09-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-09",
+      "race_number": 6,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 61
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11592149&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11593737",
+  "horse_registry": "Q",
+  "horse_name": "Tf Majestic Fdd (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R3"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-24-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-24",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 36
+    },
+    {
+      "race_id": "EVD-2026-10-10-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-10",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 32
+    },
+    {
+      "race_id": "DED-2026-08-06-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-06",
+      "race_number": 8,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 26
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-10-07",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.02",
+      "note": "Breezing",
+      "rank": "6/6"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11593737&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11668229",
+  "horse_registry": "Q",
+  "horse_name": "Fiscal Warning (AL)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-07-03-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-03",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 62
+    },
+    {
+      "race_id": "DED-2026-05-27-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-27",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "DED-2026-05-08-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-08",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 44
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-11-07",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.19",
+      "note": "Breezing from the gate",
+      "rank": "10/11"
+    },
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-06",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "11.87",
+      "note": "Breezing",
+      "rank": "10/27"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11668229&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11797304",
+  "horse_registry": "Q",
+  "horse_name": "Right On Lorenzo (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-11-04-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-11-04",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 58
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-17",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.36",
+      "note": "Breezing",
+      "rank": "2/3"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11797304&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11588306",
+  "horse_registry": "Q",
+  "horse_name": "The Concrete Wolf (IN)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-11-04",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.97",
+      "note": "Breezing from the gate",
+      "rank": "2/2"
+    },
+    {
+      "track_code": "IND",
+      "track_name": "Horseshoe Indianapolis",
+      "workout_date": "2026-09-23",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "11.75",
+      "note": "Breezing from the gate",
+      "rank": "2/8"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11588306&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11789835",
+  "horse_registry": "Q",
+  "horse_name": "Golden Cruzer (SC)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-24-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-24",
+      "race_number": 7,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 57
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-02",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.13",
+      "note": "Breezing from the gate",
+      "rank": "30/37"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11789835&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:44.270Z"
+},
+{
+  "record_type": "race",
+  "race_id": "EVD-2026-11-18-R1",
+  "race_date": "2026-11-18",
+  "track_code": "EVD",
+  "track_name": "Evangeline Downs",
+  "race_number": 1,
+  "race_name": "Maiden Claiming",
+  "race_type": "Maiden Claiming",
+  "distance": "Four Hundred Yards",
+  "distance_furlongs": 8,
+  "surface": "Dirt",
+  "purse_usd": 9000,
+  "track_condition": null,
+  "post_time": "5:35 PM",
+  "age_sex_restriction": null,
+  "entries_count": 7,
+  "entries": "1|One Sweet Bride (LA)|R Cabrera|B Hernandez|124|15/1 | 2|Memories Cocktail (TX)|N Castaneda|C G Castro|124|20/1 | 3|Ss Apollo Road (LA)|U Luna|R S Vidana|124|8/1 | 4|Some Royal Charlatan (LA)|R Hernandez|D Hoda|124|5/1 | 5|Elbow 225 (LA)|R Leblanc|D Hoda|124|3/1 | 6|A Fabulous Moon (LA)|S Ramirez|S Ramirez|124|4/1 | 7|Pk Silver Streak (LA)|J E Villarreal|S G Flores|124|7/5",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "One Sweet Bride (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11675133",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "R Cabrera",
+      "trainer": "B Hernandez",
+      "weight_lbs": 124,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "19/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Memories Cocktail (TX)",
+      "state_bred": "TX",
+      "horse_refno": "11688976",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 5000,
+      "jockey": "N Castaneda",
+      "trainer": "C G Castro",
+      "weight_lbs": 124,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "22/1"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "Ss Apollo Road (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11606014",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "U Luna",
+      "trainer": "R S Vidana",
+      "weight_lbs": 124,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "6/1"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Some Royal Charlatan (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11681827",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "R Hernandez",
+      "trainer": "D Hoda",
+      "weight_lbs": 124,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "8/1"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Elbow 225 (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11624762",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": null,
+      "claim_price_usd": 5000,
+      "jockey": "R Leblanc",
+      "trainer": "D Hoda",
+      "weight_lbs": 124,
+      "ml_odds": "3/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "7/5"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "A Fabulous Moon (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11650086",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "S Ramirez",
+      "trainer": "S Ramirez",
+      "weight_lbs": 124,
+      "ml_odds": "4/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "5/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Pk Silver Streak (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11695242",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": null,
+      "claim_price_usd": 5000,
+      "jockey": "J E Villarreal",
+      "trainer": "S G Flores",
+      "weight_lbs": 124,
+      "ml_odds": "7/5",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "9/5"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": false,
+  "winner_horse": null,
+  "winner_jockey": null,
+  "winner_trainer": null,
+  "winning_time": null,
+  "finish_order": null,
+  "win_payout": null,
+  "place_payout": null,
+  "show_payout": null,
+  "exotic_payouts": null,
+  "winner_program_number": null,
+  "payouts_by_horse": null,
+  "exotic_payouts_by_type": null,
+  "finish_order_detail": null,
+  "result_revision": null,
+  "entry_url": "https://www.equibase.com/static/entry/EVD111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/EVD111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:32:52.079Z",
+  "live_odds_as_of": "06:31 PM",
+  "live_odds_final": false
+},
+{
+  "record_type": "race",
+  "race_id": "EVD-2026-11-18-R3",
+  "race_date": "2026-11-18",
+  "track_code": "EVD",
+  "track_name": "Evangeline Downs",
+  "race_number": 3,
+  "race_name": "Maiden Claiming",
+  "race_type": "Maiden Claiming",
+  "distance": "Two Hundred And Twenty Yards",
+  "distance_furlongs": 8,
+  "surface": "Dirt",
+  "purse_usd": 15000,
+  "track_condition": null,
+  "post_time": "6:25 PM",
+  "age_sex_restriction": null,
+  "entries_count": 8,
+  "entries": "1|Fefeisnotleaving (LA)|L Palomo|G Davila|124|5/2 | 2|Miss Piloto Chrome (LA)|L Constantin|M Flores, Jr.|124|5/1 | 3|San Lorenzo Game (LA)|L Rodriguez|R Aboytes-Suarez|124|8/1 | 4|Dancing Wild Train (LA)|J F Garcia, Jr.|M Flores, Jr.|124|20/1 | 5|Louisiana Tornado (LA)|R Cabrera|J Estrada|124|10/1 | 7|Farewell Brenda (LA)|A X Morales|E McCulley|124|9/2 | 8|Eyejesleavinlouisana (LA)|B Ransom|D London|124|12/1 | 9|Tf Majestic Fdd (LA)|E E Martinez|J D Barron|124|15/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Fefeisnotleaving (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11523479",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 10000,
+      "jockey": "L Palomo",
+      "trainer": "G Davila",
+      "weight_lbs": 124,
+      "ml_odds": "5/2",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Miss Piloto Chrome (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11499007",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "L Constantin",
+      "trainer": "M Flores, Jr.",
+      "weight_lbs": 124,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "3",
+      "post_position": "3",
+      "horse_name": "San Lorenzo Game (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11827707",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "L Rodriguez",
+      "trainer": "R Aboytes-Suarez",
+      "weight_lbs": 124,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "3",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "5/2"
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Dancing Wild Train (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11559368",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "J F Garcia, Jr.",
+      "trainer": "M Flores, Jr.",
+      "weight_lbs": 124,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Louisiana Tornado (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11539061",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "R Cabrera",
+      "trainer": "J Estrada",
+      "weight_lbs": 124,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "5/2"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Mda Cartel Werker (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11587902",
+      "horse_registry": "Q",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "3/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Farewell Brenda (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11681826",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "A X Morales",
+      "trainer": "E McCulley",
+      "weight_lbs": 124,
+      "ml_odds": "9/2",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "4/5"
+    },
+    {
+      "program_number": "8",
+      "post_position": "8",
+      "horse_name": "Eyejesleavinlouisana (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11686783",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "B Ransom",
+      "trainer": "D London",
+      "weight_lbs": 124,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "8",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "6/1"
+    },
+    {
+      "program_number": "9",
+      "post_position": "9",
+      "horse_name": "Tf Majestic Fdd (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11593737",
+      "horse_registry": "Q",
+      "age_sex": "2/C",
+      "age": 2,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": 10000,
+      "jockey": "E E Martinez",
+      "trainer": "J D Barron",
+      "weight_lbs": 124,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "9",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": false,
+  "winner_horse": null,
+  "winner_jockey": null,
+  "winner_trainer": null,
+  "winning_time": null,
+  "finish_order": null,
+  "win_payout": null,
+  "place_payout": null,
+  "show_payout": null,
+  "exotic_payouts": null,
+  "winner_program_number": null,
+  "payouts_by_horse": null,
+  "exotic_payouts_by_type": null,
+  "finish_order_detail": null,
+  "result_revision": null,
+  "entry_url": "https://www.equibase.com/static/entry/EVD111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/EVD111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:32:52.079Z",
+  "live_odds_as_of": "05:04 PM",
+  "live_odds_final": false
+},
+{
+  "record_type": "race",
+  "race_id": "EVD-2026-11-18-R4",
+  "race_date": "2026-11-18",
+  "track_code": "EVD",
+  "track_name": "Evangeline Downs",
+  "race_number": 4,
+  "race_name": "Maiden",
+  "race_type": "Maiden",
+  "distance": "Three Hundred And Fifty Yards",
+  "distance_furlongs": 8,
+  "surface": "Dirt",
+  "purse_usd": 14000,
+  "track_condition": null,
+  "post_time": "6:50 PM",
+  "age_sex_restriction": null,
+  "entries_count": 9,
+  "entries": "1|Life On the Train (TX)|N Castaneda|J U Lopez|124|9/2 | 2|Fiscal Warning (AL)|D Blake|R Meche|124|7/2 | 4|Right On Lorenzo (LA)|L Palomo|J E Gonzalez|124|15/1 | 5|Jp Big Daddy Dash (CO)|R Hernandez|F Lopez|124|2/1 | 6|Predators Gold (OK)|R Edison Jr.|G Rosales|124|20/1 | 7|Golden Cruzer (SC)|J F Garcia, Jr.|T Ellis|124|8/1 | 8|The Concrete Wolf (IN)|L Rodriguez|H J Sanchez|124|15/1 | 9|Jess Maybe I Can (OK)|M Sanchez|D Rubin|124|12/1 | 10|Fav Apollitical (CA)|A X Morales|L Hernandez|124|20/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Life On the Train (TX)",
+      "state_bred": "TX",
+      "horse_refno": "11592149",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "N Castaneda",
+      "trainer": "J U Lopez",
+      "weight_lbs": 124,
+      "ml_odds": "9/2",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "1/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Fiscal Warning (AL)",
+      "state_bred": "AL",
+      "horse_refno": "11668229",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "D Blake",
+      "trainer": "R Meche",
+      "weight_lbs": 124,
+      "ml_odds": "7/2",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Concrete Cowboy M (TX)",
+      "state_bred": "TX",
+      "horse_refno": "11804331",
+      "horse_registry": "Q",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "6/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "4",
+      "post_position": "4",
+      "horse_name": "Right On Lorenzo (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11797304",
+      "horse_registry": "Q",
+      "age_sex": "2/C",
+      "age": 2,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "L Palomo",
+      "trainer": "J E Gonzalez",
+      "weight_lbs": 124,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "4",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Jp Big Daddy Dash (CO)",
+      "state_bred": "CO",
+      "horse_refno": "11613800",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": "R Hernandez",
+      "trainer": "F Lopez",
+      "weight_lbs": 124,
+      "ml_odds": "2/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Predators Gold (OK)",
+      "state_bred": "OK",
+      "horse_refno": "11524547",
+      "horse_registry": "Q",
+      "age_sex": "2/C",
+      "age": 2,
+      "sex": "C",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "R Edison Jr.",
+      "trainer": "G Rosales",
+      "weight_lbs": 124,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Golden Cruzer (SC)",
+      "state_bred": "SC",
+      "horse_refno": "11789835",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "J F Garcia, Jr.",
+      "trainer": "T Ellis",
+      "weight_lbs": 124,
+      "ml_odds": "8/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "8",
+      "post_position": "8",
+      "horse_name": "The Concrete Wolf (IN)",
+      "state_bred": "IN",
+      "horse_refno": "11588306",
+      "horse_registry": "Q",
+      "age_sex": "2/C",
+      "age": 2,
+      "sex": "C",
+      "medication": "L1",
+      "claim_price_usd": null,
+      "jockey": "L Rodriguez",
+      "trainer": "H J Sanchez",
+      "weight_lbs": 124,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "8",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "3/1"
+    },
+    {
+      "program_number": "9",
+      "post_position": "9",
+      "horse_name": "Jess Maybe I Can (OK)",
+      "state_bred": "OK",
+      "horse_refno": "11587512",
+      "horse_registry": "Q",
+      "age_sex": "2/F",
+      "age": 2,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "M Sanchez",
+      "trainer": "D Rubin",
+      "weight_lbs": 124,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "9",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "7/1"
+    },
+    {
+      "program_number": "10",
+      "post_position": "10",
+      "horse_name": "Fav Apollitical (CA)",
+      "state_bred": "CA",
+      "horse_refno": "11639490",
+      "horse_registry": "Q",
+      "age_sex": "2/G",
+      "age": 2,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": null,
+      "jockey": "A X Morales",
+      "trainer": "L Hernandez",
+      "weight_lbs": 124,
+      "ml_odds": "20/1",
+      "is_scratched": false,
+      "coupled_group": "10",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "7/5"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": false,
+  "winner_horse": null,
+  "winner_jockey": null,
+  "winner_trainer": null,
+  "winning_time": null,
+  "finish_order": null,
+  "win_payout": null,
+  "place_payout": null,
+  "show_payout": null,
+  "exotic_payouts": null,
+  "winner_program_number": null,
+  "payouts_by_horse": null,
+  "exotic_payouts_by_type": null,
+  "finish_order_detail": null,
+  "result_revision": null,
+  "entry_url": "https://www.equibase.com/static/entry/EVD111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/EVD111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:32:52.079Z",
+  "live_odds_as_of": "05:04 PM",
+  "live_odds_final": false
+},
+{
+  "record_type": "race",
+  "race_id": "EVD-2026-11-18-R7",
+  "race_date": "2026-11-18",
+  "track_code": "EVD",
+  "track_name": "Evangeline Downs",
+  "race_number": 7,
+  "race_name": "Maiden Claiming",
+  "race_type": "Maiden Claiming",
+  "distance": "Three Hundred Yards",
+  "distance_furlongs": 8,
+  "surface": "Dirt",
+  "purse_usd": 12500,
+  "track_condition": null,
+  "post_time": "8:05 PM",
+  "age_sex_restriction": null,
+  "entries_count": 6,
+  "entries": "1|Lorenzos Gone (LA)|B Ransom|M Flores, Jr.|126|5/1 | 2|Cartel Over the Moon (LA)|R Leblanc|L A Lee|128|7/2 | 5|Huckleberry Tide (LA)|R Hernandez|D Hoda|126|12/1 | 6|Tdz Cosdecuero (LA)|U Luna|N Eschete|126|3/1 | 7|Ttt Runaway Angie (LA)|R Edison Jr.|D L Barnes|126|10/1 | 8|Ej Booboo Fett (LA)|A X Morales|E Jeane|128|15/1",
+  "entries_detail": [
+    {
+      "program_number": "1",
+      "post_position": "1",
+      "horse_name": "Lorenzos Gone (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11340415",
+      "horse_registry": "Q",
+      "age_sex": "3/G",
+      "age": 3,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "B Ransom",
+      "trainer": "M Flores, Jr.",
+      "weight_lbs": 126,
+      "ml_odds": "5/1",
+      "is_scratched": false,
+      "coupled_group": "1",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "2",
+      "post_position": "2",
+      "horse_name": "Cartel Over the Moon (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11360047",
+      "horse_registry": "Q",
+      "age_sex": "5/M",
+      "age": 5,
+      "sex": "M",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "R Leblanc",
+      "trainer": "L A Lee",
+      "weight_lbs": 128,
+      "ml_odds": "7/2",
+      "is_scratched": false,
+      "coupled_group": "2",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "High Flying Jedi (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11436559",
+      "horse_registry": "Q",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "9/5",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": null,
+      "post_position": null,
+      "horse_name": "Jazzy Cartel (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11138705",
+      "horse_registry": "Q",
+      "age_sex": null,
+      "age": null,
+      "sex": null,
+      "medication": null,
+      "claim_price_usd": null,
+      "jockey": null,
+      "trainer": null,
+      "weight_lbs": null,
+      "ml_odds": "20/1",
+      "is_scratched": true,
+      "coupled_group": null,
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": null
+    },
+    {
+      "program_number": "5",
+      "post_position": "5",
+      "horse_name": "Huckleberry Tide (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11472367",
+      "horse_registry": "Q",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 5000,
+      "jockey": "R Hernandez",
+      "trainer": "D Hoda",
+      "weight_lbs": 126,
+      "ml_odds": "12/1",
+      "is_scratched": false,
+      "coupled_group": "5",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "6",
+      "post_position": "6",
+      "horse_name": "Tdz Cosdecuero (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11628683",
+      "horse_registry": "Q",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "U Luna",
+      "trainer": "N Eschete",
+      "weight_lbs": 126,
+      "ml_odds": "3/1",
+      "is_scratched": false,
+      "coupled_group": "6",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "98/1"
+    },
+    {
+      "program_number": "7",
+      "post_position": "7",
+      "horse_name": "Ttt Runaway Angie (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11617428",
+      "horse_registry": "Q",
+      "age_sex": "3/F",
+      "age": 3,
+      "sex": "F",
+      "medication": null,
+      "claim_price_usd": 5000,
+      "jockey": "R Edison Jr.",
+      "trainer": "D L Barnes",
+      "weight_lbs": 126,
+      "ml_odds": "10/1",
+      "is_scratched": false,
+      "coupled_group": "7",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "6/5"
+    },
+    {
+      "program_number": "8",
+      "post_position": "8",
+      "horse_name": "Ej Booboo Fett (LA)",
+      "state_bred": "LA",
+      "horse_refno": "11447711",
+      "horse_registry": "Q",
+      "age_sex": "5/G",
+      "age": 5,
+      "sex": "G",
+      "medication": "L",
+      "claim_price_usd": 5000,
+      "jockey": "A X Morales",
+      "trainer": "E Jeane",
+      "weight_lbs": 128,
+      "ml_odds": "15/1",
+      "is_scratched": false,
+      "coupled_group": "8",
+      "finish_position": null,
+      "dead_heat": null,
+      "live_odds": "1/5"
+    }
+  ],
+  "race_cancelled": false,
+  "results_available": false,
+  "winner_horse": null,
+  "winner_jockey": null,
+  "winner_trainer": null,
+  "winning_time": null,
+  "finish_order": null,
+  "win_payout": null,
+  "place_payout": null,
+  "show_payout": null,
+  "exotic_payouts": null,
+  "winner_program_number": null,
+  "payouts_by_horse": null,
+  "exotic_payouts_by_type": null,
+  "finish_order_detail": null,
+  "result_revision": null,
+  "entry_url": "https://www.equibase.com/static/entry/EVD111826USA-EQB.html",
+  "result_url": "https://www.equibase.com/static/chart/summary/EVD111826USA-EQB.html",
+  "scraped_at": "2026-11-18T23:32:52.079Z",
+  "live_odds_as_of": "05:05 PM",
+  "live_odds_final": false
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11613800",
+  "horse_registry": "Q",
+  "horse_name": "Jp Big Daddy Dash (CO)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-28-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-28",
+      "race_number": 7,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 76
+    },
+    {
+      "race_id": "DED-2026-08-06-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-06",
+      "race_number": 8,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "DED-2026-06-20-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-20",
+      "race_number": 7,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 2,
+      "speed_figure": 71
+    },
+    {
+      "race_id": "DED-2026-05-20-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-20",
+      "race_number": 5,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 68
+    },
+    {
+      "race_id": "DED-2026-04-25-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-04-25",
+      "race_number": 5,
+      "race_type": "Old South Futurity Trial",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 72
+    },
+    {
+      "race_id": "LAD-2026-03-06-R8",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-03-06",
+      "race_number": 8,
+      "race_type": "Louisiana Downs Futurity Trial",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 67
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-02",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.87",
+      "note": "Breezing",
+      "rank": "23/37"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11613800&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11524547",
+  "horse_registry": "Q",
+  "horse_name": "Predators Gold (OK)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-16-R2",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-16",
+      "race_number": 2,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 53
+    },
+    {
+      "race_id": "DED-2026-06-12-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-12",
+      "race_number": 8,
+      "race_type": "Firecracker Futurity Trial",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 37
+    },
+    {
+      "race_id": "DED-2026-04-25-R2",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-04-25",
+      "race_number": 2,
+      "race_type": "Old South Futurity Trial",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 50
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "workout_date": "2026-10-07",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.78",
+      "note": "Breezing",
+      "rank": "1/6"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11524547&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11360047",
+  "horse_registry": "Q",
+  "horse_name": "Cartel Over the Moon (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-11-04-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-11-04",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 46
+    },
+    {
+      "race_id": "EVD-2026-10-16-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-16",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 10
+    },
+    {
+      "race_id": "DED-2026-08-20-R7",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-20",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 39
+    },
+    {
+      "race_id": "DED-2026-06-03-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-03",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 8
+    },
+    {
+      "race_id": "LAD-2026-03-25-R5",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-03-25",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": null,
+      "speed_figure": null
+    },
+    {
+      "race_id": "EVD-2025-12-06-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-12-06",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 38
+    },
+    {
+      "race_id": "EVD-2025-11-14-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-11-14",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 18
+    },
+    {
+      "race_id": "EVD-2025-10-25-R8",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-10-25",
+      "race_number": 8,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 3,
+      "speed_figure": 39
+    },
+    {
+      "race_id": "EVD-2024-11-14-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2024-11-14",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 33
+    },
+    {
+      "race_id": "DED-2024-06-05-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2024-06-05",
+      "race_number": 6,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 18
+    },
+    {
+      "race_id": "DED-2024-05-18-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2024-05-18",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 15
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-07",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.47",
+      "note": "Breezing from the gate",
+      "rank": "22/24"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11360047&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11587512",
+  "horse_registry": "Q",
+  "horse_name": "Jess Maybe I Can (OK)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-15-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-15",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 57
+    },
+    {
+      "race_id": "DED-2026-08-28-R8",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-28",
+      "race_number": 8,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 49
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-09-30",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.03",
+      "note": "Breezing from the gate",
+      "rank": "10/12"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11587512&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11340415",
+  "horse_registry": "Q",
+  "horse_name": "Lorenzos Gone (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-06-11-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-11",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "DED-2026-05-27-R4",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-27",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 30
+    },
+    {
+      "race_id": "EVD-2025-12-03-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-12-03",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 24
+    },
+    {
+      "race_id": "EVD-2025-11-13-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-11-13",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 21
+    },
+    {
+      "race_id": "EVD-2025-10-29-R7",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-10-29",
+      "race_number": 7,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 32
+    },
+    {
+      "race_id": "EVD-2025-10-16-R3",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-10-16",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 35
+    },
+    {
+      "race_id": "EVD-2025-10-04-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-10-04",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 19
+    },
+    {
+      "race_id": "DED-2025-08-23-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-08-23",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 4,
+      "speed_figure": 28
+    },
+    {
+      "race_id": "DED-2025-07-26-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-07-26",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 26
+    },
+    {
+      "race_id": "DED-2025-07-03-R6",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2025-07-03",
+      "race_number": 6,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 12
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-31",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.56",
+      "note": "Breezing from the gate",
+      "rank": "6/7"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11340415&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11639490",
+  "horse_registry": "Q",
+  "horse_name": "Fav Apollitical (CA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R4"
+  ],
+  "past_starts": [
+    {
+      "race_id": "ALB-2026-06-27-R8",
+      "track_code": "ALB",
+      "track_name": "Albuquerque",
+      "race_date": "2026-06-27",
+      "race_number": 8,
+      "race_type": "Rainbow Futurity Trial",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 22
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-17",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "11.29",
+      "note": "Breezing",
+      "rank": "1/11"
+    },
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-06",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.38",
+      "note": "Breezing from the gate",
+      "rank": "16/27"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11639490&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11472367",
+  "horse_registry": "Q",
+  "horse_name": "Huckleberry Tide (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "EVD-2026-10-23-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-23",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    },
+    {
+      "race_id": "EVD-2026-10-02-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2026-10-02",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 36
+    },
+    {
+      "race_id": "DED-2026-08-27-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-27",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 0
+    }
+  ],
+  "workouts": [],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11472367&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11628683",
+  "horse_registry": "Q",
+  "horse_name": "Tdz Cosdecuero (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-08-27-R5",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-08-27",
+      "race_number": 5,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 40
+    },
+    {
+      "race_id": "LAD-2026-01-12-R2",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-01-12",
+      "race_number": 2,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 32
+    },
+    {
+      "race_id": "EVD-2025-12-18-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-12-18",
+      "race_number": 4,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 51
+    },
+    {
+      "race_id": "EVD-2025-11-28-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-11-28",
+      "race_number": 4,
+      "race_type": "LQHBA Louisiana Million Futurity Trial",
+      "breed": "QH",
+      "finish_position": 8,
+      "speed_figure": 36
+    },
+    {
+      "race_id": "EVD-2025-10-01-R1",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-10-01",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 24
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-24",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "13.06",
+      "note": "Breezing from the gate",
+      "rank": "18/22"
+    },
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-10-10",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.53",
+      "note": "Breezing",
+      "rank": "19/24"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11628683&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11617428",
+  "horse_registry": "Q",
+  "horse_name": "Ttt Runaway Angie (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "DED-2026-07-16-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-16",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 42
+    },
+    {
+      "race_id": "DED-2026-07-03-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-07-03",
+      "race_number": 1,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 33
+    },
+    {
+      "race_id": "DED-2026-06-06-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-06-06",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 6,
+      "speed_figure": 13
+    },
+    {
+      "race_id": "DED-2026-05-13-R3",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-05-13",
+      "race_number": 3,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 7,
+      "speed_figure": 41
+    },
+    {
+      "race_id": "DED-2026-04-25-R1",
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "race_date": "2026-04-25",
+      "race_number": 1,
+      "race_type": "Maiden",
+      "breed": "QH",
+      "finish_position": 10,
+      "speed_figure": 12
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "DED",
+      "track_name": "Delta Downs",
+      "workout_date": "2026-10-20",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "11.98",
+      "note": "Breezing",
+      "rank": "1/7"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11617428&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+},
+{
+  "record_type": "horse_history",
+  "horse_refno": "11447711",
+  "horse_registry": "Q",
+  "horse_name": "Ej Booboo Fett (LA)",
+  "entered_race_ids": [
+    "EVD-2026-11-18-R7"
+  ],
+  "past_starts": [
+    {
+      "race_id": "LAD-2026-01-12-R4",
+      "track_code": "LAD",
+      "track_name": "Louisiana Downs",
+      "race_date": "2026-01-12",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 5,
+      "speed_figure": 31
+    },
+    {
+      "race_id": "EVD-2025-11-15-R4",
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "race_date": "2025-11-15",
+      "race_number": 4,
+      "race_type": "Maiden Claiming",
+      "breed": "QH",
+      "finish_position": 9,
+      "speed_figure": 18
+    }
+  ],
+  "workouts": [
+    {
+      "track_code": "EVD",
+      "track_name": "Evangeline",
+      "workout_date": "2026-11-05",
+      "surface": "Dirt",
+      "distance": "220Y",
+      "time": "12.64",
+      "note": "Breezing from the gate",
+      "rank": "1/11"
+    }
+  ],
+  "profile_url": "https://www.equibase.com/profiles/Results.cfm?type=Horse&refno=11447711&registry=Q&rbt=TB",
+  "scraped_at": "2026-11-18T23:32:52.255Z"
+}]
