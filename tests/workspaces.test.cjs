@@ -656,10 +656,12 @@ test("notebook and preferences belong to the verified account, without stable se
     200,
   );
   let preferences = await call(carol, "/api/my-racing/preferences");
-  assert.equal(preferences.data.deliveryAvailable, false);
+  assert.equal(preferences.data.deliveryAvailable, true, "racing alerts reach the bell and devices");
+  assert.equal(preferences.data.emailAvailable, false, "email isn't sent yet");
   assert.deepEqual(preferences.data.preferences, choices);
   preferences = await call(alice, "/api/my-racing/preferences");
-  assert.equal(preferences.data.preferences.entry_alerts, false);
+  assert.equal(preferences.data.preferences.entry_alerts, true, "no saved choice = racing alerts on");
+  assert.equal(preferences.data.preferences.email_enabled, false);
   const summary = await call(carol, "/api/my-racing/summary");
   assert.equal(summary.status, 200);
   assert.equal(summary.data.notes, 1);

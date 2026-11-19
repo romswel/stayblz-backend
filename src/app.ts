@@ -65,11 +65,11 @@ app.use(
 app.use("/api", (req, res, next) =>
   req.path === "/health" ? next() : apiLimit(req, res, next),
 );
-// Request bodies stay small. The two admin endpoints that need more room (Update posts and
-// race-card imports) read their body inside their routes, only after sign-in and the admin check,
+// Request bodies stay small. The admin endpoints that need more room (Update posts, race-card imports and
+// racing data-feed files) read their body inside their routes, only after sign-in and the admin check,
 // so nobody can make the server read a large body anonymously.
 const smallJson = express.json({ limit: "32kb" });
-const largeBodyPath = /^\/api\/admin\/(updates(\/[^/]+)?|racing\/days\/[^/]+\/import)$/;
+const largeBodyPath = /^\/api\/admin\/(updates(\/[^/]+)?|racing\/days\/[^/]+\/import|racing\/feed\/import)$/;
 app.use((req, res, next) =>
   largeBodyPath.test(req.path) && req.method !== "GET" ? next() : smallJson(req, res, next),
 );

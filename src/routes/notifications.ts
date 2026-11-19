@@ -61,7 +61,9 @@ router.get(
   "/alerts",
   asyncRoute(async (req, res) => {
     const since = typeof req.query.since === "string" && ISO.test(req.query.since) ? req.query.since : null;
-    const { data, error } = await supabase.rpc("chat_alerts_list", { p_user: me(req).id, p_since: since, p_limit: 40 });
+    // racing=1: this app knows racing alerts (older apps would show them blank).
+    const racing = req.query.racing === "1";
+    const { data, error } = await supabase.rpc("chat_alerts_list", { p_user: me(req).id, p_since: since, p_limit: 40, p_racing: racing });
     if (error) return unavailable(res);
     res.set("Cache-Control", "no-store");
     res.json(data);
