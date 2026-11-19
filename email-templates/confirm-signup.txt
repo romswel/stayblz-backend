@@ -1,14 +1,12 @@
-Welcome to Stayblz - confirm your email
+Welcome to Stayblz - verify your email
 
-Your 6-digit code: {{ .Token }}
+Open this link to verify your email and finish creating your account:
+{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email
 
-Enter this code on the Stayblz sign-up screen to confirm your email and finish creating your account.
-The code works once and expires in 1 hour. If you asked for more than one, use the newest email.
-
-Closed the sign-up page? Log in to Stayblz with your email and password and you'll be asked for this code.
+The link works once and expires in 1 hour. If you asked for more than one email, use the newest.
 
 Didn't sign up? Someone may have typed your email by mistake. Remove the sign-up here:
 {{ .SiteURL }}/auth/not-me?token_hash={{ .TokenHash }}
-If you ignore this email, the account stays unconfirmed and can't be used.
+If you ignore this email, the account stays unverified and can't be used.
 
-Sent to {{ .Email }} by Stayblz. Stayblz staff will never ask for your password or this code.
+Sent to {{ .Email }} by Stayblz. Stayblz staff will never ask for your password.

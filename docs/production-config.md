@@ -22,7 +22,7 @@ browser only through the same-origin proxy `https://stayblz-app.com/api/*` (`ver
 | `DATABASE_URL` | **unset** | release tooling only | Not read by the API. |
 | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT`, `R2_BUCKET_PRIVATE`, `R2_BUCKET_PUBLIC` | Suprah's values (not yet on Render) | copied from `suprah-backend/.env` | Cloudflare R2, shared with Suprah; Stayblz only uses keys under `stayblz/`. Unset = R2 off. See `r2-storage.md`. |
 | `R2_PUBLIC_URL` | unset until Suprah's live public address is known | empty | Suprah's local r2.dev value no longer resolves (2026-11-15). Only public-bucket links need it. |
-| `PUSH_VAPID_PUBLIC_KEY`, `PUSH_VAPID_PRIVATE_KEY`, `PUSH_CONTACT` | **not yet on Render** — create once with `npm run push:keys` | `npm run push:keys -- --write` adds a pair to `.env` | Web Push ("alerts when Stayblz is closed", `lib/push.ts`). Unset = push off; settings say so and alerts still work while Stayblz is open. Changing keys later means every device turns alerts on again. Contact defaults to `mailto:support@stayblz-app.com`. |
+| `PUSH_VAPID_PUBLIC_KEY`, `PUSH_VAPID_PRIVATE_KEY`, `PUSH_CONTACT` | **on Render since 2026-11-18** (a device got a push that day) — never change them casually | `npm run push:keys -- --write` adds a pair to `.env` | Web Push ("alerts when Stayblz is closed", `lib/push.ts`). Unset = push off; settings say so and alerts still work while Stayblz is open. Changing keys later means every device turns alerts on again. Contact defaults to `mailto:support@stayblz-app.com`. |
 | `PORT`, `RENDER`, `RENDER_GIT_COMMIT` | set by Render | — | |
 
 Render service settings: Node 22.12 or newer; build `npm ci --include=dev && npm run build` (TypeScript is a
@@ -34,16 +34,24 @@ dev dependency, and npm skips those when `NODE_ENV=production`); start `npm star
 - Build: framework Vite, build `npm run build`, output `dist`, Node 22.
 - Domains: `stayblz-app.com` (primary) and `www.stayblz-app.com` → redirect to `stayblz-app.com` (308).
   `vercel.json` redirects the old `stayblz-frontend.vercel.app` address to `https://stayblz-app.com`.
+- **`www` certificate (checked 2026-11-19: broken).** `www.stayblz-app.com` (CNAME → Vercel) is served the
+  certificate for `stayblz-app.com` only, so every browser shows "Your connection is not private" on the `www`
+  address, and because the main site sends HSTS with `includeSubDomains` there is no "proceed anyway". Fix in
+  Vercel → Project → Settings → Domains → `www.stayblz-app.com`: if it says Invalid Configuration, set the DNS record
+  it shows at Bluehost (CNAME `www` → the value Vercel gives); then use Refresh / re-issue, or remove `www` and add it
+  again as "Redirect to stayblz-app.com". Check: `openssl s_client -connect www.stayblz-app.com:443 -servername
+  www.stayblz-app.com` must list `DNS:www.stayblz-app.com` in Subject Alternative Name. Keep `includeSubDomains`.
 
 ## Supabase (Authentication)
 
 - URL Configuration → Site URL `https://stayblz-app.com`; Redirect URLs `https://stayblz-app.com/auth/confirm`,
   `https://stayblz-app.com/auth/confirm?recovery=1`, `http://localhost:5173/auth/confirm`. Remove the old
   `stayblz-frontend.vercel.app` entries.
-- Providers → Email: Confirm email on; Email OTP Length 6; Email OTP Expiration 3600.
-- Emails → Templates: paste from `email-templates/` (see its README).
+- Providers → Email: Confirm email on; Email OTP Expiration 3600 (the emailed links last that long).
+- Emails → Templates: paste from `email-templates/` (see its README). Since 2026-11-19 every email is **link-only**
+  (no 6-digit codes): paste the new templates before releasing that change.
 - Emails → SMTP: Resend (`smtp.resend.com`), sender `no-reply@stayblz-app.com`, name `Stayblz`.
-- Rate Limits: keep the defaults or lower; the API adds its own per-address limits on codes and emails.
+- Rate Limits: keep the defaults or lower; the API adds its own per-address limit on emails.
 
 ## Email domain (Resend + Bluehost DNS)
 

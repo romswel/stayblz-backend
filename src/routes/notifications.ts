@@ -7,11 +7,14 @@ import { isPushEndpoint, pushConfig, pushTest } from "../lib/push";
 /**
  * Notifications (signed in), mounted at /api/notifications. Stayblz Chat is the first thing that notifies.
  *   GET  /settings            your choices + whether alerts-when-closed (Web Push) work on this server
- *   POST /settings            change choices: enabled, chatMessages, chatRequests, paddockCalls, previews, sound, prompted
+ *   POST /settings            change choices: enabled, chatMessages, chatRequests, chatMentions, chatReactions, paddockCalls,
+ *                             previews, sound, prompted
+ *   GET  /alerts              Stayblz Chat alerts for the bell, newest first (+ how many are unread); ?since= for new ones
+ *   POST /alerts/read         { ids: [...] } or { all: true }
  *   POST /push/subscribe      save this device's push subscription (from PushManager.subscribe)
  *   POST /push/unsubscribe    forget this device
  *   POST /push/test           send a test alert to your devices
- * Rows: notification_settings + push_subscriptions (migration 202611170002_notifications.sql).
+ * Rows: notification_settings + push_subscriptions (202611170002_notifications.sql), chat_alerts (202611190003_chat_alerts.sql).
  */
 const router = Router();
 router.use(requireAuth);
@@ -33,7 +36,7 @@ router.get(
   }),
 );
 
-const KEYS = ["enabled", "chatMessages", "chatRequests", "paddockCalls", "previews", "sound", "prompted"];
+const KEYS = ["enabled", "chatMessages", "chatRequests", "chatMentions", "chatReactions", "paddockCalls", "previews", "sound", "prompted"];
 router.post(
   "/settings",
   asyncRoute(async (req, res) => {
@@ -48,6 +51,33 @@ router.post(
     const { data, error } = await supabase.rpc("notification_settings_set", { p_user: me(req).id, p_changes: changes });
     if (error) return unavailable(res);
     res.json({ settings: data, push: pushInfo() });
+  }),
+);
+
+const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+router.get(
+  "/alerts",
+  asyncRoute(async (req, res) => {
+    const since = typeof req.query.since === "string" && ISO.test(req.query.since) ? req.query.since : null;
+    const { data, error } = await supabase.rpc("chat_alerts_list", { p_user: me(req).id, p_since: since, p_limit: 40 });
+    if (error) return unavailable(res);
+    res.set("Cache-Control", "no-store");
+    res.json(data);
+  }),
+);
+
+router.post(
+  "/alerts/read",
+  asyncRoute(async (req, res) => {
+    const ids = req.body?.ids;
+    const all = req.body?.all === true;
+    if (!all && (!Array.isArray(ids) || !ids.length || ids.length > 100 || !ids.every((id) => typeof id === "string" && UUID.test(id))))
+      return res.status(400).json({ error: "Nothing to mark as read." });
+    const { data, error } = await supabase.rpc("chat_alerts_mark_read", { p_user: me(req).id, p_ids: all ? null : ids });
+    if (error) return unavailable(res);
+    res.json({ unread: data ?? 0 });
   }),
 );
 
