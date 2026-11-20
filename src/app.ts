@@ -14,6 +14,9 @@ import watchlistRoutes from "./routes/watchlist";
 import adminRoutes from "./routes/admin";
 import personalMessages from "./routes/personalMessages";
 import myRacingRoutes from "./routes/myRacing";
+import { virtualRouter } from "./routes/virtualStayblz";
+import { requireAuth } from "./middleware/auth";
+import { requireStable } from "./middleware/stable";
 import updatesRoutes from "./routes/updates";
 import adminRacingRoutes from "./routes/adminRacing";
 import marketplaceRoutes from "./routes/marketplace";
@@ -129,6 +132,9 @@ app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/feed", memberFeed);
 app.use("/api/messages", personalMessages);
 app.use("/api/team-messages", memberMessages);
+// Virtual Stayblz: a private list under My racing, and a shared one for the active stable.
+app.use("/api/my-racing/virtual", virtualRouter("personal"));
+app.use("/api/workspace/virtual", requireAuth, requireStable, virtualRouter("stable"));
 app.use("/api/my-racing", myRacingRoutes);
 // Stayblz Paddock: in-call + guest routes use seats/passes (no cookie); the rest need sign-in.
 app.use("/api/paddock/live", paddockLiveRoutes);

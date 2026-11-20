@@ -10,6 +10,19 @@ import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { roleRank } from "../lib/accounts";
 import {
+  HORSE_COLUMNS,
+  IMAGE_COLUMNS,
+  accountActive,
+  canSeeHorse,
+  horseView,
+  imageView,
+  loadCommunityHorse,
+  loadStats,
+  ownerContext,
+  recordView,
+  type OwnerContext,
+} from "../lib/communityHorses";
+import {
   InputError,
   commentInput,
   horseInput,
@@ -127,118 +140,10 @@ function postView(r: any) {
   };
 }
 
-const HORSE_COLUMNS =
-  "id,owner_id,name,breed,sex,foaled_year,color,sire,dam,status,trainer,location,description,visibility,cover_image_id,created_at,updated_at";
-
-type Stats = { starts: number; wins: number; places: number; shows: number; earnings_cents: number; last_race: string | null };
-const noStats: Stats = { starts: 0, wins: 0, places: 0, shows: 0, earnings_cents: 0, last_race: null };
-
-function horseView(h: any, stats: Stats | undefined, opts: { mine: boolean; showEarnings: boolean; imageCount?: number }) {
-  const s = stats ?? noStats;
-  return {
-    id: h.id,
-    ownerId: h.owner_id,
-    name: h.name,
-    breed: h.breed,
-    sex: h.sex,
-    foaledYear: h.foaled_year,
-    color: h.color,
-    sire: h.sire,
-    dam: h.dam,
-    status: h.status,
-    trainer: h.trainer,
-    location: h.location,
-    description: h.description,
-    // Only the owner needs to know the privacy setting.
-    visibility: opts.mine ? h.visibility : undefined,
-    coverImageId: h.cover_image_id,
-    imageCount: opts.imageCount,
-    stats: {
-      starts: num(s.starts),
-      wins: num(s.wins),
-      places: num(s.places),
-      shows: num(s.shows),
-      earningsCents: opts.showEarnings || opts.mine ? num(s.earnings_cents) : null,
-      lastRace: s.last_race,
-    },
-    mine: opts.mine,
-    createdAt: h.created_at,
-    updatedAt: h.updated_at,
-  };
-}
-
-function recordView(r: any, showEarnings: boolean) {
-  return {
-    id: r.id,
-    raceDate: r.race_date,
-    track: r.track,
-    raceName: r.race_name,
-    distance: r.distance,
-    surface: r.surface,
-    finish: r.finish,
-    fieldSize: r.field_size,
-    earningsCents: showEarnings ? num(r.earnings_cents) : null,
-    notes: r.notes,
-  };
-}
-
-const IMAGE_COLUMNS = "id,kind,width,height,caption,position,duration_seconds,poster_path";
-const imageView = (i: any) => ({
-  id: i.id,
-  kind: i.kind === "video" ? "video" : "photo",
-  width: i.width,
-  height: i.height,
-  caption: i.caption ?? "",
-  position: i.position,
-  durationSeconds: i.kind === "video" ? (i.duration_seconds ?? null) : null,
-  hasPoster: !!i.poster_path,
-});
-
-/* ============================== Visibility helpers ============================== */
-
-type OwnerContext = { level: "members" | "followers" | "private"; showEarnings: boolean; follows: boolean; headline: string };
-
-async function ownerContext(viewer: string, owner: string): Promise<OwnerContext> {
-  const [profile, follow] = await Promise.all([
-    supabase.from("community_profiles").select("inventory_visibility,show_earnings,headline").eq("user_id", owner).maybeSingle(),
-    viewer === owner
-      ? Promise.resolve({ data: null, error: null })
-      : supabase.from("community_follows").select("follower_id").eq("follower_id", viewer).eq("followee_id", owner).maybeSingle(),
-  ]);
-  if (profile.error || follow.error) throw profile.error ?? follow.error;
-  return {
-    level: (profile.data?.inventory_visibility as OwnerContext["level"]) ?? "members",
-    showEarnings: profile.data?.show_earnings ?? true,
-    follows: !!follow.data,
-    headline: profile.data?.headline ?? "",
-  };
-}
-
-function canSeeHorse(viewer: string, horse: { owner_id: string; visibility: string }, ctx: OwnerContext) {
-  if (viewer === horse.owner_id) return true;
-  const level = horse.visibility === "inherit" ? ctx.level : horse.visibility;
-  return level === "members" || (level === "followers" && ctx.follows);
-}
-
-async function loadStats(ids: string[]) {
-  const map = new Map<string, Stats>();
-  if (!ids.length) return map;
-  const { data, error } = await supabase.from("owner_horse_stats").select("*").in("horse_id", ids);
-  if (error) throw error;
-  for (const row of data ?? []) map.set(row.horse_id, row as Stats);
-  return map;
-}
-
 async function ownHorse(horseId: string, owner: string) {
   const { data, error } = await supabase.from("owner_horses").select(HORSE_COLUMNS).eq("id", horseId).eq("owner_id", owner).maybeSingle();
   if (error) throw error;
   return data;
-}
-
-async function accountActive(id: string) {
-  const { data, error } = await supabase.from("accounts").select("id,status").eq("id", id).maybeSingle();
-  if (error) throw error;
-  return !!data && data.status === "active";
 }
 
 /** One post as the viewer sees it (null when it doesn't exist or isn't visible to them). */
@@ -573,43 +478,115 @@ for (const action of ["follow", "unfollow"] as const)
 
 /* ============================== Horses ============================== */
 
+/** Community horses every member can see (Virtual Stayblz "Public horses"), by name, 24 a page. */
+const PUBLIC_PAGE = 24;
+const PUBLIC_SEXES = ["colt", "filly", "mare", "stallion", "gelding", "ridgling"];
+const PUBLIC_STATUSES = ["racing", "training", "resting", "injured", "retired", "for_sale", "breeding"];
+/** Breeds among the public horses, for the Public horses filter. */
+router.get(
+  "/public-horses/breeds",
+  asyncRoute(async (req, res) => {
+    const { data, error } = await supabase.rpc("community_public_horse_breeds", { p_viewer: me(req).id });
+    if (error) return unavailable(res, error);
+    res.set("Cache-Control", "no-store");
+    res.json({ breeds: Array.isArray(data) ? data : [] });
+  }),
+);
+router.get(
+  "/public-horses",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const q = typeof req.query.q === "string" ? req.query.q.trim().slice(0, 60) : "";
+    const pick = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+    const breed = pick(req.query.breed).slice(0, 60);
+    const sex = pick(req.query.sex);
+    const status = pick(req.query.status);
+    const year = (v: unknown) => {
+      const t = pick(v);
+      if (!t) return null;
+      const n = Number(t);
+      return Number.isInteger(n) && n >= 1980 && n <= 2100 ? n : NaN;
+    };
+    const yearFrom = year(req.query.foaledFrom);
+    const yearTo = year(req.query.foaledTo);
+    if (
+      (sex && !PUBLIC_SEXES.includes(sex)) ||
+      (status && !PUBLIC_STATUSES.includes(status)) ||
+      Number.isNaN(yearFrom) ||
+      Number.isNaN(yearTo)
+    )
+      return res.status(400).json({ error: "Those filters aren't valid." });
+    let before: { name: string; id: string } | null = null;
+    if (typeof req.query.before === "string" && req.query.before) {
+      try {
+        const c = JSON.parse(Buffer.from(req.query.before, "base64url").toString("utf8"));
+        if (typeof c?.name !== "string" || !isUuid(c?.id)) throw new Error("bad");
+        before = { name: c.name, id: c.id };
+      } catch {
+        return res.status(400).json({ error: "That page link isn't valid." });
+      }
+    }
+    const { data, error } = await supabase.rpc("community_public_horses", {
+      p_viewer: viewer,
+      p_query: q,
+      p_breed: breed || null,
+      p_sex: sex || null,
+      p_status: status || null,
+      p_year_from: yearFrom,
+      p_year_to: yearTo,
+      p_raced: req.query.raced === "1" || req.query.raced === "true",
+      p_before_name: before?.name ?? null,
+      p_before_id: before?.id ?? null,
+      p_limit: PUBLIC_PAGE + 1,
+    });
+    if (error) return unavailable(res, error);
+    const rows: any[] = (Array.isArray(data) ? data : []).slice(0, PUBLIC_PAGE);
+    const owners = [...new Set(rows.map((h) => h.owner_id))];
+    let stats, profiles, names;
+    try {
+      [stats, profiles, names] = await Promise.all([
+        loadStats(rows.map((h) => h.id)),
+        owners.length
+          ? supabase.from("community_profiles").select("user_id,show_earnings").in("user_id", owners)
+          : Promise.resolve({ data: [], error: null }),
+        owners.length
+          ? supabase.from("accounts").select("id,first_name,last_name").in("id", owners)
+          : Promise.resolve({ data: [], error: null }),
+      ]);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (profiles.error || names.error) return unavailable(res, profiles.error, names.error);
+    const hidden = new Set((profiles.data ?? []).filter((p: any) => p.show_earnings === false).map((p: any) => p.user_id));
+    const ownerName = new Map(
+      (names.data ?? []).map((a: any) => [a.id, `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || "Stayblz member"]),
+    );
+    const last = rows[rows.length - 1];
+    res.set("Cache-Control", "no-store");
+    res.json({
+      horses: rows.map((h) => ({
+        ...horseView(h, stats.get(h.id), { mine: false, showEarnings: !hidden.has(h.owner_id) }),
+        owner: { id: h.owner_id, name: ownerName.get(h.owner_id) ?? "Stayblz member" },
+      })),
+      next:
+        Array.isArray(data) && data.length > PUBLIC_PAGE && last
+          ? Buffer.from(JSON.stringify({ name: String(last.sort_name), id: last.id })).toString("base64url")
+          : null,
+    });
+  }),
+);
+
 router.get(
   "/horses/:id",
   asyncRoute(async (req, res) => {
-    const viewer = me(req).id;
-    const { data: horse, error } = await supabase.from("owner_horses").select(HORSE_COLUMNS).eq("id", req.params.id).maybeSingle();
-    if (error) return unavailable(res, error);
-    if (!horse || !(await accountActive(horse.owner_id))) return notFound(res, "That horse");
-    const ctx = await ownerContext(viewer, horse.owner_id);
-    if (!canSeeHorse(viewer, horse, ctx)) return notFound(res, "That horse");
-    const mine = viewer === horse.owner_id;
-    const showEarnings = mine || ctx.showEarnings;
-    const [stats, images, records, owner] = await Promise.all([
-      loadStats([horse.id]),
-      supabase.from("owner_horse_images").select(IMAGE_COLUMNS).eq("horse_id", horse.id).order("position").order("created_at"),
-      supabase
-        .from("owner_horse_records")
-        .select("id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes")
-        .eq("horse_id", horse.id)
-        .order("race_date", { ascending: false })
-        .limit(500),
-      supabase.from("accounts").select("id,first_name,last_name").eq("id", horse.owner_id).maybeSingle(),
-    ]);
-    if (images.error || records.error || owner.error) return unavailable(res, images.error, records.error, owner.error);
-    res.json({
-      horse: {
-        ...horseView(horse, stats.get(horse.id), { mine, showEarnings, imageCount: images.data?.length ?? 0 }),
-        images: (images.data ?? []).map(imageView),
-        records: (records.data ?? []).map((r) => recordView(r, showEarnings)),
-        owner: {
-          id: horse.owner_id,
-          name: `${owner.data?.first_name ?? ""} ${owner.data?.last_name ?? ""}`.trim() || "Stayblz member",
-          headline: ctx.headline,
-          isFollowing: ctx.follows,
-          me: mine,
-        },
-      },
-    });
+    let horse;
+    try {
+      horse = await loadCommunityHorse(me(req).id, req.params.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!horse) return notFound(res, "That horse");
+    res.json({ horse });
   }),
 );
 
