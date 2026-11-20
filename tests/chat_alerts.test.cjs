@@ -290,7 +290,7 @@ test("the bell: list, unread count, new-since, mark read; the poll carries new a
   assert.ok(r.data.unread >= 1);
   const first = r.data.items[0];
   assert.deepEqual(Object.keys(first).sort(), [
-    "actorId", "actorName", "at", "attachment", "body", "chatId", "chatKind", "count", "emoji", "group", "id", "kind", "messageId", "read", "stableId", "title",
+    "actorId", "actorName", "at", "attachment", "body", "chatId", "chatKind", "count", "emoji", "group", "id", "kind", "link", "messageId", "read", "stableId", "title",
   ].sort());
   const since = new Date().toISOString();
   await wait(20);

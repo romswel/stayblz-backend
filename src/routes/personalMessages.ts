@@ -72,7 +72,8 @@ router.get(
     const [incoming, alerts] = await Promise.all([
       supabase.rpc("chat_incoming", { p_user: user(req).id, p_since: overlap }),
       // Everything new for the bell and on-screen alerts: messages, mentions, replies, reactions, requests, friends.
-      supabase.rpc("chat_alerts_list", { p_user: user(req).id, p_since: overlap, p_limit: 20 }),
+      // racing=1: this app also shows racing alerts (entries, results, scratches, workouts you follow).
+      supabase.rpc("chat_alerts_list", { p_user: user(req).id, p_since: overlap, p_limit: 20, p_racing: req.query.racing === "1" }),
     ]);
     res.json({
       ...data,

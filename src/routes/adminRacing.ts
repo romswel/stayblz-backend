@@ -5,6 +5,10 @@ import { authLimit } from "../middleware/authLimits";
 import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { accountStore } from "../lib/accounts";
+import { notifyRacing } from "../lib/racingAlerts";
+import { cardsFromFile, importCards } from "../lib/racingFeed/importCards";
+import { licences, sourceLicensed } from "../lib/racingFeed/licence";
+import { pullState, racingApiStatus, racingToday, scheduleState, shiftISO, startPull } from "../lib/racingFeed/pull";
 import {
   dateRange,
   dayInput,
@@ -218,6 +222,9 @@ for (const action of ["publish", "unpublish"] as const)
       const id = idParam(req, res);
       if (!id) return;
       if (action === "publish") {
+        const current = await supabase.from("racing_days").select("source").eq("id", id).maybeSingle();
+        if (current.error) return sendDbError(res, current.error);
+        if (!sourceLicensed((current.data as { source?: string } | null)?.source)) return res.status(409).json(licenceRefusal);
         const races = await supabase.from("racing_races").select("id").eq("day_id", id).limit(1);
         if (races.error) return sendDbError(res, races.error);
         if (!races.data?.length) return res.status(400).json({ error: "Add at least one race before publishing." });
@@ -236,6 +243,8 @@ for (const action of ["publish", "unpublish"] as const)
       if (error) return sendDbError(res, error);
       if (!data) return res.status(404).json({ error: "That race day no longer exists." });
       await audit(req, `racing.day_${action}ed`, { day: id });
+      // Followers of these horses, people and families hear about the entries (once per runner).
+      if (action === "publish") notifyRacing("day", id);
       res.json({ day: await dayJson(id) });
     }),
   );
@@ -266,6 +275,7 @@ router.post(
     if ("error" in parsed) return res.status(400).json({ error: parsed.error });
     const { data, error } = await supabase.rpc("racing_import_card", { p_actor: actor(req), p_day: id, p_rows: parsed.value });
     if (error) return sendDbError(res, error, "Two rows use the same program number in one race.");
+    notifyRacing("day", id); // only when the day is already published
     res.json({ summary: data, day: await dayJson(id) });
   }),
 );
@@ -328,6 +338,7 @@ router.put(
     if ("error" in parsed) return res.status(400).json({ error: parsed.error });
     const { data, error } = await supabase.rpc("racing_save_results", { p_actor: actor(req), p_race: id, p_data: parsed.value });
     if (error) return sendDbError(res, error);
+    notifyRacing("race", id); // only once the race is official on a published day
     res.json({ day: data });
   }),
 );
@@ -369,6 +380,8 @@ for (const method of ["post", "put"] as const)
           : await supabase.from("racing_runners").update({ ...write, updated_at: stamp() }).eq("id", id).select().single();
       if (error) return sendDbError(res, error, "That horse or program number is already in this race.");
       await audit(req, method === "post" ? "racing.runner_added" : "racing.runner_edited", { race: raceId });
+      if (method === "post") notifyRacing("day", dayId);
+      else if (parsed.value.scratched) notifyRacing("scratch", id);
       res.status(method === "post" ? 201 : 200).json({ day: await dayJson(dayId) });
     }),
   );
@@ -424,12 +437,17 @@ for (const method of ["post", "put"] as const)
       else {
         const id = idParam(req, res);
         if (!id) return;
+        if (row.status === "published") {
+          const current = await supabase.from("racing_workouts").select("source").eq("id", id).maybeSingle();
+          if (!sourceLicensed((current.data as { source?: string } | null)?.source)) return res.status(409).json(licenceRefusal);
+        }
         query = supabase.from("racing_workouts").update({ ...row, updated_at: stamp() }).eq("id", id).select().single();
       }
       const { data, error } = await query;
       if (error) return sendDbError(res, error, "That horse already has a workout at that track on that date.");
       if (!data) return res.status(404).json({ error: "That workout no longer exists." });
       await audit(req, method === "post" ? "racing.workout_created" : "racing.workout_edited", { workout: data.id });
+      notifyRacing("workout", data.id); // only when published
       res.status(method === "post" ? 201 : 200).json({ workout: data });
     }),
   );
@@ -443,6 +461,68 @@ router.delete(
     if (!data?.length) return res.status(404).json({ error: "That workout no longer exists." });
     await audit(req, "racing.workout_deleted", { workout: id });
     res.json({ deleted: true });
+  }),
+);
+
+// ----- Data feed (docs/racing-data-feed.md) -----
+const licenceRefusal = {
+  error:
+    "This came from a racing data source whose licence isn't confirmed (the server's RACING_FEED_LICENSED setting). Until then it stays a draft.",
+  code: "feed_not_licensed",
+};
+router.get(
+  "/feed",
+  asyncRoute(async (req, res) => {
+    const { data, error } = await supabase.rpc("racing_feed_recent", { p_limit: 20 });
+    if (error) return sendDbError(res, error);
+    res.json({
+      // File imports (the collected Equibase files): may they be published?
+      licensed: sourceLicensed("equibase"),
+      licences: licences(),
+      // The login the boss gave is The Racing API's; nothing calls Equibase itself (no feed contract/spec yet).
+      provider: { name: "The Racing API", ...(await racingApiStatus(req.query.check === "1")) },
+      schedule: scheduleState(),
+      pull: pullState(),
+      today: racingToday(),
+      recent: data ?? [],
+    });
+  }),
+);
+router.post(
+  "/feed/import",
+  // A whole day of racing (several tracks, horses' earlier starts and workouts) needs room; the admin check has run.
+  express.json({ limit: "8mb" }),
+  asyncRoute(async (req, res) => {
+    const publish = req.body?.publish === true;
+    if (publish && !sourceLicensed("equibase")) return res.status(409).json(licenceRefusal);
+    const file = cardsFromFile(req.body?.data);
+    if ("error" in file) return res.status(400).json({ error: file.error });
+    if (!file.cards.length) return res.status(400).json({ error: "That file has no race cards in it." });
+    if (file.cards.length > 60) return res.status(400).json({ error: "Import up to 60 cards (track days) at a time." });
+    const results = await importCards(actor(req), file.cards, publish);
+    res.json({ format: file.format, unplacedHorses: file.unplacedHorses ?? 0, published: publish, results });
+  }),
+);
+
+// Pull from The Racing API now: `date` (YYYY-MM-DD, up to a year back or 7 days ahead) and `days` going back from it
+// (1–31), then `histories` horses' earlier starts (0–300). Runs in the background; GET /feed shows progress.
+router.post(
+  "/feed/pull",
+  asyncRoute(async (req, res) => {
+    const provider = await racingApiStatus();
+    if (!provider.configured) return res.status(503).json({ error: "The Racing API login isn't set on the server yet." });
+    const today = racingToday();
+    const date = typeof req.body?.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(req.body.date) ? req.body.date : today;
+    if (Number.isNaN(Date.parse(date + "T12:00:00Z")) || date < shiftISO(today, -366) || date > shiftISO(today, 7))
+      return res.status(400).json({ error: "Pick a date from the last year or the next 7 days." });
+    const days = Number.isInteger(req.body?.days) ? Math.min(Math.max(req.body.days, 0), 31) : 1;
+    const histories = Number.isInteger(req.body?.histories) ? Math.min(Math.max(req.body.histories, 0), 300) : 0;
+    if (!days && !histories) return res.status(400).json({ error: "Choose days to pull or horses to update." });
+    const dates = Array.from({ length: days }, (_, i) => shiftISO(date, i - days + 1));
+    const job = startPull({ dates, histories, actor: actor(req) });
+    if (!job) return res.status(409).json({ error: "A pull is already running. Wait for it to finish.", pull: pullState() });
+    await audit(req, "racing.feed_pull", { dates: dates.length ? `${dates[0]}..${dates[dates.length - 1]}` : "", histories });
+    res.status(202).json({ job });
   }),
 );
 

@@ -45,10 +45,15 @@ router.get(
         .from("personal_conversations")
         .select("id", { count: "exact", head: true })
         .contains("member_ids", [id]),
+      supabase
+        .from("racing_follows")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", id),
     ]);
     if (results.some((r) => r.error)) return unavailable(res);
     res.json({
-      following: results[0].count ?? 0,
+      // Earlier flat-record follows + follows on the linked racing data.
+      following: (results[0].count ?? 0) + (results[3].count ?? 0),
       notes: results[1].count ?? 0,
       conversations: results[2].count ?? 0,
     });
@@ -134,6 +139,8 @@ router.post(
     res.json({ ok: true });
   }),
 );
+/** Racing alerts reach the bell, on-screen cards and (with notifications on) devices; email isn't sent yet. */
+const delivery = { deliveryAvailable: true, emailAvailable: false };
 const keys = [
   "entry_alerts",
   "workout_alerts",
@@ -150,11 +157,12 @@ router.get(
       .maybeSingle();
     if (error) return unavailable(res);
     const values = data as unknown as Record<string, unknown> | null;
+    // No saved choice = racing alerts on (SQL racing_alert_wanted), email off.
     res.json({
       preferences: Object.fromEntries(
-        keys.map((k) => [k, values?.[k] === true]),
+        keys.map((k) => [k, values ? values[k] === true : k !== "email_enabled"]),
       ),
-      deliveryAvailable: false,
+      ...delivery,
     });
   }),
 );
@@ -175,7 +183,52 @@ router.patch(
         { onConflict: "user_id" },
       );
     if (error) return unavailable(res);
-    res.json({ preferences, deliveryAvailable: false });
+    res.json({ preferences, ...delivery });
+  }),
+);
+
+// ----- Following on the linked racing data (horses, people, a horse's family) -----
+// Rows: racing_follows (202611190004_racing_follows.sql). Alerts are sent by lib/racingAlerts.ts.
+const followKinds = ["horse", "family", "person"] as const;
+const followFailures: Record<string, [number, string]> = {
+  unknown_target: [404, "That horse or person isn't on Stayblz racing pages yet."],
+  too_many_follows: [409, "You can follow up to 300 horses, people and families. Unfollow some first."],
+  invalid_kind: [400, "Choose a horse, a family or a person to follow."],
+};
+router.get(
+  "/follows",
+  asyncRoute(async (req, res) => {
+    const { data, error } = await supabase.rpc("racing_follows_list", { p_user: userId(req) });
+    if (error) return res.status(503).json({ error: "Your follows are temporarily unavailable. Please try again." });
+    res.set("Cache-Control", "no-store");
+    res.json({ follows: Array.isArray(data) ? data : [] });
+  }),
+);
+router.get(
+  "/follows/state",
+  asyncRoute(async (req, res) => {
+    const id = req.query.id;
+    if (!isUuid(id)) return res.status(400).json({ error: "Choose a horse or person." });
+    const { data, error } = await supabase.rpc("racing_follow_state", { p_user: userId(req), p_target: id });
+    if (error) return res.status(503).json({ error: "Follow status is temporarily unavailable." });
+    res.set("Cache-Control", "no-store");
+    res.json({ state: data });
+  }),
+);
+router.post(
+  "/follows",
+  asyncRoute(async (req, res) => {
+    const { kind, id, on } = req.body ?? {};
+    if (!followKinds.includes(kind) || !isUuid(id) || typeof on !== "boolean")
+      return res.status(400).json({ error: "Choose a horse, a family or a person to follow." });
+    const { data, error } = await supabase.rpc("racing_follow_set", { p_user: userId(req), p_kind: kind, p_target: id, p_on: on });
+    if (error) {
+      const message = String(error.message ?? "");
+      const known = Object.keys(followFailures).find((key) => message.includes(key));
+      if (known) return res.status(followFailures[known][0]).json({ error: followFailures[known][1] });
+      return res.status(503).json({ error: "Your follow could not be saved. Please try again." });
+    }
+    res.json({ state: data });
   }),
 );
 export default router;

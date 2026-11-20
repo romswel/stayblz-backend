@@ -7,6 +7,8 @@
   },
   "scripts": {
     "test": "npm run build && node --test tests/*.test.cjs",
+    "racing:check": "npm run build && node scripts/racing-feed-check.cjs",
+    "racing:pull": "npm run build && node scripts/racing-pull.cjs",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
