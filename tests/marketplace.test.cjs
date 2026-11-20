@@ -174,3 +174,82 @@ test("only the seller edits; the seller or an admin removes", async () => {
   assert.equal((await call(admin, "/api/marketplace/listings/" + bobs[0].id + "/remove", { method: "POST" })).status, 200);
   assert.deepEqual(names(await call(alice, "/api/marketplace/listings")), ["Quiet Mare"]);
 });
+
+/* ---------- Message seller ---------- */
+
+const inquiry = (user, id, body, clientId = require("node:crypto").randomUUID()) =>
+  call(user, `/api/marketplace/listings/${id}/message`, { body: { body, clientId } });
+
+test("message seller: the buyer's message lands in the seller's inbox with the listing under it", async () => {
+  const r = await call(alice, "/api/marketplace/listings", { body: horse({ name: "Inbox Star", price: 32000 }) });
+  assert.equal(r.status, 201);
+  const listing = r.data.listing;
+  const clientId = require("node:crypto").randomUUID();
+
+  let sent = await inquiry(bob, listing.id, "  Hi, is this still available?  ", clientId);
+  assert.equal(sent.status, 201);
+  const chatId = sent.data.conversationId;
+  assert.ok(chatId);
+  assert.equal(sent.data.message.body, "Hi, is this still available?");
+  assert.deepEqual(sent.data.message.listing, {
+    id: listing.id, name: "Inbox Star", price: 32000, location: "Lexington, Kentucky", cover: null,
+  });
+
+  // A retry with the same client id is the same message.
+  const again = await inquiry(bob, listing.id, "Hi, is this still available?", clientId);
+  assert.equal(again.status, 201);
+  assert.equal(again.data.message.id, sent.data.message.id);
+
+  // Not a message request: it's a normal, unread chat for the seller, who can reply straight away.
+  const list = await call(alice, "/api/messages");
+  const chat = list.data.conversations.find((c) => c.id === chatId);
+  assert.ok(chat, "the seller sees the chat");
+  assert.equal(chat.request, false);
+  assert.equal(chat.unread, true);
+  const thread = await call(alice, `/api/messages/${chatId}`);
+  assert.equal(thread.status, 200);
+  assert.equal(thread.data.conversation.messages.length, 1);
+  assert.equal(thread.data.conversation.messages[0].listing.id, listing.id);
+  assert.equal(thread.data.conversation.messages[0].mine, false);
+  const reply = await call(alice, `/api/messages/${chatId}/messages`, {
+    body: { body: "Yes, still for sale.", clientId: require("node:crypto").randomUUID() },
+  });
+  assert.equal(reply.status, 201);
+  assert.equal(reply.data.message.listing, null);
+
+  // A second listing from the same seller continues the same chat.
+  const other = await call(alice, "/api/marketplace/listings", { body: horse({ name: "Second Look" }) });
+  sent = await inquiry(bob, other.data.listing.id, "And this one?");
+  assert.equal(sent.status, 201);
+  assert.equal(sent.data.conversationId, chatId);
+  assert.equal(sent.data.message.listing.name, "Second Look");
+
+  // Unsending hides the card along with the text.
+  const unsent = await call(bob, `/api/messages/${chatId}/messages/${sent.data.message.id}/unsend`, { body: {} });
+  assert.ok(unsent.status < 300, `unsend: ${unsent.status}`);
+  const after = await call(bob, `/api/messages/${chatId}`);
+  const removed = after.data.conversation.messages.find((m) => m.id === sent.data.message.id);
+  assert.equal(removed.removed, true);
+  assert.equal(removed.listing, null);
+});
+
+test("message seller: checked input, own listings, missing listings and blocks", async () => {
+  const r = await call(alice, "/api/marketplace/listings", { body: horse({ name: "Checked Horse" }) });
+  const id = r.data.listing.id;
+  assert.equal((await call(null, `/api/marketplace/listings/${id}/message`, { body: { body: "hi" } })).status, 401);
+  assert.equal((await inquiry(bob, id, "   ")).status, 400);
+  assert.equal((await inquiry(bob, id, "x".repeat(1001))).status, 400);
+  assert.equal((await call(bob, `/api/marketplace/listings/${id}/message`, { body: { body: "hi", clientId: "nope" } })).status, 400);
+  const own = await inquiry(alice, id, "Talking to myself");
+  assert.equal(own.status, 400);
+  assert.equal(own.data.code, "self");
+  const missing = await inquiry(bob, "99999999-9999-4999-8999-999999999999", "Hello?");
+  assert.equal(missing.status, 404);
+  assert.equal(missing.data.code, "listing_not_found");
+
+  await database.db.query("insert into public.chat_blocks(user_id, blocked_id) values($1, $2)", [alice, admin]);
+  const blocked = await inquiry(admin, id, "Hello?");
+  assert.equal(blocked.status, 403);
+  assert.equal(blocked.data.code, "blocked");
+  await database.db.query("delete from public.chat_blocks where user_id = $1 and blocked_id = $2", [alice, admin]);
+});

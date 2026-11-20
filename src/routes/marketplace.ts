@@ -8,6 +8,8 @@ import { supabase } from "../lib/supabase";
 import { peek } from "../lib/streamPeek";
 import { roleRank } from "../lib/accounts";
 import { listingFilters, listingInput, mediaInput, MediaInputError } from "../lib/marketplaceInput";
+import { notifyChat } from "../lib/chatAlerts";
+import { chatError } from "./chat";
 import {
   FILE_TYPES,
   MAX_DOCUMENTS,
@@ -42,7 +44,8 @@ const router = Router();
 router.use(requireAuth);
 router.use((req, res, next) => {
   if (req.method !== "GET" && (req as AuthenticatedRequest).user.passwordSetupRequired) {
-    res.status(403).json({ error: "Complete password setup before listing a horse." });
+    const messaging = /\/message$/.test(req.path);
+    res.status(403).json({ error: `Complete password setup before ${messaging ? "messaging a seller" : "listing a horse"}.` });
     return;
   }
   next();
@@ -91,6 +94,10 @@ const badListing = (res: Response) =>
 
 const perUser = (req: Request) => (req as Partial<AuthenticatedRequest>).user?.id ?? null;
 const uploadLimit = authLimit("marketplace-upload", 60, 10 * 60_000, perUser);
+// "Message seller": 15 messages per person per 10 minutes, and up to 1,000 characters each.
+const messageLimit = authLimit("marketplace-message", 15, 10 * 60_000, perUser);
+const MAX_INQUIRY = 1000;
+const gone = (res: Response) => res.status(404).json({ error: "This listing is no longer available.", code: "listing_not_found" });
 
 /* ---------- Shapes sent to the browser ---------- */
 
@@ -300,6 +307,64 @@ router.get(
     } catch (e) {
       unavailable(res, e as any);
     }
+  }),
+);
+
+/**
+ * POST /listings/:id/message — "Message seller". Starts (or reopens) the buyer's one-to-one chat with the
+ * seller and sends `body`, with a card for this listing under it. Goes straight to the seller's inbox
+ * (no message request); blocks still apply. `clientId` makes a retry return the same message.
+ */
+router.post(
+  "/listings/:id/message",
+  messageLimit,
+  asyncRoute(async (req, res) => {
+    if (!isUuid(req.params.id)) return notFound(res);
+    const body = typeof req.body?.body === "string" ? req.body.body.trim() : "";
+    if (!body || body.length > MAX_INQUIRY || !isUuid(req.body?.clientId))
+      return res.status(400).json({ error: `Write a message of up to ${MAX_INQUIRY.toLocaleString("en-US")} characters.` });
+    const me = user(req);
+    const { data: row, error } = await supabase.from("marketplace_listings").select(COLUMNS).eq("id", req.params.id).maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!row) return gone(res);
+    if (row.seller_id === me.id) return res.status(400).json({ error: "This is your own listing.", code: "self" });
+    // The card still works without a picture if photos can't be loaded right now.
+    const media = await loadMedia([row.id]).catch(() => new Map<string, Media>());
+    const listing = view(row, me.id, media.get(row.id));
+    const snapshot = {
+      id: listing.id,
+      name: listing.name,
+      price: listing.price,
+      location: listing.location,
+      cover: listing.cover ? { id: listing.cover.id, kind: listing.cover.kind, poster: !!listing.cover.poster } : null,
+    };
+    const { data, error: sendError } = await supabase.rpc("marketplace_inquiry", {
+      p_user: me.id,
+      p_display: me.displayName,
+      p_listing: row.id,
+      p_snapshot: snapshot,
+      p_body: body,
+      p_client: req.body.clientId,
+    });
+    if (sendError) {
+      const reason = sendError.message ?? "";
+      if (reason.includes("listing_not_found")) return gone(res);
+      if (reason.includes("self")) return res.status(400).json({ error: "This is your own listing.", code: "self" });
+      if (reason.includes("blocked")) return res.status(403).json({ error: "You can't message this seller.", code: "blocked" });
+      if (reason.includes("no_account"))
+        return res.status(404).json({ error: "This seller's account is no longer active.", code: "no_account" });
+      console.error(`[marketplace] message seller failed: ${sendError.code ?? "?"} ${reason}`);
+      // The function or its column is missing: migration 202611210001 hasn't been run on this database.
+      if (["PGRST202", "42883", "42703"].includes(sendError.code ?? "") || /marketplace_inquiry|listing/.test(reason))
+        return res.status(503).json({
+          error: "Messaging sellers isn't set up yet: run migration 202611210001_marketplace_inquiries.sql on the database.",
+          code: "setup_database",
+        });
+      return chatError(res, sendError);
+    }
+    res.status(201).json(data);
+    if (data?.message?.id)
+      void notifyChat("personal", data.conversationId, me.id, { type: "message", messageId: data.message.id });
   }),
 );
 
