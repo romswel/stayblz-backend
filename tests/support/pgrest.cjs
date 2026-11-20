@@ -229,11 +229,8 @@ const MIGRATIONS = [
   "202611190005_racing_feed.sql",
   "202611190006_racing_currency.sql",
   "202611200001_virtual_stayblz.sql",
-<<<<<<< HEAD
-  "202611210001_marketplace_inquiries.sql",
-=======
   "202611210001_chat_everyone.sql",
->>>>>>> main
+  "202611210001_marketplace_inquiries.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */
