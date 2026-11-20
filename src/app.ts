@@ -24,6 +24,7 @@ import communityRoutes from "./routes/community";
 import storageRoutes from "./routes/storage";
 import avatarRoutes from "./routes/avatars";
 import notificationRoutes from "./routes/notifications";
+import stayblzDataRoutes from "./routes/stayblzData";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -137,6 +138,8 @@ app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/tv", tvRoutes);
+// Stayblz Data (Explore): the Equibase race day kept as JSON in data/horse-racing (signed in).
+app.use("/api/stayblz-data", stayblzDataRoutes);
 // Stayblz Community: horse profiles, members, follows and the feed (photos are uploaded as raw image bodies).
 app.use("/api/community", communityRoutes);
 // Profile pictures (signed-in members; stored by lib/communityStorage: R2 when set up, else Supabase).
