@@ -5,7 +5,8 @@ import { isUuid } from "../middleware/stable";
 import { asyncRoute } from "../middleware/asyncRoute";
 import { supabase } from "../lib/supabase";
 import { text } from "../lib/workspace";
-import { touch } from "../lib/presence";
+import { presenceParam, touch } from "../lib/presence";
+import { bumpChat, deliveredTo, liveParams, personVersion, waitForPerson } from "../lib/chatLive";
 import { chatError, chatRoutes, loadThread } from "./chat";
 import chatPeople from "./chatPeople";
 import { notifyPerson } from "../lib/chatAlerts";
@@ -56,16 +57,34 @@ const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d
 router.get(
   "/unread",
   asyncRoute(async (req, res) => {
-    touch(user(req).id);
-    // This poll also marks new messages as "Delivered" to this person (writes only when something is new).
-    await supabase.rpc("chat_mark_delivered", { p_user: user(req).id });
-    const { data, error } = await supabase.rpc("chat_unread", { p_user: user(req).id });
-    if (error) return unavailable(res);
+    const me = user(req).id;
+    const presence = presenceParam(req.query.presence);
+    touch(me, presence);
     res.set("Cache-Control", "no-store");
+    // Long-poll: with `uv` (the version from the last answer) and `wait` (seconds), wait until something reaches you.
+    const live = liveParams(req.query.uv, req.query.wait);
+    if (live.waitMs && live.version !== null) {
+      let cancel: (() => void) | null = null;
+      res.on("close", () => {
+        if (!res.writableEnded) cancel?.();
+      });
+      await waitForPerson(me, live.version, live.waitMs, (fn) => {
+        cancel = fn;
+      });
+      if (res.destroyed) return;
+      touch(me, presence);
+    }
+    const uv = personVersion(me);
+    // This poll also marks new messages as "Delivered" to this person (writes only when something is new),
+    // and lets the senders' open chats show it.
+    const { data: marked } = await supabase.rpc("chat_mark_delivered", { p_user: me });
+    if (Number(marked ?? 0) > 0) deliveredTo(me);
+    const { data, error } = await supabase.rpc("chat_unread", { p_user: me });
+    if (error) return unavailable(res);
     const since = req.query.since;
     if (typeof since !== "string") return res.json(data);
     const now = new Date().toISOString();
-    if (!ISO.test(since) || !Number.isFinite(Date.parse(since))) return res.json({ ...data, incoming: [], now });
+    if (!ISO.test(since) || !Number.isFinite(Date.parse(since))) return res.json({ ...data, incoming: [], now, uv });
     // A few seconds of overlap so a clock difference between this server and the database never drops a message;
     // the browser ignores ones it already showed.
     const overlap = new Date(Date.parse(since) - 5_000).toISOString();
@@ -81,6 +100,7 @@ router.get(
       alerts: alerts.error ? [] : (alerts.data?.items ?? []),
       alertsUnread: alerts.error ? null : (alerts.data?.unread ?? 0),
       now,
+      uv,
     });
   }),
 );
@@ -275,6 +295,7 @@ router.post(
     });
     if (error) return chatError(res, error);
     res.json({ ok: true });
+    bumpChat("personal", req.params.id);
     // One-to-one: tell the person who wrote first that their request was accepted.
     const others: string[] = Array.isArray(chat?.member_ids) ? chat.member_ids.filter((id: string) => id !== me) : [];
     if (chat?.kind === "direct" && others.length === 1 && (chat.requested_ids ?? []).includes(me))

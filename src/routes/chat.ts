@@ -14,7 +14,8 @@ import {
   safeFileName,
 } from "../lib/chatStorage";
 import { IMAGE_TYPES } from "../lib/communityStorage";
-import { allow, allowed, isActive, seenAt, setTyping, touch, typers } from "../lib/presence";
+import { allow, allowed, isActive, presenceOf, presenceParam, seenAt, setTyping, touch, typers } from "../lib/presence";
+import { bumpChat, chatVersion, liveParams, messageArrived, rememberMembers, waitForChat } from "../lib/chatLive";
 import { notifyChat } from "../lib/chatAlerts";
 
 /**
@@ -22,8 +23,9 @@ import { notifyChat } from "../lib/chatAlerts";
  * Every read and write is a checked SQL function (`chat_*`, migrations 202611110001 + 202611120001) that
  * verifies membership itself. RPC arguments are passed in parameter order.
  *
- * No websockets on the free plan: the browser polls `GET /:id/updates?since=` while a chat is open.
- * "Typing…" and "Active now" live in server memory (lib/presence.ts), not the database.
+ * No websockets on the free plan: while a chat is open the browser long-polls `GET /:id/updates?since=&v=&wait=`,
+ * which answers as soon as anything in the chat changes (lib/chatLive.ts) or after `wait` seconds.
+ * "Typing…" and Online / Away / Offline live in server memory (lib/presence.ts), not the database.
  */
 export type ChatKind = "personal" | "team";
 export const PAGE_SIZE = 50;
@@ -81,20 +83,26 @@ export async function loadThread(req: Request, kind: ChatKind, id: string, befor
   return result;
 }
 
-/** Adds what only the server's memory knows: who's active and who's typing. */
-function decorate(kind: ChatKind, me: string, data: any) {
+/** Adds what only the server's memory knows: who's online, who's typing, and the chat's live version. */
+function decorate(kind: ChatKind, me: string, data: any, version?: number) {
   const c = data?.conversation;
   if (!c) return;
   allow(kind, c.id, me);
-  const mine = (c.members ?? []).find((m: any) => m.me);
+  const list: any[] = Array.isArray(c.members) ? c.members : [];
+  if (list.length) rememberMembers(kind, c.id, list.map((m) => m.id));
+  const mine = list.find((m) => m.me);
   const share = mine?.showActive !== false;
-  for (const m of c.members ?? []) {
+  for (const m of list) {
+    // Presence only between people who both share it ("Show when I'm active" in chat settings).
     const visible = share && m.showActive !== false && !m.me;
-    m.active = visible && isActive(m.id);
+    m.presence = visible ? presenceOf(m.id) : null;
+    m.active = m.presence === "online";
     m.seenAt = visible ? seenAt(m.id) : null;
     delete m.showActive;
   }
   c.typing = typers(kind, c.id, me);
+  // The browser sends this back as `v`, so its next updates request can wait for a change.
+  data.v = version ?? chatVersion(kind, c.id);
 }
 
 /** Last-sent errors for uploads: per person, 40 files per 10 minutes. */
@@ -134,7 +142,7 @@ const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export function chatRoutes(kind: ChatKind) {
   const router = Router();
   router.use((req, _res, next) => {
-    touch(user(req).id);
+    touch(user(req).id, presenceParam(req.query.presence));
     next();
   });
   router.param("id", (req, res, next, id) => {
@@ -162,8 +170,11 @@ export function chatRoutes(kind: ChatKind) {
           .in("user_id", [...others, me])
           .eq("show_active", false);
         const off = new Set((hidden ?? []).map((r: any) => r.user_id));
-        for (const c of rows)
-          c.active = !off.has(me) && !!c.otherId && !off.has(c.otherId) && isActive(c.otherId);
+        for (const c of rows) {
+          const shown = !off.has(me) && !!c.otherId && !off.has(c.otherId);
+          c.presence = shown ? presenceOf(c.otherId) : null;
+          c.active = shown && isActive(c.otherId);
+        }
       }
       res.json({ conversations: rows });
     }),
@@ -181,13 +192,30 @@ export function chatRoutes(kind: ChatKind) {
     }),
   );
 
-  // Cheap poll: only what changed since `since` (the `now` from the previous response).
+  // Cheap poll: only what changed since `since` (the `now` from the previous response). With `v` (the version from
+  // the previous response) and `wait` (seconds, up to 15) it first waits until something in the chat changes.
   router.get(
     "/:id/updates",
     asyncRoute(async (req, res) => {
       const since = req.query.since;
       if (typeof since !== "string" || !ISO.test(since) || !Number.isFinite(Date.parse(since)))
         return res.status(400).json({ error: "Invalid update request." });
+      res.set("Cache-Control", "no-store");
+      const live = liveParams(req.query.v, req.query.wait);
+      // Only people who loaded this chat recently may wait on it (no database check while waiting).
+      if (live.waitMs && live.version !== null && allowed(kind, req.params.id, user(req).id)) {
+        let cancel: (() => void) | null = null;
+        res.on("close", () => {
+          if (!res.writableEnded) cancel?.();
+        });
+        await waitForChat(kind, req.params.id, live.version, live.waitMs, (fn) => {
+          cancel = fn;
+        });
+        if (res.destroyed) return;
+        touch(user(req).id, presenceParam(req.query.presence)); // still here after the wait: the page is open
+      }
+      // Read the version before the database: a change landing during the read wakes the next request at once.
+      const version = chatVersion(kind, req.params.id);
       const { data, error } = await supabase.rpc("chat_thread", {
         ...chatScope(req, kind),
         p_conversation: req.params.id,
@@ -197,7 +225,7 @@ export function chatRoutes(kind: ChatKind) {
         p_limit: PAGE_SIZE,
       });
       if (error) return chatError(res, error);
-      decorate(kind, user(req).id, data);
+      decorate(kind, user(req).id, data, version);
       res.json(data);
     }),
   );
@@ -232,7 +260,10 @@ export function chatRoutes(kind: ChatKind) {
         return res.status(503).json({ error: "Message not sent. The chat server is busy — tap Retry in a moment." });
       }
       res.status(201).json({ message: data });
-      if (data?.id) void notifyChat(kind, req.params.id, user(req).id, { type: "message", messageId: data.id });
+      if (data?.id) {
+        messageArrived(kind, req.params.id, user(req).id);
+        void notifyChat(kind, req.params.id, user(req).id, { type: "message", messageId: data.id });
+      }
     }),
   );
 
@@ -318,7 +349,10 @@ export function chatRoutes(kind: ChatKind) {
         return chatError(res, error);
       }
       res.status(201).json({ message: data });
-      if (!existing && data?.id) void notifyChat(kind, req.params.id, me.id, { type: "message", messageId: data.id });
+      if (!existing && data?.id) {
+        messageArrived(kind, req.params.id, me.id);
+        void notifyChat(kind, req.params.id, me.id, { type: "message", messageId: data.id });
+      }
     }),
   );
 
@@ -359,6 +393,7 @@ export function chatRoutes(kind: ChatKind) {
       // Opening the chat also reads its alerts (the bell list), on every device.
       await supabase.rpc("chat_alerts_read_chat", { p_user: user(req).id, p_kind: kind, p_conversation: req.params.id });
       res.json({ ok: true });
+      bumpChat(kind, req.params.id); // "Seen" shows for the others straight away
     }),
   );
 
@@ -368,6 +403,7 @@ export function chatRoutes(kind: ChatKind) {
     if (!allowed(kind, req.params.id, me.id)) return res.json({ ok: false });
     setTyping(kind, req.params.id, me.id, me.displayName, req.body?.on !== false);
     res.json({ ok: true });
+    bumpChat(kind, req.params.id);
   });
 
   router.post(
@@ -384,6 +420,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ message: data });
+      bumpChat(kind, req.params.id);
       // Only adding (or changing to) a reaction tells the author; taking one back stays quiet.
       const me = user(req).id;
       if (emoji && data?.reactions?.some((r: { emoji: string; ids?: string[] }) => r.emoji === emoji && r.ids?.includes(me)))
@@ -405,6 +442,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ message: data });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -419,6 +457,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ message: data });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -433,6 +472,7 @@ export function chatRoutes(kind: ChatKind) {
       if (error) return chatError(res, error);
       if (data?.removePath) await chatStorage.remove([data.removePath]).catch(() => undefined);
       res.json({ message: data?.message });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -455,6 +495,7 @@ export function chatRoutes(kind: ChatKind) {
         });
         const code = error ? Object.keys(ERRORS).find((k) => error.message?.includes(k)) : undefined;
         results.push(error ? { to: target, ok: false, error: code ? ERRORS[code][1] : "Not sent." } : { to: target, ok: true });
+        if (!error && sent?.id) messageArrived(kind, target, user(req).id);
         if (!error && sent?.id) void notifyChat(kind, target, user(req).id, { type: "message", messageId: sent.id });
       }
       res.json({ results });
@@ -538,6 +579,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ ok: true });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -576,6 +618,7 @@ export function chatRoutes(kind: ChatKind) {
       }
       if (data?.old) await chatStorage.remove([data.old]).catch(() => undefined);
       res.status(201).json({ photo: path.slice(path.lastIndexOf("/") + 1) });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -591,6 +634,7 @@ export function chatRoutes(kind: ChatKind) {
       if (error) return chatError(res, error);
       if (data?.old) await chatStorage.remove([data.old]).catch(() => undefined);
       res.json({ photo: null });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -635,6 +679,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ added: data });
+      bumpChat(kind, req.params.id);
       const added = (ids as string[]).filter((id) => !already.has(id));
       if (data && added.length) void notifyChat(kind, req.params.id, user(req).id, { type: "group_added", ids: added });
     }),
@@ -652,6 +697,7 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ ok: true });
+      bumpChat(kind, req.params.id);
     }),
   );
 
@@ -670,6 +716,7 @@ export function chatRoutes(kind: ChatKind) {
       if (data?.deleted && typeof before?.photo === "string") paths.push(before.photo);
       if (paths.length) await chatStorage.remove(paths).catch(() => undefined);
       res.json({ ok: true });
+      bumpChat(kind, req.params.id);
     }),
   );
 

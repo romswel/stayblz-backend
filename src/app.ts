@@ -26,6 +26,7 @@ import paddockLiveRoutes from "./routes/paddockLive";
 import communityRoutes from "./routes/community";
 import storageRoutes from "./routes/storage";
 import avatarRoutes from "./routes/avatars";
+import gifRoutes from "./routes/gifs";
 import notificationRoutes from "./routes/notifications";
 import stayblzDataRoutes from "./routes/stayblzData";
 import { supabase } from "./lib/supabase";
@@ -150,6 +151,8 @@ app.use("/api/stayblz-data", stayblzDataRoutes);
 app.use("/api/community", communityRoutes);
 // Profile pictures (signed-in members; stored by lib/communityStorage: R2 when set up, else Supabase).
 app.use("/api/avatars", avatarRoutes);
+// GIF search for Stayblz Chat (GIPHY, only when GIPHY_API_KEY is set).
+app.use("/api/gifs", gifRoutes);
 // Notification settings + Web Push devices (signed in). Stayblz Chat is the first feature that notifies.
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin/racing", adminRacingRoutes);
