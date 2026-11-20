@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { deliver, messageSummary, pushConfig, throttled, type PushPayload, type Target } from "./push";
+import { bumpPeople } from "./chatLive";
 
 /**
  * Stayblz Chat alerts (migration 202611190003_chat_alerts.sql). After something happens in a chat, the route calls
@@ -157,7 +158,10 @@ export async function notifyChat(
       p_actor: actorId,
       p_event: event,
     });
-    if (error || !data || !pushConfig()) return 0;
+    if (error || !data) return 0;
+    // Wake the site-wide poll of everyone who just got an alert (badge, bell, on-screen alert within a moment).
+    bumpPeople(((data as NotifyResult).alerts ?? []).map((a) => a.userId));
+    if (!pushConfig()) return 0;
     return await send(data as NotifyResult);
   } catch {
     return 0;
@@ -178,7 +182,10 @@ export async function notifyPerson(
       p_type: type,
       p_conversation: conversationId,
     });
-    if (error || !data || !pushConfig()) return 0;
+    if (error || !data) return 0;
+    // Wake the site-wide poll of everyone who just got an alert (badge, bell, on-screen alert within a moment).
+    bumpPeople(((data as NotifyResult).alerts ?? []).map((a) => a.userId));
+    if (!pushConfig()) return 0;
     return await send(data as NotifyResult);
   } catch {
     return 0;

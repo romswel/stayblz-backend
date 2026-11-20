@@ -119,9 +119,30 @@ export function throttled(key: string) {
 
 const clip = (text: string, max = 140) => (text.length > max ? text.slice(0, max - 1).trimEnd() + "…" : text);
 
+/**
+ * A message as plain words: chat formatting marks (**bold**, _italic_, ~~strike~~, `code`, ||spoiler||, > quotes,
+ * list bullets) are dropped, spoilers stay hidden, "@highlight" and a leading "/me" are left out, and a lone GIF link
+ * reads "GIF".
+ * Keep in step with the frontend's plainText (components/messenger/chatMarkdown.tsx).
+ */
+export function plainMessage(text: string) {
+  const body = text.trim();
+  if (/^https:\/\/(?:media\d?\.giphy\.com|i\.giphy\.com|media\.tenor\.com)\/\S+$/i.test(body)) return "GIF";
+  return body
+    .replace(/```[a-z]*\n?([\s\S]*?)```/gi, "$1")
+    .replace(/\|\|[\s\S]+?\|\|/g, "(spoiler)")
+    .replace(/(^|\s)@highlight\b\s*/gi, "$1")
+    .replace(/^\/me\s+/i, "")
+    .replace(/^[ \t]{0,3}(?:>[ \t]?|[-*•][ \t]+|\d{1,3}[.)][ \t]+)/gm, "")
+    .replace(/(\*\*|__|~~)(?=\S)([\s\S]*?\S)\1/g, "$2")
+    .replace(/(^|[^\w*])[*_](?=\S)([^*_\n]*?\S)[*_](?![\w*])/g, "$1$2")
+    .replace(/`([^`\n]+)`/g, "$1")
+    .trim();
+}
+
 /** What a message says in an alert: its text, or what was sent. */
 export function messageSummary(message: { body?: string; attachment?: { type?: string; name?: string } | null }) {
-  const body = (message.body ?? "").replace(/\s+/g, " ").trim();
+  const body = plainMessage(message.body ?? "").replace(/\s+/g, " ").trim();
   if (body) return clip(body);
   const type = message.attachment?.type ?? "";
   if (type.startsWith("image/")) return "📷 Sent a photo";

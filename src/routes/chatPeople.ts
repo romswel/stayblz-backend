@@ -3,7 +3,7 @@ import type { AuthenticatedRequest } from "../middleware/auth";
 import { asyncRoute } from "../middleware/asyncRoute";
 import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
-import { isActive, touch } from "../lib/presence";
+import { isActive, presenceOf, presenceParam, seenAt, touch } from "../lib/presence";
 import { chatError, loadThread } from "./chat";
 import { notifyPerson } from "../lib/chatAlerts";
 import { chatLimits } from "../lib/chatStorage";
@@ -15,7 +15,7 @@ import { chatLimits } from "../lib/chatStorage";
 const router = Router();
 const me = (req: any) => (req as AuthenticatedRequest).user;
 router.use((req, _res, next) => {
-  touch(me(req).id);
+  touch(me(req).id, presenceParam(req.query.presence));
   next();
 });
 
@@ -47,7 +47,7 @@ function fail(res: Response, error: { message?: string } | null) {
   return res.status(503).json({ error: "People are unavailable right now. Try again shortly." });
 }
 
-/** Adds "active now" only for people who share it, and only if you share yours. */
+/** Adds Online / Away / Offline only for people who share it, and only if you share yours. */
 async function withActive<T extends { id: string }>(viewer: string, people: T[]) {
   if (!people.length) return people;
   const { data } = await supabase
@@ -56,8 +56,99 @@ async function withActive<T extends { id: string }>(viewer: string, people: T[])
     .in("user_id", [...people.map((p) => p.id), viewer])
     .eq("show_active", false);
   const off = new Set((data ?? []).map((r: any) => r.user_id));
-  return people.map((p) => ({ ...p, active: !off.has(viewer) && !off.has(p.id) && isActive(p.id) }));
+  return people.map((p) => {
+    const shown = !off.has(viewer) && !off.has(p.id);
+    return { ...p, presence: shown ? presenceOf(p.id) : null, active: shown && isActive(p.id), seenAt: shown ? seenAt(p.id) : null };
+  });
 }
+
+const CONTACT_CHATS = 300;
+const nameOf = (a: { first_name?: string | null; last_name?: string | null }) =>
+  `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || "Stayblz member";
+
+/**
+ * Everyone you're connected with in Stayblz Chat: your friends, plus the people in your one-to-one and group chats
+ * (not message requests you haven't accepted, not anyone blocked either way, not closed accounts). Friends first;
+ * each person comes with Online / Away / Offline (when both of you share it), how many chats you share and when
+ * one of them last had a message.
+ */
+async function contactsOf(me: string) {
+  const [friendsRes, chatsRes, mineRes, theirsRes] = await Promise.all([
+    supabase.rpc("chat_friends", { p_user: me }),
+    supabase
+      .from("personal_conversations")
+      .select("id,member_ids,requested_ids,last_message_at")
+      .contains("member_ids", [me])
+      .order("last_message_at", { ascending: false })
+      .limit(CONTACT_CHATS),
+    supabase.from("chat_blocks").select("blocked_id").eq("user_id", me),
+    supabase.from("chat_blocks").select("user_id").eq("blocked_id", me),
+  ]);
+  if (friendsRes.error || chatsRes.error || mineRes.error || theirsRes.error)
+    throw friendsRes.error ?? chatsRes.error ?? mineRes.error ?? theirsRes.error;
+  const blocked = new Set<string>([
+    ...(mineRes.data ?? []).map((b: any) => b.blocked_id as string),
+    ...(theirsRes.data ?? []).map((b: any) => b.user_id as string),
+  ]);
+  const shared = new Map<string, { chats: number; lastAt: string | null }>();
+  for (const c of (chatsRes.data ?? []) as { member_ids: string[]; requested_ids: string[] | null; last_message_at: string | null }[]) {
+    const pending = new Set(c.requested_ids ?? []);
+    if (pending.has(me)) continue; // a request to you that you haven't accepted
+    for (const id of c.member_ids ?? []) {
+      if (id === me || pending.has(id) || blocked.has(id)) continue;
+      const s = shared.get(id) ?? { chats: 0, lastAt: null };
+      s.chats++;
+      if (c.last_message_at && (!s.lastAt || c.last_message_at > s.lastAt)) s.lastAt = c.last_message_at;
+      shared.set(id, s);
+    }
+  }
+  const friendRows: any[] = [
+    ...(friendsRes.data?.friends ?? []),
+    ...(friendsRes.data?.incoming ?? []),
+    ...(friendsRes.data?.outgoing ?? []),
+  ];
+  const friendStatus = new Map<string, any>(friendRows.map((p) => [p.id, p]));
+  const ids = [...new Set([...shared.keys(), ...(friendsRes.data?.friends ?? []).map((p: any) => p.id)])].filter((id) => !blocked.has(id));
+  if (!ids.length) return [];
+  const { data: accounts, error } = await supabase
+    .from("accounts")
+    .select("id,first_name,last_name,racing_role,status")
+    .in("id", ids)
+    .eq("status", "active");
+  if (error) throw error;
+  const people = (accounts ?? []).map((a: any) => {
+    const f = friendStatus.get(a.id);
+    const s = shared.get(a.id);
+    return {
+      id: a.id as string,
+      name: nameOf(a),
+      role: a.racing_role ?? undefined,
+      status: (f?.status ?? "none") as string,
+      sharedChats: s?.chats ?? 0,
+      lastAt: s?.lastAt ?? null,
+    };
+  });
+  const rank = { online: 0, away: 1, offline: 2 } as Record<string, number>;
+  return (await withActive(me, people)).sort(
+    (a: any, b: any) =>
+      Number(b.status === "friends") - Number(a.status === "friends") ||
+      (rank[a.presence ?? "offline"] ?? 2) - (rank[b.presence ?? "offline"] ?? 2) ||
+      String(b.lastAt ?? "").localeCompare(String(a.lastAt ?? "")) ||
+      a.name.localeCompare(b.name),
+  );
+}
+
+router.get(
+  "/contacts",
+  asyncRoute(async (req, res) => {
+    try {
+      res.set("Cache-Control", "no-store");
+      res.json({ people: await contactsOf(me(req).id) });
+    } catch {
+      res.status(503).json({ error: "People are unavailable right now. Try again shortly." });
+    }
+  }),
+);
 
 router.get(
   "/search",

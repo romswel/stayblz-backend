@@ -1,38 +1,60 @@
 /**
- * "Active now" and "typing…" for chat, kept in this server's memory only — never written to the
- * database (the free plan can't afford a write every few seconds). Render runs one instance, so
+ * Presence ("Online" / "Away" / "Offline") and "typing…" for chat, kept in this server's memory only — never
+ * written to the database (the free plan can't afford a write every few seconds). Render runs one instance, so
  * this is shared by everyone; a restart simply forgets it, which is harmless.
+ *
+ * An open Stayblz page checks in at least every ~20 s (the site-wide poll, or an open chat's long-poll) and says
+ * whether its person is using it ("active") or not ("idle": the tab is hidden, or no tap/key for a few minutes).
+ *   online  = an active check-in within ONLINE_MS
+ *   away    = Stayblz is open but idle, or the last active check-in was a few minutes ago
+ *   offline = nothing for AWAY_MS
+ * The windows are several check-ins long, so one late or failed poll never makes a dot blink off and on.
  */
-const ACTIVE_MS = 2 * 60_000;
-const REMEMBER_MS = 60 * 60_000;
+const ONLINE_MS = 75_000;
+const AWAY_MS = 6 * 60_000;
+const REMEMBER_MS = 24 * 60 * 60_000;
 const TYPING_MS = 6_000;
 const ACCESS_MS = 10 * 60_000;
 const MAX_ENTRIES = 20_000;
 
+export type Presence = "online" | "away" | "offline";
 const lastSeen = new Map<string, number>();
+const lastActive = new Map<string, number>();
 const typing = new Map<string, Map<string, { name: string; until: number }>>();
 const access = new Map<string, number>();
 
 function trim<K, V>(map: Map<K, V>) {
   while (map.size > MAX_ENTRIES) map.delete(map.keys().next().value as K);
 }
-
-export function touch(userId: string) {
-  lastSeen.delete(userId);
-  lastSeen.set(userId, Date.now());
-  trim(lastSeen);
+function mark(map: Map<string, number>, userId: string, at: number) {
+  map.delete(userId);
+  map.set(userId, at);
+  trim(map);
 }
 
-/** When this person was last seen on chat (within the last hour), or null. */
+/** A request from this person. "idle" = Stayblz is open but they aren't using it (hidden tab, no input). */
+export function touch(userId: string, state: "active" | "idle" = "active") {
+  const now = Date.now();
+  mark(lastSeen, userId, now);
+  if (state === "active") mark(lastActive, userId, now);
+}
+/** `?presence=idle` on a poll means the page is open but not in use; anything else counts as active. */
+export const presenceParam = (value: unknown): "active" | "idle" => (value === "idle" ? "idle" : "active");
+
+export function presenceOf(userId: string, now = Date.now()): Presence {
+  const seen = lastSeen.get(userId);
+  if (!seen || now - seen > AWAY_MS) return "offline";
+  const active = lastActive.get(userId);
+  return active && now - active < ONLINE_MS ? "online" : "away";
+}
+
+/** When this person was last using Stayblz (within a day), or null. */
 export function seenAt(userId: string): string | null {
-  const at = lastSeen.get(userId);
+  const at = lastActive.get(userId) ?? lastSeen.get(userId);
   if (!at || Date.now() - at > REMEMBER_MS) return null;
   return new Date(at).toISOString();
 }
-export const isActive = (userId: string) => {
-  const at = lastSeen.get(userId);
-  return !!at && Date.now() - at < ACTIVE_MS;
-};
+export const isActive = (userId: string) => presenceOf(userId) === "online";
 
 const key = (kind: string, conversation: string) => `${kind}:${conversation}`;
 
@@ -74,6 +96,7 @@ export function typers(kind: string, conversation: string, exceptUser: string): 
 /** For tests. */
 export function resetPresence() {
   lastSeen.clear();
+  lastActive.clear();
   typing.clear();
   access.clear();
 }
