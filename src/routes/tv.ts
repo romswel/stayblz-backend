@@ -1,5 +1,7 @@
 import { Router } from "express";
-import { requireAuth } from "../middleware/auth";
+import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
+import { asyncRoute } from "../middleware/asyncRoute";
+import { featureAccess } from "../lib/billing/engine";
 import { tvSettings } from "../lib/tv";
 import { youtubeReplays } from "../lib/youtubeFeed";
 
@@ -14,20 +16,33 @@ import { youtubeReplays } from "../lib/youtubeFeed";
 const router = Router();
 router.use(requireAuth);
 
-router.get("/status", (_req, res) => {
-  const { state, title, startsAt } = tvSettings();
-  res.json({ state, title, startsAt });
-});
+// access: whether this person may watch (always true while paywalls are off; see Billing settings).
+router.get(
+  "/status",
+  asyncRoute(async (req, res) => {
+    const { state, title, startsAt } = tvSettings();
+    const access = await featureAccess((req as AuthenticatedRequest).user, "tv.watch");
+    res.json({ state, title, startsAt, access: { allowed: access.allowed, reason: access.reason, plan: "tv_monthly" } });
+  }),
+);
 
-router.get("/playback", (_req, res) => {
-  const { state, title, streamUrl, kind } = tvSettings();
-  // Access checks (subscription / entitlement) go here, before the address is handed out.
-  if (state !== "live" || !streamUrl) {
-    res.status(409).json({ code: "off_air", error: "Nothing is on air right now." });
-    return;
-  }
-  res.json({ url: streamUrl, title, kind });
-});
+router.get(
+  "/playback",
+  asyncRoute(async (req, res) => {
+    const { state, title, streamUrl, kind } = tvSettings();
+    // The stream address is only handed out to people with the STAYBLZ TV Pass (when paywalls are on).
+    const access = await featureAccess((req as AuthenticatedRequest).user, "tv.watch");
+    if (!access.allowed) {
+      res.status(402).json({ code: "subscription_required", plan: "tv_monthly", error: "Live races need the STAYBLZ TV Pass." });
+      return;
+    }
+    if (state !== "live" || !streamUrl) {
+      res.status(409).json({ code: "off_air", error: "Nothing is on air right now." });
+      return;
+    }
+    res.json({ url: streamUrl, title, kind });
+  }),
+);
 
 router.get("/youtube", async (_req, res) => {
   const { failed, channels, videos } = await youtubeReplays();

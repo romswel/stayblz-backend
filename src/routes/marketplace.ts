@@ -53,15 +53,15 @@ router.use((req, res, next) => {
 
 const PAGE = 60;
 const COLUMNS =
-  "id,seller_id,seller_name,name,price,breed,discipline,horse_type,gender,color,age,height_in,location,description,created_at,updated_at";
+  "id,seller_id,seller_name,name,price,breed,discipline,horse_type,gender,color,age,height_in,location,description,featured_until,created_at,updated_at";
 const FILE_COLUMNS =
   "id,listing_id,seller_id,kind,storage_key,poster_key,content_type,size_bytes,width,height,duration_seconds,file_name,position,created_at";
 const user = (req: Request) => (req as AuthenticatedRequest).user;
 /** The photo/video table or its columns are missing: the marketplace migrations haven't been run. */
 const needsMigration = (error?: { code?: string; message?: string } | null) =>
-  !!error && ["PGRST205", "PGRST204", "42P01", "42703"].includes(error.code ?? "") && /marketplace_files|poster_key|duration_seconds|description/.test(error.message ?? "");
+  !!error && ["PGRST205", "PGRST204", "42P01", "42703"].includes(error.code ?? "") && /marketplace_files|poster_key|duration_seconds|description|featured_until/.test(error.message ?? "");
 const MIGRATION_HELP =
-  "The marketplace database isn't up to date: run migrations 202611150002_marketplace_media.sql, 202611150003_marketplace_video.sql and 202611190002_marketplace_description.sql in the Supabase SQL Editor.";
+  "The marketplace database isn't up to date: run migrations 202611150002_marketplace_media.sql, 202611150003_marketplace_video.sql, 202611190002_marketplace_description.sql and 202611210002_billing.sql in the Supabase SQL Editor.";
 const unavailable = (res: Response, error?: { code?: string; message?: string } | null) => {
   if (error) console.error(`[marketplace] ${res.req?.method} ${res.req?.originalUrl} failed: ${error.code ?? "?"} ${error.message ?? ""}`);
   if (needsMigration(error)) {
@@ -154,6 +154,9 @@ function view(row: any, viewer: string, media: Media = noMedia, full = false) {
     location: row.location,
     sellerName: row.seller_name,
     mine: row.seller_id === viewer,
+    // Featured through Stayblz Billing (Featured listing): shown first with a Featured tag until this time.
+    featured: !!row.featured_until && new Date(row.featured_until).getTime() > Date.now(),
+    featuredUntil: row.seller_id === viewer ? (row.featured_until ?? null) : undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     // The card's picture: the first photo or video (a video shows its poster).
@@ -258,20 +261,24 @@ router.get(
       return res.status(400).json({ error: "Those filters aren't valid. Clear them and try again." });
     }
     const me = user(req).id;
-    let query = supabase.from("marketplace_listings").select(COLUMNS);
-    if (f.mine) query = query.eq("seller_id", me);
-    if (f.breed) query = query.eq("breed", f.breed);
-    if (f.discipline) query = query.eq("discipline", f.discipline);
-    if (f.type) query = query.eq("horse_type", f.type);
-    if (f.gender) query = query.eq("gender", f.gender);
-    if (f.color) query = query.eq("color", f.color);
-    if (f.priceMin !== undefined) query = query.gte("price", f.priceMin);
-    if (f.priceMax !== undefined) query = query.lte("price", f.priceMax);
-    if (f.ageMin !== undefined) query = query.gte("age", f.ageMin);
-    if (f.ageMax !== undefined) query = query.lte("age", f.ageMax);
-    if (f.heightMin !== undefined) query = query.gte("height_in", f.heightMin);
-    if (f.heightMax !== undefined) query = query.lte("height_in", f.heightMax);
-    if (f.location) query = query.ilike("location", `%${f.location}%`);
+    const filtered = () => {
+      let query = supabase.from("marketplace_listings").select(COLUMNS);
+      if (f.mine) query = query.eq("seller_id", me);
+      if (f.breed) query = query.eq("breed", f.breed);
+      if (f.discipline) query = query.eq("discipline", f.discipline);
+      if (f.type) query = query.eq("horse_type", f.type);
+      if (f.gender) query = query.eq("gender", f.gender);
+      if (f.color) query = query.eq("color", f.color);
+      if (f.priceMin !== undefined) query = query.gte("price", f.priceMin);
+      if (f.priceMax !== undefined) query = query.lte("price", f.priceMax);
+      if (f.ageMin !== undefined) query = query.gte("age", f.ageMin);
+      if (f.ageMax !== undefined) query = query.lte("age", f.ageMax);
+      if (f.heightMin !== undefined) query = query.gte("height_in", f.heightMin);
+      if (f.heightMax !== undefined) query = query.lte("height_in", f.heightMax);
+      if (f.location) query = query.ilike("location", `%${f.location}%`);
+      return query;
+    };
+    let query = filtered();
     if (f.sort === "price-asc" || f.sort === "price-desc")
       query = query.order("price", { ascending: f.sort === "price-asc" });
     else if (f.sort === "age-asc") query = query.order("age", { ascending: true });
@@ -279,7 +286,14 @@ router.get(
     // One extra row tells the page there are more than it shows.
     const { data, error } = await query.limit(PAGE + 1);
     if (error) return unavailable(res, error);
-    const rows = (data ?? []).slice(0, PAGE);
+    // Newest first (the default): featured listings that match the filters go on top.
+    let featured: any[] = [];
+    if (!f.mine && f.sort === "newest") {
+      const { data: top } = await filtered().gt("featured_until", new Date().toISOString()).order("featured_until", { ascending: false }).limit(12);
+      featured = top ?? [];
+    }
+    const featuredIds = new Set(featured.map((r) => r.id));
+    const rows = [...featured, ...(data ?? []).filter((r) => !featuredIds.has(r.id))].slice(0, PAGE);
     // Browsing must keep working even if photos can't be loaded (e.g. the media migrations aren't run yet).
     let media = new Map<string, Media>();
     try {
@@ -288,7 +302,7 @@ router.get(
       const err = e as { code?: string; message?: string };
       console.error(`[marketplace] photos couldn't be loaded: ${err.code ?? "?"} ${err.message ?? ""}${needsMigration(err) ? ` — ${MIGRATION_HELP}` : ""}`);
     }
-    res.json({ listings: rows.map((row) => view(row, me, media.get(row.id))), more: (data ?? []).length > PAGE });
+    res.json({ listings: rows.map((row) => view(row, me, media.get(row.id))), more: featured.length + (data ?? []).filter((r) => !featuredIds.has(r.id)).length > PAGE });
   }),
 );
 

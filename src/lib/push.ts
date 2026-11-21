@@ -16,7 +16,7 @@ export interface PushPayload {
   /** Same tag = the phone replaces the earlier alert for that chat instead of stacking them. */
   tag: string;
   url: string;
-  kind: "chat" | "test" | "call" | "meeting" | "racing";
+  kind: "chat" | "test" | "call" | "meeting" | "racing" | "billing";
   /** Stayblz Chat: what happened (message, mention, reaction…). Racing: race_entry, race_result, workout, digest… */
   alert?: string;
   /** The saved alert (chat) or the call alert (Paddock, so "Decline" on the notification can answer it). */

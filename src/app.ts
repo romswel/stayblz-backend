@@ -29,6 +29,10 @@ import avatarRoutes from "./routes/avatars";
 import gifRoutes from "./routes/gifs";
 import notificationRoutes from "./routes/notifications";
 import stayblzDataRoutes from "./routes/stayblzData";
+import billingRoutes from "./routes/billing";
+import stableBillingRoutes from "./routes/stableBilling";
+import payRoutes from "./routes/pay";
+import adminBillingRoutes from "./routes/adminBilling";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -136,6 +140,10 @@ app.use("/api/team-messages", memberMessages);
 // Virtual Stayblz: a private list under My racing, and a shared one for the active stable.
 app.use("/api/my-racing/virtual", virtualRouter("personal"));
 app.use("/api/workspace/virtual", requireAuth, requireStable, virtualRouter("stable"));
+// Stayblz Billing: your plans, cards and bills; the stable's billing (owners/managers); public pay links.
+app.use("/api/billing", billingRoutes);
+app.use("/api/workspace/billing", requireAuth, requireStable, stableBillingRoutes);
+app.use("/api/pay", payRoutes);
 app.use("/api/my-racing", myRacingRoutes);
 // Stayblz Paddock: in-call + guest routes use seats/passes (no cookie); the rest need sign-in.
 app.use("/api/paddock/live", paddockLiveRoutes);
@@ -156,6 +164,7 @@ app.use("/api/gifs", gifRoutes);
 // Notification settings + Web Push devices (signed in). Stayblz Chat is the first feature that notifies.
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin/racing", adminRacingRoutes);
+app.use("/api/admin/billing", adminBillingRoutes);
 // Cloudflare R2 (shared with Suprah, Stayblz files under stayblz/ only): admin status + connection check.
 app.use("/api/admin/storage", storageRoutes);
 app.use("/api/admin", adminRoutes);

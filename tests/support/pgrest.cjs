@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const { PGlite } = require("@electric-sql/pglite");
 let db;
 const identifier = (v) => {
-  assert.match(v, /^[a-z_]+$/);
+  assert.match(v, /^[a-z_][a-z0-9_]*$/);
   return '"' + v + '"';
 };
 // Lists of plain values become Postgres arrays; lists of objects stay JSON (like PostgREST).
@@ -231,6 +231,7 @@ const MIGRATIONS = [
   "202611200001_virtual_stayblz.sql",
   "202611210001_chat_everyone.sql",
   "202611210001_marketplace_inquiries.sql",
+  "202611210002_billing.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */

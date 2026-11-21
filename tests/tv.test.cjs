@@ -8,6 +8,11 @@ const { app } = require("../dist/app");
 const auth = require("../dist/middleware/auth");
 const { tvSettings, streamUrl, youtubeEmbed } = require("../dist/lib/tv");
 const { parseFeed, youtubeChannels, clearYouTubeCache, youtubeReplays } = require("../dist/lib/youtubeFeed");
+const { supabase } = require("../dist/lib/supabase");
+// No database here: Billing's settings read answers "paywalls off" (the default) straight away.
+// The paywall itself (402 without the TV Pass) is tested in billing.test.cjs.
+supabase.from = () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { enforce_paywalls: false }, error: null }) }) }) });
+const OPEN = { allowed: true, reason: "open", plan: "tv_monthly" };
 
 const STREAM = "https://video.example.test/live/race.m3u8";
 let server, origin, token;
@@ -41,7 +46,7 @@ test("guests get 401 on both TV routes", async () => {
 test("off air by default; playback refuses with off_air", async () => {
   const status = await call("/api/tv/status");
   assert.equal(status.status, 200);
-  assert.deepEqual(status.data, { state: "off_air", title: null, startsAt: null });
+  assert.deepEqual(status.data, { state: "off_air", title: null, startsAt: null, access: OPEN });
   assert.equal(status.cache, "no-store");
   const playback = await call("/api/tv/playback");
   assert.equal(playback.status, 409);
@@ -53,7 +58,7 @@ test("live: status names the broadcast but never the stream; playback hands it o
   process.env.TV_STREAM_URL = STREAM;
   process.env.TV_TITLE = "  Keeneland \n Race 7  ";
   const status = await call("/api/tv/status");
-  assert.deepEqual(status.data, { state: "live", title: "Keeneland Race 7", startsAt: null });
+  assert.deepEqual(status.data, { state: "live", title: "Keeneland Race 7", startsAt: null, access: OPEN });
   assert.equal(JSON.stringify(status.data).includes("m3u8"), false);
   const playback = await call("/api/tv/playback");
   assert.equal(playback.status, 200);
@@ -76,6 +81,7 @@ test("upcoming only for a future start time", async () => {
     state: "upcoming",
     title: "Saturday card",
     startsAt: "2099-01-01T18:30:00.000Z",
+    access: OPEN,
   });
   process.env.TV_NEXT_AT = "2001-01-01T00:00:00Z";
   assert.equal((await call("/api/tv/status")).data.state, "off_air");
@@ -96,7 +102,7 @@ test("demo YouTube embed: live with kind embed; the HLS stream wins when both ar
   process.env.TV_TITLE = "Los Alamitos";
   process.env.TV_EMBED_URL = "https://www.youtube.com/watch?v=cJA4RJ5teuw&t=600s";
   const status = await call("/api/tv/status");
-  assert.deepEqual(status.data, { state: "live", title: "Los Alamitos", startsAt: null });
+  assert.deepEqual(status.data, { state: "live", title: "Los Alamitos", startsAt: null, access: OPEN });
   const playback = await call("/api/tv/playback");
   assert.equal(playback.data.kind, "embed");
   assert.equal(
