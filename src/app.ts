@@ -33,6 +33,8 @@ import billingRoutes from "./routes/billing";
 import stableBillingRoutes from "./routes/stableBilling";
 import payRoutes from "./routes/pay";
 import adminBillingRoutes from "./routes/adminBilling";
+import stallionRoutes from "./routes/stallions";
+import publicStallionRoutes from "./routes/stallionsPublic";
 import { supabase } from "./lib/supabase";
 import { createHash } from "node:crypto";
 import { apiLimit } from "./middleware/authLimits";
@@ -130,6 +132,8 @@ app.get("/api/db-health", async (_req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRoutes);
+// Stayblz Stallions: the public directory and pages (before the other public routes), and the signed-in side.
+app.use("/api/public/stallions", publicStallionRoutes);
 app.use("/api/public", publicRacingRoutes);
 app.use("/api/updates", updatesRoutes);
 app.use("/api/racing", racingRoutes);
@@ -152,6 +156,7 @@ app.use("/api/inventory", memberInventory);
 app.use("/api/horses", memberHorses);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
+app.use("/api/stallions", stallionRoutes);
 app.use("/api/tv", tvRoutes);
 // Stayblz Data (Explore): the Equibase race day kept as JSON in data/horse-racing (signed in).
 app.use("/api/stayblz-data", stayblzDataRoutes);

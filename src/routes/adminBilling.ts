@@ -210,10 +210,10 @@ function catalogInput(b: Record<string, unknown>, existing: Record<string, unkno
     const features = Array.isArray(b.features) ? (b.features as unknown[]).filter((f): f is string => typeof f === "string" && /^[a-z][a-z0-9_.]{2,39}$/.test(f)).slice(0, 10) : [];
     Object.assign(row, { id: idValue, kind, family, features });
     if (kind === "product") {
-      if (b.effect !== "marketplace_feature") throw new BillingError(400, "invalid_input", "Choose what the product does.");
+      if (b.effect !== "marketplace_feature" && b.effect !== "stallion_feature") throw new BillingError(400, "invalid_input", "Choose what the product does.");
       const days = b.effectDays;
       if (!Number.isInteger(days) || (days as number) < 1 || (days as number) > 365) throw new BillingError(400, "invalid_input", "Choose 1 to 365 days.");
-      Object.assign(row, { effect: "marketplace_feature", effect_days: days });
+      Object.assign(row, { effect: b.effect, effect_days: days });
     }
   }
   return row;

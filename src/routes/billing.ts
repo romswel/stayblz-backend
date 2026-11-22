@@ -282,8 +282,12 @@ router.post(
     const b = req.body ?? {};
     if (typeof b.productId !== "string" || !/^[a-z][a-z0-9_]{1,39}$/.test(b.productId)) throw new BillingError(400, "invalid_input", "Choose what to buy.");
     if (!input.isUuid(b.methodId)) throw new BillingError(400, "invalid_input", "Choose a card or bank account.");
-    if (!input.isUuid(b.listingId)) throw new BillingError(400, "invalid_target", "Choose the listing to feature.");
-    const result = await purchase({ accountId: me(req).id, productId: b.productId, target: { listingId: b.listingId }, methodId: b.methodId, key: input.key(b.key) });
+    // What the purchase is for: a Marketplace listing or a Stayblz Stallions stallion (the SQL checks it's yours).
+    let target: Record<string, string>;
+    if (input.isUuid(b.stallionId)) target = { stallionId: b.stallionId };
+    else if (input.isUuid(b.listingId)) target = { listingId: b.listingId };
+    else throw new BillingError(400, "invalid_target", "Choose what to feature.");
+    const result = await purchase({ accountId: me(req).id, productId: b.productId, target, methodId: b.methodId, key: input.key(b.key) });
     if (result.payment.status === "failed")
       return res.status(402).json({ code: result.payment.failureCode, error: result.payment.failureMessage ?? "The payment didn't go through.", ...result });
     res.status(201).json(result);
