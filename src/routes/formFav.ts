@@ -2,10 +2,12 @@ import { Router, type Request, type Response } from "express";
 import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { asyncRoute } from "../middleware/asyncRoute";
 import * as ff from "../lib/formFav";
+import * as idx from "../lib/formFavIndex";
 
 /**
  * Stayblz Data → FormFav (signed in): racing form, results, predictions and stats from FormFav, through our server.
- * GET /status, /meetings, /race, /search, /jockey/:name, /trainer/:name, /runner/:id, /track-bias/:track.
+ * GET /status, /meetings, /race, /search, /jockey/:name, /trainer/:name, /runner/:id, /track-bias/:track,
+ * and the A–Z lists built by lib/formFavIndex.ts: /horses, /horse, /people.
  */
 const router = Router();
 router.use(requireAuth);
@@ -79,7 +81,7 @@ function match(v: string | undefined, re: RegExp) {
 const SLUG = /^[a-z0-9-]{2,100}$/;
 const DISTANCE = /^\d{3,4}(?:-\d{3,4})?$/;
 /** A person's name as FormFav spells it (letters in any script, spaces, . ' - &). */
-const NAME = /^[\p{L}\p{M}0-9 .'&-]{2,100}$/u;
+const NAME = /^[\p{L}\p{M}0-9 .'&(),/-]{2,100}$/u;
 
 /**
  * `make` validates the request (throwing Invalid → 400) and returns the FormFav read; the read only runs after the
@@ -192,6 +194,55 @@ router.get(
       distance: match(one(req, "distance"), DISTANCE),
     };
     return () => ff.trackBias(track, o);
+  }),
+);
+
+// ── A–Z lists (lib/formFavIndex.ts) ─────────────────────────────────────────────────────────────────────────────────
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 50;
+/** ?offset&limit&q&codes&countries for the A–Z lists. */
+function listQuery(req: Request): idx.ListQuery {
+  const offset = int(one(req, "offset"), 0, 100_000) ?? 0;
+  const limit = int(one(req, "limit"), 1, MAX_LIMIT) ?? DEFAULT_LIMIT;
+  const q = one(req, "q")?.trim().slice(0, 60);
+  return { offset, limit, q: q || undefined, codes: someOf(one(req, "codes"), idx.INDEX_CODES), countries: someOf(one(req, "countries"), ff.COUNTRIES) };
+}
+
+router.get(
+  "/horses",
+  handle((req) => {
+    const q = listQuery(req);
+    return async () => {
+      idx.ensureIndex();
+      return idx.listHorses(q);
+    };
+  }),
+);
+
+router.get(
+  "/horse",
+  handle((req) => {
+    const name = need(one(req, "name")).trim();
+    if (!name || name.length > 100) throw new Invalid();
+    const code = need(oneOf(one(req, "code"), idx.INDEX_CODES));
+    return async () => {
+      idx.ensureIndex();
+      const horse = idx.getHorse(name, code);
+      if (!horse) throw new ff.FormFavError(404);
+      return horse;
+    };
+  }),
+);
+
+router.get(
+  "/people",
+  handle((req) => {
+    const kind = need(oneOf(one(req, "kind"), ["jockey", "trainer"] as const));
+    const q = listQuery(req);
+    return async () => {
+      idx.ensureIndex();
+      return idx.listPeople(kind, q);
+    };
   }),
 );
 

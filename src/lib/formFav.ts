@@ -37,34 +37,45 @@ export function formFavKey() {
 const cache = new Map<string, { until: number; value: unknown }>();
 const inflight = new Map<string, Promise<unknown>>();
 
-type Params = Record<string, string | number | undefined>;
+export type Params = Record<string, string | number | undefined>;
 
-/** GET path?params → shape(body), cached for ttl(body) ms. */
-async function call<T>(path: string, params: Params, ttl: number | ((body: any) => number), shape: (body: any) => T): Promise<T> {
-  const key = formFavKey();
-  if (!key) throw new FormFavError(503);
+function urlFor(path: string, params: Params) {
   const qs = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== "") qs.set(k, String(v));
   const query = qs.toString();
-  const url = `${API}${path}${query ? `?${query}` : ""}`;
+  return `${API}${path}${query ? `?${query}` : ""}`;
+}
+
+async function fetchUrl(url: string): Promise<any> {
+  const key = formFavKey();
+  if (!key) throw new FormFavError(503);
+  let res: Response;
+  try {
+    res = await (fetcher ?? fetch)(url, { headers: { "X-API-Key": key, Accept: "application/json" }, signal: AbortSignal.timeout(TIMEOUT_MS) });
+  } catch {
+    throw new FormFavError(503);
+  }
+  if (!res.ok) throw new FormFavError(res.status === 404 ? 404 : res.status === 400 || res.status === 422 ? 400 : 503);
+  try {
+    return await res.json();
+  } catch {
+    throw new FormFavError(503);
+  }
+}
+
+/** One uncached GET (for the A–Z index in lib/formFavIndex.ts, which keeps its own copy of what it reads). */
+export const fetchJson = (path: string, params: Params) => fetchUrl(urlFor(path, params));
+
+/** GET path?params → shape(body), cached for ttl(body) ms. */
+async function call<T>(path: string, params: Params, ttl: number | ((body: any) => number), shape: (body: any) => T): Promise<T> {
+  if (!formFavKey()) throw new FormFavError(503);
+  const url = urlFor(path, params);
   const hit = cache.get(url);
   if (hit && Date.now() < hit.until) return hit.value as T;
   const running = inflight.get(url);
   if (running) return running as Promise<T>;
   const job = (async () => {
-    let res: Response;
-    try {
-      res = await (fetcher ?? fetch)(url, { headers: { "X-API-Key": key, Accept: "application/json" }, signal: AbortSignal.timeout(TIMEOUT_MS) });
-    } catch {
-      throw new FormFavError(503);
-    }
-    if (!res.ok) throw new FormFavError(res.status === 404 ? 404 : res.status === 400 || res.status === 422 ? 400 : 503);
-    let body: any;
-    try {
-      body = await res.json();
-    } catch {
-      throw new FormFavError(503);
-    }
+    const body = await fetchUrl(url);
     const value = shape(body);
     cache.set(url, { until: Date.now() + (typeof ttl === "function" ? ttl(body) : ttl), value });
     while (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value as string);
@@ -79,10 +90,10 @@ async function call<T>(path: string, params: Params, ttl: number | ((body: any) 
 }
 
 // ── small helpers: copy only what we expect, with the type we expect ──────────────────────────────────────────────
-const str = (v: unknown) => (typeof v === "string" && v ? v.slice(0, 300) : null);
-const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
-const bool = (v: unknown) => v === true;
-const list = (v: unknown, max = 200): any[] => (Array.isArray(v) ? v.slice(0, max) : []);
+export const str = (v: unknown) => (typeof v === "string" && v ? v.slice(0, 300) : null);
+export const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
+export const bool = (v: unknown) => v === true;
+export const list = (v: unknown, max = 200): any[] => (Array.isArray(v) ? v.slice(0, max) : []);
 const obj = (v: unknown): Record<string, any> | null => (v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, any>) : null);
 /** A plain JSON stats block (numbers/strings/bools, nested once), or null. */
 function block(v: unknown, depth = 2): any {
