@@ -1,8 +1,10 @@
 import { isProduction } from "./site";
 
 /**
- * STAYBLZ TV broadcast settings. They come from server environment variables only (no database
- * table yet), so changing what is on air means changing them in Render → Environment:
+ * STAYBLZ TV featured-broadcast settings (our own stream, behind the TV Pass). Track channels that
+ * are live on YouTube are found automatically (lib/youtubeLive.ts) and don't need these. They come
+ * from server environment variables only (no database table yet), so changing what is on air means
+ * changing them in Render → Environment:
  *
  *   TV_ON_AIR       "true" while a broadcast is running. Anything else means off air.
  *   TV_STREAM_URL   The HLS playlist (.m3u8) to play. Must be https (http only for localhost

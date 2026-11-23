@@ -380,6 +380,10 @@ test("STAYBLZ TV: open while paywalls are off; with them on only pass holders, g
     assert.equal(blocked.data.code, "subscription_required");
     const status = await call(hal, "/api/tv/status");
     assert.equal(status.data.access.allowed, false);
+    // Tracks' own YouTube streams are never behind the pass (YouTube's terms): not live here, so 409, not 402.
+    const track = await call(hal, "/api/tv/playback?channel=UCzU39Vjjyv2_SXipboFPAsQ");
+    assert.equal(track.status, 409);
+    assert.equal(track.data.code, "off_air");
     assert.equal((await call(eve, "/api/tv/playback")).status, 200, "a pass holder watches");
     assert.equal((await call(fay, "/api/tv/playback")).status, 200, "staff can always check it");
     // A free-access grant.
