@@ -29,6 +29,7 @@ import avatarRoutes from "./routes/avatars";
 import gifRoutes from "./routes/gifs";
 import notificationRoutes from "./routes/notifications";
 import stayblzDataRoutes from "./routes/stayblzData";
+import formFavRoutes from "./routes/formFav";
 import billingRoutes from "./routes/billing";
 import stableBillingRoutes from "./routes/stableBilling";
 import payRoutes from "./routes/pay";
@@ -158,6 +159,8 @@ app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/stallions", stallionRoutes);
 app.use("/api/tv", tvRoutes);
+// Stayblz Data → FormFav: live form, results, predictions and stats via FormFav (signed in; FORMFAV_API_KEY).
+app.use("/api/stayblz-data/formfav", formFavRoutes);
 // Stayblz Data (Explore): the Equibase race day kept as JSON in data/horse-racing (signed in).
 app.use("/api/stayblz-data", stayblzDataRoutes);
 // Stayblz Community: horse profiles, members, follows and the feed (photos are uploaded as raw image bodies).

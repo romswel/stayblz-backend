@@ -3,6 +3,7 @@ import './lib/loadEnv';
 import { app } from './app';
 import { startRacingSchedule } from './lib/racingFeed/pull';
 import { startBillingSchedule } from './lib/billing/schedule';
+import { startFormFavIndex } from './lib/formFavIndex';
 
 const port = Number(process.env.PORT ?? 4000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
@@ -14,4 +15,6 @@ app.listen(port, '0.0.0.0', () => {
   if (startRacingSchedule()) console.log('Racing data schedule on (The Racing API).');
   // Renewals, retries, bank clearing and autopay (Stayblz Billing), every minute while awake.
   if (startBillingSchedule()) console.log('Billing schedule on.');
+  // Stayblz Data's A–Z horses / jockeys / trainers from FormFav (needs FORMFAV_API_KEY), every 30 min while awake.
+  if (startFormFavIndex()) console.log('FormFav index schedule on.');
 });
