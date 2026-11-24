@@ -9,6 +9,8 @@ import { authLimit } from "../middleware/authLimits";
 import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { roleRank } from "../lib/accounts";
+import { LOCKED_COLUMNS, LinkError, bustFollowerCounts, linkColumns, resolveRacingHorse } from "../lib/formFavLink";
+import { syncLinkedHorse } from "../lib/formFavSync";
 import {
   HORSE_COLUMNS,
   IMAGE_COLUMNS,
@@ -516,17 +518,18 @@ router.get(
       Number.isNaN(yearTo)
     )
       return res.status(400).json({ error: "Those filters aren't valid." });
-    let before: { name: string; id: string } | null = null;
+    // Most followed first (distinct people tracking it in Virtual Stayblz), then A–Z; the cursor holds all three.
+    let before: { followers: number; name: string; id: string } | null = null;
     if (typeof req.query.before === "string" && req.query.before) {
       try {
         const c = JSON.parse(Buffer.from(req.query.before, "base64url").toString("utf8"));
-        if (typeof c?.name !== "string" || !isUuid(c?.id)) throw new Error("bad");
-        before = { name: c.name, id: c.id };
+        if (typeof c?.name !== "string" || !isUuid(c?.id) || !Number.isInteger(c?.f) || c.f < 0) throw new Error("bad");
+        before = { followers: c.f, name: c.name, id: c.id };
       } catch {
         return res.status(400).json({ error: "That page link isn't valid." });
       }
     }
-    const { data, error } = await supabase.rpc("community_public_horses", {
+    const { data, error } = await supabase.rpc("community_public_horses_v2", {
       p_viewer: viewer,
       p_query: q,
       p_breed: breed || null,
@@ -535,6 +538,7 @@ router.get(
       p_year_from: yearFrom,
       p_year_to: yearTo,
       p_raced: req.query.raced === "1" || req.query.raced === "true",
+      p_before_followers: before?.followers ?? null,
       p_before_name: before?.name ?? null,
       p_before_id: before?.id ?? null,
       p_limit: PUBLIC_PAGE + 1,
@@ -567,10 +571,11 @@ router.get(
       horses: rows.map((h) => ({
         ...horseView(h, stats.get(h.id), { mine: false, showEarnings: !hidden.has(h.owner_id) }),
         owner: { id: h.owner_id, name: ownerName.get(h.owner_id) ?? "Stayblz member" },
+        followers: Number(h.followers ?? 0),
       })),
       next:
         Array.isArray(data) && data.length > PUBLIC_PAGE && last
-          ? Buffer.from(JSON.stringify({ name: String(last.sort_name), id: last.id })).toString("base64url")
+          ? Buffer.from(JSON.stringify({ f: Number(last.followers ?? 0), name: String(last.sort_name), id: last.id })).toString("base64url")
           : null,
     });
   }),
@@ -641,9 +646,19 @@ router.patch(
     } catch (error) {
       return bad(res, error);
     }
+    let current;
+    try {
+      current = await ownHorse(req.params.id, me(req).id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!current) return notFound(res, "That horse");
+    // Linked to race data: what race data keeps up to date stays as it is.
+    const update: Record<string, unknown> = { ...input };
+    if (current.formfav_key) for (const column of LOCKED_COLUMNS) update[column] = (current as any)[column];
     const { data, error } = await supabase
       .from("owner_horses")
-      .update({ ...input, updated_at: new Date().toISOString() })
+      .update({ ...update, updated_at: new Date().toISOString() })
       .eq("id", req.params.id)
       .eq("owner_id", me(req).id)
       .select(HORSE_COLUMNS)
@@ -667,6 +682,98 @@ router.post(
     if (error) return unavailable(res, error);
     await communityStorage.remove((images ?? []).flatMap((i) => [i.path, i.poster_path]).filter(Boolean)).catch(() => undefined);
     res.json({ ok: true });
+  }),
+);
+
+/* ----- Race data (lib/formFavLink.ts): link an owned horse to a race-data horse ----- */
+
+/** POST /horses/:id/formfav {name, code} — one owner per race-data horse (409 formfav_claimed). */
+router.post(
+  "/horses/:id/formfav",
+  asyncRoute(async (req, res) => {
+    const owner = me(req).id;
+    let horse;
+    try {
+      horse = await ownHorse(req.params.id, owner);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!horse) return notFound(res, "That horse");
+    if (horse.formfav_key) return res.status(409).json({ error: "This horse is already linked. Unlink it first.", code: "already_linked" });
+    let target;
+    try {
+      target = resolveRacingHorse({ name: req.body?.name, code: req.body?.code });
+    } catch (error) {
+      if (error instanceof LinkError) return void res.status(error.status).json({ error: error.message });
+      throw error;
+    }
+    const { error } = await supabase
+      .from("owner_horses")
+      .update({ ...linkColumns(target), formfav_alerts: true, updated_at: new Date().toISOString() })
+      .eq("id", horse.id)
+      .eq("owner_id", owner);
+    if (error) {
+      if (error.code === "23505")
+        return res
+          .status(409)
+          .json({ error: "Another member has already linked that racing horse to their horse.", code: "formfav_claimed" });
+      return unavailable(res, error);
+    }
+    bustFollowerCounts();
+    await syncLinkedHorse("owned", horse.id, target);
+    let fresh;
+    try {
+      fresh = await loadCommunityHorse(owner, horse.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    res.json({ horse: fresh });
+  }),
+);
+
+/** POST /horses/:id/formfav/remove — unlink: details stay, race-data records become ordinary records. */
+router.post(
+  "/horses/:id/formfav/remove",
+  asyncRoute(async (req, res) => {
+    const owner = me(req).id;
+    let horse;
+    try {
+      horse = await ownHorse(req.params.id, owner);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!horse) return notFound(res, "That horse");
+    if (!horse.formfav_key) return res.status(400).json({ error: "This horse isn't linked to race data." });
+    const { error } = await supabase.rpc("formfav_unlink", { p_kind: "owned", p_id: horse.id });
+    if (error) return unavailable(res, error);
+    bustFollowerCounts();
+    let fresh;
+    try {
+      fresh = await loadCommunityHorse(owner, horse.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    res.json({ horse: fresh });
+  }),
+);
+
+/** POST /horses/:id/formfav/alerts {on} — the owner's alerts for their linked horse. */
+router.post(
+  "/horses/:id/formfav/alerts",
+  asyncRoute(async (req, res) => {
+    const on = req.body?.on;
+    if (typeof on !== "boolean") return res.status(400).json({ error: "Choose on or off." });
+    const owner = me(req).id;
+    const { data, error } = await supabase
+      .from("owner_horses")
+      .update({ formfav_alerts: on })
+      .eq("id", req.params.id)
+      .eq("owner_id", owner)
+      .select("id,formfav_key")
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!data) return notFound(res, "That horse");
+    res.json({ alertsOn: on });
   }),
 );
 
@@ -1023,7 +1130,16 @@ router.post(
 
 /* ----- Race records ----- */
 
-const RECORD_COLUMNS = "id,horse_id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes";
+const RECORD_COLUMNS = "id,horse_id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes,formfav_ref";
+
+/** A record of this owner, with whether its horse is still linked to race data. */
+async function ownRecord(id: string, owner: string) {
+  const { data, error } = await supabase.from("owner_horse_records").select(RECORD_COLUMNS).eq("id", id).eq("owner_id", owner).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const horse = await ownHorse(data.horse_id, owner);
+  return { record: data, linked: !!horse?.formfav_key };
+}
 
 router.post(
   "/horses/:id/records",
@@ -1078,13 +1194,22 @@ router.post(
 router.patch(
   "/records/:id",
   asyncRoute(async (req, res) => {
-    let input;
+    const owner = me(req).id;
+    let found;
+    try {
+      found = await ownRecord(req.params.id, owner);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!found) return notFound(res, "That race record");
+    let input: Record<string, unknown>;
     try {
       input = recordInput(req.body ?? {});
     } catch (error) {
       return bad(res, error);
     }
-    const owner = me(req).id;
+    // A race from race data keeps its race details while the horse is linked; its notes and earnings are the owner's.
+    if (found.record.formfav_ref && found.linked) input = { notes: input.notes, earnings_cents: input.earnings_cents };
     const { data, error } = await supabase
       .from("owner_horse_records")
       .update({ ...input, updated_at: new Date().toISOString() })
@@ -1107,6 +1232,15 @@ router.post(
   "/records/:id/remove",
   asyncRoute(async (req, res) => {
     const owner = me(req).id;
+    let found;
+    try {
+      found = await ownRecord(req.params.id, owner);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!found) return notFound(res, "That race record");
+    if (found.record.formfav_ref && found.linked)
+      return res.status(409).json({ error: "This race comes from race data. Unlink the horse to remove it.", code: "from_race_data" });
     const { data, error } = await supabase
       .from("owner_horse_records")
       .delete()

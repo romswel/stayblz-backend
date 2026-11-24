@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { linkView } from "./formFavLink";
 
 /**
  * Community horse shapes and visibility checks, shared by /api/community and Virtual Stayblz.
@@ -9,7 +10,7 @@ import { supabase } from "./supabase";
 const num = (v: unknown) => (typeof v === "number" ? v : Number(v ?? 0));
 
 export const HORSE_COLUMNS =
-  "id,owner_id,name,breed,sex,foaled_year,color,sire,dam,status,trainer,location,description,visibility,cover_image_id,created_at,updated_at";
+  "id,owner_id,name,breed,sex,foaled_year,color,sire,dam,status,trainer,location,description,visibility,cover_image_id,created_at,updated_at,formfav_name,formfav_code,formfav_key,formfav_runner_id,formfav_linked_at,formfav_synced_at,formfav_alerts";
 
 export type Stats = { starts: number; wins: number; places: number; shows: number; earnings_cents: number; last_race: string | null };
 const noStats: Stats = { starts: 0, wins: 0, places: 0, shows: 0, earnings_cents: 0, last_race: null };
@@ -43,6 +44,8 @@ export function horseView(h: any, stats: Stats | undefined, opts: { mine: boolea
       lastRace: s.last_race,
     },
     mine: opts.mine,
+    // Race data the owner linked (lib/formFavLink.ts); only the owner sees their alerts setting.
+    raceData: linkView(h) && { ...linkView(h)!, alertsOn: opts.mine ? h.formfav_alerts !== false : undefined },
     createdAt: h.created_at,
     updatedAt: h.updated_at,
   };
@@ -60,6 +63,7 @@ export function recordView(r: any, showEarnings: boolean) {
     fieldSize: r.field_size,
     earningsCents: showEarnings ? num(r.earnings_cents) : null,
     notes: r.notes,
+    fromRaceData: !!r.formfav_ref,
   };
 }
 
@@ -134,7 +138,7 @@ export async function loadCommunityHorse(viewer: string, id: string) {
     supabase.from("owner_horse_images").select(IMAGE_COLUMNS).eq("horse_id", horse.id).order("position").order("created_at"),
     supabase
       .from("owner_horse_records")
-      .select("id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes")
+      .select("id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes,formfav_ref")
       .eq("horse_id", horse.id)
       .order("race_date", { ascending: false })
       .limit(500),

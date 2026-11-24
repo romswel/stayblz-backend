@@ -11,7 +11,13 @@ import { deliver, pushConfig, type PushPayload, type Target } from "./push";
  */
 export type RacingEvent = "day" | "race" | "scratch" | "workout";
 
-interface RacingAlert {
+type RacingAlert = SavedRacingAlert;
+interface NotifyResult {
+  alerts?: RacingAlert[];
+  targets?: (Target & { alertId: string })[];
+}
+
+export interface SavedRacingAlert {
   id: string;
   userId: string;
   kind: string;
@@ -19,14 +25,13 @@ interface RacingAlert {
   body: string;
   link: string | null;
 }
-interface NotifyResult {
-  alerts?: RacingAlert[];
-  targets?: (Target & { alertId: string })[];
-}
 
-/** One push per person: their alert, or a short digest when one change touched several of their follows. */
-export function racingPushes(event: RacingEvent, ref: string, alerts: RacingAlert[]) {
-  const byUser = new Map<string, RacingAlert[]>();
+/**
+ * One push per person: their alert, or a digest when one change touched several of their horses. Shared by racing
+ * follows (below) and linked race-data horses (lib/formFavSync.ts).
+ */
+export function groupedPushes(alerts: SavedRacingAlert[], digest: { tag: string; url: string }) {
+  const byUser = new Map<string, SavedRacingAlert[]>();
   for (const alert of alerts) byUser.set(alert.userId, [...(byUser.get(alert.userId) ?? []), alert]);
   const payloads = new Map<string, PushPayload>();
   for (const [userId, list] of byUser) {
@@ -46,14 +51,27 @@ export function racingPushes(event: RacingEvent, ref: string, alerts: RacingAler
         : {
             kind: "racing",
             alert: "digest",
-            tag: `racing-${event}-${ref}`,
-            url: event === "day" ? `/racing/days/${ref}` : "/my-racing",
+            tag: digest.tag,
+            url: digest.url,
             title: `${list.length} updates on racing you follow`,
             body: `${first.title ?? "Racing update"} and ${list.length - 1} more`,
           },
     );
   }
   return payloads;
+}
+
+/** One push per person: their alert, or a short digest when one change touched several of their follows. */
+export function racingPushes(event: RacingEvent, ref: string, alerts: RacingAlert[]) {
+  return groupedPushes(alerts, { tag: `racing-${event}-${ref}`, url: event === "day" ? `/racing/days/${ref}` : "/my-racing" });
+}
+
+/** Sends one push per device for already-saved alerts (the SQL returns a device once per alert). */
+export async function pushSaved(payloads: Map<string, PushPayload>, targets: (Target & { alertId?: string })[]) {
+  if (!targets.length || !pushConfig()) return 0;
+  const devices = new Map<string, Target>();
+  for (const target of targets) if (target.userId && payloads.has(target.userId)) devices.set(target.endpoint, target);
+  return deliver([...devices.values()], (t) => payloads.get(t.userId!)!);
 }
 
 /** Saves the alerts and pushes them. Never throws; returns what happened (tests use it). */

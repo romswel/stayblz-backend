@@ -161,7 +161,7 @@ test('one horse: every start and entry, newest first; unknown horse is 404', asy
   assert.equal(h.history.length, WINDOW.length);
   assert.equal(h.history[0].date, '2026-11-26');
   assert.equal(h.history.at(-1).date, '2026-10-26');
-  assert.deepEqual(Object.keys(h.history[0]).sort(), ['code', 'country', 'date', 'jockey', 'position', 'raceName', 'raceNumber', 'scratched', 'slug', 'startTime', 'status', 'timezone', 'track', 'trainer']);
+  assert.deepEqual(Object.keys(h.history[0]).sort(), ['code', 'country', 'date', 'distance', 'fieldSize', 'jockey', 'position', 'raceName', 'raceNumber', 'scratched', 'slug', 'startTime', 'status', 'timezone', 'track', 'trainer']);
   assert.equal((await json('/horse?name=Nobody&code=gallops', 404)).error, 'Not found.');
   assert.equal((await json('/horse?name=Pacer%20Uno&code=gallops', 404)).error, 'Not found.');
 });

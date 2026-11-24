@@ -39,8 +39,36 @@ RLS is on for all of these, browser roles have no grants, and everything goes th
 - **Owners aren't notified** when someone tracks their horse.
 - **Limits:** 300 horses per list and 2,000 entries per horse, checked in the route.
 
+## Race data: Racing horses, linked horses, alerts (migration `202611240001_virtual_racing_horses.sql`)
+
+Race data is FormFav's US/Canada race cards, through the A–Z index (`src/lib/formFavIndex.ts`, today−29 … +2, refreshed every 30 min while the server is awake). The UI never names FormFav in a tab, only in the credit line.
+
+- **Racing horses tab:** `GET /racing-horses?offset&limit&q&codes&countries&tracking=1`.
+  - Horses from the index, most followed first, then A–Z. Each carries `followers` and `trackingId` (this list's horse, or null).
+  - `tracking=1` keeps only this list's horses, plus `noRecentRuns` ones that have no runs in the window right now.
+  - Shares the per-person 60/min FormFav limit (`formFavAllowed` in `src/lib/formFav.ts`).
+- **Added from Racing horses:** `POST / {source:'formfav', formfavName, formfavCode}`.
+  - The horse lives in that tab, and `GET /` leaves it out.
+  - It has its own 300-horse allowance.
+  - Details can't be edited, and it can't be unlinked, only removed.
+- **Linking a hand-typed horse:** `POST /:id/formfav {name, code}` (409 `already_linked` / `already_added`). Unlink with `POST /:id/formfav/remove`.
+- **Owned horses:** `POST /api/community/horses/:id/formfav` links one, and each race-data horse can be claimed by one owner only (`formfav_key` globally unique, 409 `formfav_claimed`). Also `…/formfav/remove` and `…/formfav/alerts {on}`.
+- **Matching:** a race-data horse is known by name + code only. `formfav_key` = `<code>|<folded name>` is written by the API (`idx.horseKey`), and everything matches on it.
+- **While linked:**
+  - Trainer, sire, dam, sex, foaled year and breed come from race data. `src/lib/formFavSync.ts` takes them from the index, the race card of a new entry (one cached call) and runner search. Routes keep these columns as stored.
+  - Every final result becomes a log row with `formfav_ref` (one per race start). A hand-written race row of the same day and track gets the ref instead of a duplicate. Those rows take notes only (owned records: notes and earnings) and can't be removed until the horse is unlinked.
+  - Unlinking (`formfav_unlink`) keeps all values and clears the refs.
+- **Alerts:** `syncFormFav()` runs after every index refresh (`startFormFavSync` in `src/index.ts`).
+  - **Events:** entered (first sighting, `formfav_entry_seen`), jockey/driver or trainer change (`race_change`, names compared ignoring dots and case), scratched / race abandoned (from yesterday on), result (final, last 2 days).
+  - **Who:** `formfav_notify` sends to list owners, every stable member and linked-horse owners. Each person gets one alert per event, minus mutes (`virtual_horse_mutes`, `POST /:id/alerts {on}`), the owner's `formfav_alerts`, `racing_preferences` (`race_change` follows the entries switch) and events from before the link.
+  - Push goes through `groupedPushes` / `pushSaved` (`src/lib/racingAlerts.ts`).
+- **Follower counts:** distinct people, from the view `virtual_horse_followers` (personal-list owner, or every active member of the stable).
+  - `formfav_follower_counts()` feeds Racing horses (cached 60 s).
+  - `community_public_horses_v2` orders Public horses by it. Its cursor is `{f, name, id}`, and each record has `followers`.
+  - The old `community_public_horses` stays for the backend that is live during the release; drop it later.
+
 ## Release order
 
-Apply the migration first, then deploy the backend, then the frontend. The backend's Virtual Stayblz routes and `/api/community/public-horses` return 503 until the migration exists. All other routes are unaffected.
+Apply the migration first, then deploy the backend, then the frontend. The backend's Virtual Stayblz routes and `/api/community/public-horses` return 503 until the migration exists. All other routes are unaffected. `202611240001_virtual_racing_horses.sql` must be applied before the backend that uses it: owned-horse reads select the new columns.
 
-Tests: `tests/virtual_stayblz.test.cjs` (PGlite with every migration).
+Tests: `tests/virtual_stayblz.test.cjs` and `tests/formfav_sync.test.cjs` (PGlite with every migration, fake FormFav).

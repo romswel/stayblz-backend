@@ -12,18 +12,6 @@ import * as idx from "../lib/formFavIndex";
 const router = Router();
 router.use(requireAuth);
 
-// The FormFav quota is shared by every member, so each person gets 60 requests a minute (cached answers count too).
-const recent = new Map<string, number[]>();
-function allowed(id: string) {
-  const now = Date.now();
-  const hits = (recent.get(id) ?? []).filter((t) => now - t < 60_000);
-  if (hits.length >= 60) return false;
-  hits.push(now);
-  recent.set(id, hits);
-  if (recent.size > 5000) recent.delete(recent.keys().next().value as string);
-  return true;
-}
-
 const DAY = 86_400_000;
 
 class Invalid extends Error {}
@@ -96,7 +84,7 @@ function handle(make: (req: Request) => () => Promise<unknown>) {
       if (e instanceof Invalid) return void res.status(400).json({ error: "Invalid FormFav request." });
       throw e;
     }
-    if (!allowed((req as AuthenticatedRequest).user.id)) {
+    if (!ff.formFavAllowed((req as AuthenticatedRequest).user.id)) {
       return void res.status(429).json({ error: "That's a lot of lookups. Wait a moment.", retryAfterSeconds: 60 });
     }
     try {

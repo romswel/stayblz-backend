@@ -233,6 +233,7 @@ const MIGRATIONS = [
   "202611210001_marketplace_inquiries.sql",
   "202611210002_billing.sql",
   "202611220001_stallions.sql",
+  "202611240001_virtual_racing_horses.sql",
 ];
 
 /** Creates a fresh database with every migration and points `supabase` at it. */

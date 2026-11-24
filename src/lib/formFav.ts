@@ -28,6 +28,21 @@ export function setFormFavFetch(fn: Fetcher | null) {
   inflight.clear();
 }
 
+/**
+ * The FormFav quota is shared by every member, so each person gets 60 FormFav-backed requests a minute (cached answers
+ * count too), across Stayblz Data and Virtual Stayblz's Racing horses.
+ */
+const recent = new Map<string, number[]>();
+export function formFavAllowed(id: string) {
+  const now = Date.now();
+  const hits = (recent.get(id) ?? []).filter((t) => now - t < 60_000);
+  if (hits.length >= 60) return false;
+  hits.push(now);
+  recent.set(id, hits);
+  if (recent.size > 5000) recent.delete(recent.keys().next().value as string);
+  return true;
+}
+
 export function formFavKey() {
   if (process.env.NODE_ENV === "test" && !fetcher) return null;
   const key = process.env.FORMFAV_API_KEY?.trim();
@@ -304,6 +319,9 @@ function results(w: RaceWhere) {
     })),
   }));
 }
+
+/** The race card alone (cached like the rest): what lib/formFavSync.ts reads a horse's sex, age and pedigree from. */
+export const raceCard = (w: RaceWhere) => form(w);
 
 /** One race: form (required) plus predictions and results when FormFav has them (else null). */
 export async function race(w: RaceWhere) {
