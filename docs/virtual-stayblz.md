@@ -41,6 +41,8 @@ RLS is on for all of these, browser roles have no grants, and everything goes th
 
 ## Race data: Racing horses, linked horses, alerts (migration `202611240001_virtual_racing_horses.sql`)
 
+**United States and Canada only.** Every FormFav read is limited to US/Canada: meetings, races, the index, runner search and runner stats (`isNorthAmerica`), and jockey/trainer/track stats (only people and tracks in the US/Canada index). Only US/Canada horses can be tracked: race-data horses come from the index, and `source: "racing"` needs a US/USA/CA/CAN horse (400 `not_north_america`). Horses tracked before this rule stay. The frontend's "+ Add horse" dialog searches US and Canada race data instead of the racing feed.
+
 Race data is FormFav's US/Canada race cards, through the A–Z index (`src/lib/formFavIndex.ts`, today−29 … +2, refreshed every 30 min while the server is awake). The UI never names FormFav in a tab, only in the credit line.
 
 - **Racing horses tab:** `GET /racing-horses?offset&limit&q&codes&countries&tracking=1`.
@@ -48,7 +50,7 @@ Race data is FormFav's US/Canada race cards, through the A–Z index (`src/lib/f
   - `tracking=1` keeps only this list's horses, plus `noRecentRuns` ones that have no runs in the window right now.
   - Shares the per-person 60/min FormFav limit (`formFavAllowed` in `src/lib/formFav.ts`).
 - **Added from Racing horses:** `POST / {source:'formfav', formfavName, formfavCode}`.
-  - The horse lives in that tab, and `GET /` leaves it out.
+  - The horse shows in that tab (Tracking only) and in `GET /`, which carries `race` (index numbers: starts, wins, places, last start, next entry, trainer; null outside the window) and `racingLimit`. The app puts these horses in their own "Racing horses" section of My tracked horses, under the list's own horses.
   - It has its own 300-horse allowance.
   - Details can't be edited, and it can't be unlinked, only removed.
 - **Linking a hand-typed horse:** `POST /:id/formfav {name, code}` (409 `already_linked` / `already_added`). Unlink with `POST /:id/formfav/remove`.

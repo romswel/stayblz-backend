@@ -157,10 +157,10 @@ export function virtualRouter(mode: Mode) {
     "/",
     asyncRoute(async (req, res) => {
       const viewer = me(req).id;
+      // Everything in the list, racing horses (source 'formfav') included: the app shows them in their own section.
       const { data, error } = await scoped(supabase.from("virtual_horses").select(HORSE_COLS), req)
-        .neq("source", "formfav")
         .order("created_at", { ascending: false })
-        .limit(MAX_VIRTUAL_HORSES);
+        .limit(MAX_VIRTUAL_HORSES + MAX_RACING_HORSES);
       if (error) return unavailable(res, error);
       const rows = (data ?? []) as any[];
       const ids = rows.map((r) => r.id);
@@ -211,9 +211,12 @@ export function virtualRouter(mode: Mode) {
                     earningsCents: live.showEarnings ? Number(s?.earnings_cents ?? 0) : null,
                   }
                 : null,
+              // Linked to race data: what the index has on it now (no FormFav call; null outside the window).
+              race: r.formfav_key ? raceSummary(r) : null,
             });
           }),
           limit: MAX_VIRTUAL_HORSES,
+          racingLimit: MAX_RACING_HORSES,
         });
       } catch (err) {
         unavailable(res, err as DbError);
@@ -310,6 +313,13 @@ export function virtualRouter(mode: Mode) {
     }),
   );
 
+  /** A linked horse's numbers from the race-data index, for the list (null when it has no runs in the window). */
+  function raceSummary(r: any) {
+    const h = idx.getHorse(r.formfav_name, r.formfav_code);
+    if (!h) return null;
+    return { starts: h.starts, wins: h.wins, places: h.places, lastStart: h.lastStart, nextEntry: h.nextEntry, trainer: h.trainer };
+  }
+
   /** Is this community / racing / race-data horse already in this list? Drives the "Add to Virtual Stayblz" buttons. */
   router.get(
     "/state",
@@ -373,11 +383,14 @@ export function virtualRouter(mode: Mode) {
           if (!isUuid(body.racingHorseId)) return res.status(400).json({ error: "Choose a horse." });
           const { data: h, error } = await supabase
             .from("racing_horses")
-            .select("id,name,breed,sex,foaled_year,color,sire,dam")
+            .select("id,name,breed,sex,foaled_year,color,sire,dam,country")
             .eq("id", body.racingHorseId)
             .maybeSingle();
           if (error) return unavailable(res, error);
           if (!h) return res.status(404).json({ error: "That horse isn't on Stayblz racing pages." });
+          // Virtual Stayblz tracks United States and Canada horses only (ones already tracked stay).
+          if (!ff.isNorthAmerica(h.country))
+            return res.status(400).json({ error: "Only US and Canada horses can be tracked.", code: "not_north_america" });
           const year = Number.isInteger(h.foaled_year) && h.foaled_year >= 1900 && h.foaled_year <= 2100 ? h.foaled_year : null;
           fields = {
             source: "racing",

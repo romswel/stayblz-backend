@@ -17,7 +17,7 @@ const ann = "a1111111-1111-4111-8111-111111111111", // owns community horses
   dan = "d4444444-4444-4444-8444-444444444444"; // outsider
 const people = { [ann]: ["Ann", "Archer"], [ben]: ["Ben", "Bishop"], [cat]: ["Cat", "Carter"], [dan]: ["Dan", "Diaz"] };
 const tokens = new Map();
-let db, database, server, origin, stable, racingHorse;
+let db, database, server, origin, stable, racingHorse, foreignHorse;
 
 before(async () => {
   database = await installDatabase(supabase);
@@ -37,9 +37,11 @@ before(async () => {
   stable = created.data.stable.id;
   await db.query("insert into stable_memberships(stable_id,user_id,display_name,role) values($1,$2,'Cat Carter','member')", [stable, cat]);
   const { rows } = await db.query(
-    "insert into racing_horses(name,sire,dam,sex,foaled_year) values('Data Runner','Into Mischief','Fast Lady','colt',2022) returning id",
+    "insert into racing_horses(name,sire,dam,sex,foaled_year,country) values('Data Runner','Into Mischief','Fast Lady','colt',2022,'US') returning id",
   );
   racingHorse = rows[0].id;
+  // Racing data from outside the US and Canada (The Racing API's feed) can't be tracked.
+  foreignHorse = (await db.query("insert into racing_horses(name,country) values('Galway Girl','IRE') returning id")).rows[0].id;
 });
 after(async () => {
   for (const token of tokens.values()) auth.destroySession(token);
@@ -228,6 +230,9 @@ test("racing-data horses are added with their pedigree", async () => {
   assert.equal(added.data.horse.foaledYear, 2022);
   assert.equal((await call(cat, mine, { body: { source: "racing", racingHorseId: racingHorse } })).status, 409);
   assert.equal((await call(cat, mine, { body: { source: "racing", racingHorseId: "e5555555-5555-4555-8555-555555555555" } })).status, 404);
+  const foreign = await call(cat, mine, { body: { source: "racing", racingHorseId: foreignHorse } });
+  assert.equal(foreign.status, 400);
+  assert.equal(foreign.data.code, "not_north_america");
   // No published starts or workouts yet, so there's nothing live.
   const detail = await call(cat, `${mine}/${added.data.horse.id}`);
   assert.equal(detail.data.liveUnavailable, true);

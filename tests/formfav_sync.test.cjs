@@ -102,7 +102,13 @@ function fakeFormFav(url) {
   }
   if (u.pathname === "/v1/stats/runner/search") {
     const q = String(p.q).toLowerCase();
-    const results = q === "lucky star" ? [{ runnerId: 777, name: "Lucky Star", country: "us", sire: "Into Mischief", dam: "Star Dam", totalStarts: 4 }, { runnerId: 778, name: "Lucky Star", country: "au" }] : [];
+    // Worldwide, with FormFav's three-letter countries: only US/Canada runners are ever linked.
+    const results =
+      q === "lucky star"
+        ? [{ runnerId: 778, name: "Lucky Star", country: "AUS", sire: "Someone", dam: "Aussie Dam" }, { runnerId: 777, name: "Lucky Star", country: "USA", sire: "Into Mischief", dam: "Star Dam", totalStarts: 4 }]
+        : q === "pacer uno"
+          ? [{ runnerId: 900, name: "Pacer Uno", country: "AUS" }]
+          : [];
     return reply(200, { query: p.q, results });
   }
   return reply(404, { detail: "Not Found" });
@@ -209,7 +215,11 @@ test("Racing horses: most followed first, distinct people counted, tracking badg
   assert.equal(teamTracking.data.records[0].trackingId, ids.teamLucky);
   assert.equal((await call(ann, `${mine}/racing-horses?codes=greyhounds`)).status, 400);
 
-  assert.ok(!(await call(ann, mine)).data.horses.some((h) => h.id === ids.annLucky), "Tracked doesn't show Racing horses");
+  // The list has it too (the app shows racing horses in their own section), with its race-data numbers.
+  const inList = (await call(ann, mine)).data.horses.find((h) => h.id === ids.annLucky);
+  assert.equal(inList.source, "formfav");
+  assert.equal(inList.race.nextEntry.raceNumber, 4);
+  assert.deepEqual([inList.race.starts, inList.race.trainer], [1, "Bob Smith"]);
   const state = await call(ann, `${mine}/state?formfavName=LUCKY%20STAR&formfavCode=gallops`);
   assert.deepEqual(state.data, { added: true, id: ids.annLucky });
 
@@ -275,6 +285,7 @@ test("owned horses: one owner per racing horse, locked details, records from rac
   const linked = await call(ann, `/api/community/horses/${ids.annUno}/formfav`, { body: { name: "Pacer Uno", code: "harness" } });
   assert.equal(linked.status, 200, JSON.stringify(linked.data));
   const h = linked.data.horse;
+  assert.equal(h.raceData.runnerId, null, "the only runner of that name is Australian: no career link");
   assert.deepEqual([h.breed, h.sex, h.sire, h.trainer, h.raceData.name, h.raceData.alertsOn], ["Standardbred", "gelding", "Somebeachsomewhere", "R. Moreau", "Pacer Uno", true]);
   assert.equal(h.records.length, 1);
   assert.deepEqual([String(h.records[0].raceDate).slice(0, 10), h.records[0].track, h.records[0].finish, h.records[0].fieldSize, h.records[0].fromRaceData], [YESTERDAY, "Mohawk", 1, 2, true]);
@@ -397,5 +408,6 @@ test("Racing horses have their own 300-horse allowance, apart from the list's", 
   assert.equal(full.status, 409);
   assert.match(full.data.error, /Racing horses holds up to 300/);
   assert.equal((await call(eve, mine, { body: { source: "manual", name: "Still Room" } })).status, 201, "the list is separate");
-  assert.equal((await call(eve, mine)).data.horses.length, 1);
+  const list = (await call(eve, mine)).data;
+  assert.deepEqual([list.horses.filter((h) => h.source !== "formfav").length, list.horses.filter((h) => h.source === "formfav").length, list.racingLimit], [1, 300, 300]);
 });

@@ -490,6 +490,17 @@ export function listHorses(q: ListQuery, opts: { rank?: Map<string, number>; onl
   };
 }
 
+/** Did this jockey/driver or trainer ride or train in the US/Canada window? (Their FormFav stats are shown only then.) */
+export function knownPerson(kind: "jockey" | "trainer", name: string) {
+  const needle = fold(name);
+  return (kind === "jockey" ? derived.jockeys : derived.trainers).some((p) => fold(p.name) === needle);
+}
+/** Is this a US/Canada track in the window (by FormFav slug)? */
+export function knownTrack(slug: string) {
+  for (const day of days.values()) if (day.meetings.some((m) => m.slug === slug)) return true;
+  return false;
+}
+
 /** New York "today" as the index sees it (its clock can be moved in tests). */
 export const indexToday = () => span().today;
 

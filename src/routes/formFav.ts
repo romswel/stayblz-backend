@@ -138,6 +138,16 @@ router.get(
   }),
 );
 
+/**
+ * Jockeys, trainers and tracks are shown only when they're in the US/Canada window of the A–Z index (FormFav's own
+ * stats are worldwide): 404 otherwise, 503 while the index is still being built.
+ */
+function northAmerican(known: () => boolean) {
+  idx.ensureIndex();
+  if (idx.indexStatus().building) throw new ff.FormFavError(503);
+  if (!known()) throw new ff.FormFavError(404);
+}
+
 router.get(
   "/search",
   handle((req) => {
@@ -146,7 +156,13 @@ router.get(
     const q = need(one(req, "q")).trim();
     if (q.length < 3 || q.length > 100) throw new Invalid();
     const code = raceCode(one(req, "race_code"));
-    return () => ff.search(kind, q, code);
+    // Runner results are kept to the US and Canada in ff.search; people to those in the US/Canada index.
+    if (kind === "runner") return () => ff.search(kind, q, code);
+    return async () => {
+      northAmerican(() => true);
+      const found = await ff.search(kind, q, code);
+      return { ...found, results: found.results.filter((r: any) => r.name && idx.knownPerson(kind, r.name)) };
+    };
   }),
 );
 
@@ -157,7 +173,10 @@ for (const kind of ["jockey", "trainer"] as const) {
       const name = need(match(String(req.params.name).trim(), NAME));
       const code = raceCode(one(req, "race_code"));
       const window = int(one(req, "window"), 14, 365);
-      return () => (kind === "jockey" ? ff.jockey(name, code, window) : ff.trainer(name, code, window));
+      return async () => {
+        northAmerican(() => idx.knownPerson(kind, name));
+        return kind === "jockey" ? ff.jockey(name, code, window) : ff.trainer(name, code, window);
+      };
     }),
   );
 }
@@ -177,11 +196,14 @@ router.get(
     const track = need(match(String(req.params.track), SLUG));
     const o = {
       raceCode: raceCode(one(req, "race_code")),
-      country: country(one(req, "country")),
+      country: country(one(req, "country")) ?? "us",
       window: int(one(req, "window"), 14, 365),
       distance: match(one(req, "distance"), DISTANCE),
     };
-    return () => ff.trackBias(track, o);
+    return async () => {
+      northAmerican(() => idx.knownTrack(track));
+      return ff.trackBias(track, o);
+    };
   }),
 );
 

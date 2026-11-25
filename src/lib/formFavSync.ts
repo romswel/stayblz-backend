@@ -121,13 +121,14 @@ async function cardDetails(h: Horse, s: Start) {
   }
 }
 
-/** FormFav's runner id (career stats) plus sire/dam, from an exact-name runner search, US/Canada first. */
+/** FormFav's runner id (career stats) plus sire/dam, from an exact-name runner search (US and Canada only). */
 async function runnerMatch(h: Horse) {
   if (h.name.length < 3) return null;
   try {
     const found = await ff.search("runner", h.name, h.code);
-    const exact = found.results.filter((r: any) => r.name && fold(r.name) === fold(h.name));
-    const pick = exact.find((r: any) => r.country === "us" || r.country === "ca") ?? (exact.length === 1 ? exact[0] : null);
+    // US and Canada only (ff.search already drops the rest); two North American horses of that name = no guess.
+    const exact = found.results.filter((r: any) => r.name && fold(r.name) === fold(h.name) && ff.isNorthAmerica(r.country));
+    const pick = exact.length === 1 ? exact[0] : null;
     if (!pick || typeof pick.id !== "number") return null;
     const out: Record<string, unknown> = { runnerId: pick.id };
     if (pick.sire) out.sire = pick.sire;
