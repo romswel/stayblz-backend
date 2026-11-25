@@ -162,6 +162,89 @@ test("the site-wide poll wakes when a message reaches you, and marking it delive
   assert.ok(answer.data.conversation.delivered.some((d) => d.id === ben));
 });
 
+test("reading a chat wakes your own badge poll at once (the red dot never waits out the 15 s)", async () => {
+  await say(ann, annBen, "Saddle's ready");
+  const first = await call(ben, `/api/messages/unread?since=${encodeURIComponent(new Date().toISOString())}`);
+  const unreadBefore = first.data.personal;
+  assert.ok(unreadBefore >= 1);
+  const benPoll = timed(call(ben, `/api/messages/unread?since=${encodeURIComponent(first.data.now)}&uv=${first.data.uv}&wait=8`));
+  await wait(150);
+  assert.equal((await call(ben, `/api/messages/${annBen}/read`, { body: {} })).status, 200);
+  const answer = await benPoll;
+  assert.ok(answer.ms < 3000, `badge poll answered after ${answer.ms} ms`);
+  assert.equal(answer.data.personal, unreadBefore - 1);
+
+  // Muting (or marking unread) changes the badge too: that wakes it as well.
+  const again = await call(ben, `/api/messages/unread?since=${encodeURIComponent(answer.data.now)}`);
+  const mutePoll = timed(call(ben, `/api/messages/unread?since=${encodeURIComponent(again.data.now)}&uv=${again.data.uv}&wait=8`));
+  await wait(150);
+  assert.equal((await call(ben, `/api/messages/${annBen}/settings`, { body: { unread: true } })).status, 200);
+  const marked = await mutePoll;
+  assert.ok(marked.ms < 3000, `badge poll answered after ${marked.ms} ms`);
+  assert.equal(marked.data.personal, unreadBefore);
+  await call(ben, `/api/messages/${annBen}/settings`, { body: { unread: false } });
+});
+
+test("the chat list shows the latest reaction until a newer message; taking it back or unsending clears it", async () => {
+  const row = async (who) => (await call(who, "/api/messages")).data.conversations.find((c) => c.id === annBen);
+  const react = (who, id, emoji) => call(who, `/api/messages/${annBen}/messages/${id}/react`, { body: { emoji } });
+  const benSaid = (await say(ben, annBen, "**Bolt** looks sharp")).data.message;
+  assert.equal((await row(ann)).lastReaction, null);
+
+  assert.equal((await react(ann, benSaid.id, "❤️")).status, 200);
+  const mine = (await row(ann)).lastReaction;
+  assert.equal(mine.emoji, "❤️");
+  assert.equal(mine.mine, true);
+  assert.equal(mine.toMe, false);
+  assert.equal(mine.body, "**Bolt** looks sharp");
+  assert.equal(mine.message, benSaid.id);
+  const theirs = (await row(ben)).lastReaction;
+  assert.equal(theirs.mine, false);
+  assert.equal(theirs.toMe, true);
+  assert.equal(theirs.byName, "Ann Archer");
+  // A reaction doesn't make the chat unread or change the last message.
+  assert.equal((await row(ann)).lastMessage, "**Bolt** looks sharp");
+  // The open chat carries it too (its header is the same preview).
+  assert.equal((await call(ann, `/api/messages/${annBen}`)).data.conversation.lastReaction.emoji, "❤️");
+
+  // Taking it back clears it.
+  await react(ann, benSaid.id, "❤️");
+  assert.equal((await row(ann)).lastReaction, null);
+  // A newer message wins.
+  await react(ann, benSaid.id, "👍");
+  assert.equal((await row(ben)).lastReaction.emoji, "👍");
+  await say(ben, annBen, "Thanks");
+  assert.equal((await row(ben)).lastReaction, null);
+  // The line reads the message as it is now: an edit shows its new words.
+  const second = (await say(ben, annBen, "Meet at barn 4, code 1234")).data.message;
+  await react(ann, second.id, "😮");
+  assert.equal((await row(ann)).lastReaction.body, "Meet at barn 4, code 1234");
+  assert.equal((await call(ben, `/api/messages/${annBen}/messages/${second.id}/edit`, { body: { body: "Meet at barn 4" } })).status, 200);
+  assert.equal((await row(ann)).lastReaction.body, "Meet at barn 4");
+  // Unsending the reacted message drops the line, so its words don't linger in the list.
+  assert.equal((await call(ben, `/api/messages/${annBen}/messages/${second.id}/unsend`, { body: {} })).status, 200);
+  assert.equal((await row(ann)).lastReaction, null);
+  // A long message comes whole, so a spoiler near the end stays hidden in the list's plain words.
+  const tip = "Tip for Saturday: ||Bolt wins the 3:15 at Ascot by three lengths, the yard has been keeping it quiet all week so please don't tell anyone||";
+  const third = (await say(ben, annBen, tip)).data.message;
+  await react(ann, third.id, "🤫");
+  const body = (await row(ann)).lastReaction.body;
+  assert.equal(body, tip);
+  assert.equal(plainMessage(body), "Tip for Saturday: (spoiler)");
+});
+
+test("an opened chat says when you last read it (readAt), so the app can open at your first unread message", async () => {
+  await call(ben, `/api/messages/${annBen}/read`, { body: {} });
+  const read = (await call(ben, `/api/messages/${annBen}`)).data.conversation.readAt;
+  assert.equal(typeof read, "string");
+  await say(ann, annBen, "Are you coming?");
+  const opened = (await call(ben, `/api/messages/${annBen}`)).data.conversation;
+  assert.equal(opened.readAt, read);
+  assert.equal(opened.unread, true);
+  const unreadOnes = opened.messages.filter((m) => !m.mine && Date.parse(m.sentAt) > Date.parse(opened.readAt));
+  assert.deepEqual(unreadOnes.map((m) => m.body), ["Are you coming?"]);
+});
+
 test("presence: online when using Stayblz, away when idle, offline after a few quiet minutes", async () => {
   presence.resetPresence();
   await call(cat, `/api/messages/unread?presence=active`);
@@ -231,6 +314,30 @@ test("alert words drop chat formatting, spoilers and @highlight; a lone GIF link
   assert.equal(plainMessage("> quoted\n- one\n2. two"), "quoted\none\ntwo");
   assert.equal(plainMessage("https://media2.giphy.com/media/abc/giphy.gif?cid=1"), "GIF");
   assert.equal(messageSummary({ body: "snake_case_name stays" }), "snake_case_name stays");
+});
+
+// Same examples as the frontend's tests/chat-format.spec.ts: lib/chatFormat.ts is an identical copy of the
+// frontend's, so a push notification reads exactly like the chat list.
+test("alert words: symbols that aren't formatting stay as typed, never blank; phone-style marks still format", () => {
+  const same = ["****", "***", "*****", "~~~~", "||||", "```", "````", ">", "2*3*4", "5 * 3 * 2", "pass: ****", "** spaced **", "snake_case_name"];
+  for (const text of same) assert.equal(plainMessage(text), text, JSON.stringify(text));
+  assert.equal(plainMessage("**hello **"), "hello"); // a phone keyboard's space after a suggested word
+  assert.equal(plainMessage("*hello *"), "hello");
+  assert.equal(plainMessage("***bold italic***"), "bold italic");
+  assert.equal(plainMessage("**https://x.com/a**"), "https://x.com/a");
+  assert.equal(plainMessage("```js\nconst a = 1\n```"), "const a = 1");
+  assert.equal(plainMessage("```hello world\nmore\n```"), "hello world\nmore");
+  assert.equal(plainMessage("x**2 + y**2"), "x2 + y2");
+  assert.equal(plainMessage("/me waves"), "waves");
+  assert.equal(messageSummary({ body: "****" }), "****");
+  assert.equal(messageSummary({ body: "> \n" }), ">");
+  // Alert texts are squeezed onto one line: a code block's language name isn't part of the message.
+  assert.equal(plainMessage("```js const a = 1 ```"), "const a = 1");
+  // Never blank, even for a message that is only "@highlight".
+  assert.equal(plainMessage("@highlight"), "@highlight");
+  // A link that ends in "_" keeps it; marks around a link are formatting.
+  assert.equal(plainMessage("see https://x.com/report_ ok"), "see https://x.com/report_ ok");
+  assert.equal(plainMessage("_https://x.com/a_"), "https://x.com/a");
 });
 
 test("GIF search: hidden without a key; with one it returns GIPHY media only, and pages", async () => {

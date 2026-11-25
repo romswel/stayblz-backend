@@ -15,7 +15,7 @@ import {
 } from "../lib/chatStorage";
 import { IMAGE_TYPES } from "../lib/communityStorage";
 import { allow, allowed, isActive, presenceOf, presenceParam, seenAt, setTyping, touch, typers } from "../lib/presence";
-import { bumpChat, chatVersion, liveParams, messageArrived, rememberMembers, waitForChat } from "../lib/chatLive";
+import { bumpChat, bumpPeople, chatVersion, liveParams, membersOf, messageArrived, rememberMembers, waitForChat } from "../lib/chatLive";
 import { notifyChat } from "../lib/chatAlerts";
 
 /**
@@ -394,6 +394,8 @@ export function chatRoutes(kind: ChatKind) {
       await supabase.rpc("chat_alerts_read_chat", { p_user: user(req).id, p_kind: kind, p_conversation: req.params.id });
       res.json({ ok: true });
       bumpChat(kind, req.params.id); // "Seen" shows for the others straight away
+      // Your own badge poll (this device and your others) is waiting for something new: one fewer unread is new.
+      bumpPeople([user(req).id]);
     }),
   );
 
@@ -421,8 +423,10 @@ export function chatRoutes(kind: ChatKind) {
       if (error) return chatError(res, error);
       res.json({ message: data });
       bumpChat(kind, req.params.id);
-      // Only adding (or changing to) a reaction tells the author; taking one back stays quiet.
+      // The chat list shows the newest reaction: wake the other members' site-wide polls so their lists catch up.
       const me = user(req).id;
+      bumpPeople(membersOf(kind, req.params.id).filter((id) => id !== me));
+      // Only adding (or changing to) a reaction tells the author; taking one back stays quiet.
       if (emoji && data?.reactions?.some((r: { emoji: string; ids?: string[] }) => r.emoji === emoji && r.ids?.includes(me)))
         void notifyChat(kind, req.params.id, me, { type: "reaction", messageId: req.params.message, emoji });
     }),
@@ -530,6 +534,8 @@ export function chatRoutes(kind: ChatKind) {
       });
       if (error) return chatError(res, error);
       res.json({ settings: data });
+      // Mute, unread and archive change your badge: wake your own badge polls.
+      bumpPeople([user(req).id]);
     }),
   );
 
@@ -698,6 +704,7 @@ export function chatRoutes(kind: ChatKind) {
       if (error) return chatError(res, error);
       res.json({ ok: true });
       bumpChat(kind, req.params.id);
+      bumpPeople([req.params.member]); // the chat leaves their list and badge now, not after their poll times out
     }),
   );
 
@@ -717,6 +724,7 @@ export function chatRoutes(kind: ChatKind) {
       if (paths.length) await chatStorage.remove(paths).catch(() => undefined);
       res.json({ ok: true });
       bumpChat(kind, req.params.id);
+      bumpPeople([user(req).id]); // its unread count leaves your badge
     }),
   );
 
