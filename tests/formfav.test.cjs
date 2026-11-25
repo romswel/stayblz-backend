@@ -65,10 +65,17 @@ beforeEach(() => {
       predictions: [{ number: 1, name: 'Jewels Statement', winProb: 0.34, placeProb: 0.6, modelRank: 1 }] }),
     '/v1/results': () => reply(404, { detail: 'Race not found' }),
     '/v1/stats/jockey/search': () => reply(200, { query: 'mcd', results: [{ name: 'James McDonald', totalStarts: 3874, isAmbiguous: false }] }),
-    '/v1/stats/runner/search': () => reply(200, { query: 'bel', results: [{ runnerId: 340236, name: 'Bellarata', country: 'AUS', totalStarts: 10, sire: 'Pierata', dam: 'Bellevue Girl' }] }),
+    // FormFav's runner search is worldwide: Stayblz keeps the US and Canada ones.
+    '/v1/stats/runner/search': () => reply(200, { query: 'bel', results: [
+      { runnerId: 340236, name: 'Bellarata', country: 'AUS', totalStarts: 10, sire: 'Pierata', dam: 'Bellevue Girl' },
+      { runnerId: 400001, name: 'Bel Air Kid', country: 'USA', totalStarts: 6, sire: 'Gun Runner', dam: 'Kid Sister' },
+      { runnerId: 400002, name: 'Belle Of Woodbine', country: 'CAN', totalStarts: 2 },
+      { runnerId: 297209, name: 'Bel Robot', country: 'HKG', totalStarts: 4 },
+    ] }),
+    '/v1/stats/runner/400001': () => reply(200, { runner: { runnerId: 400001, name: 'Bel Air Kid', country: 'USA' }, career: { totalStarts: 6, wins: 3 }, distanceStats: [], recentStats: null }),
     '/v1/stats/jockey/James McDonald': () => reply(200, { jockeyName: 'James McDonald', totalStarts: 2645, totalWins: 645, overallWinRate: 0.2439, overallPlaceRate: 0.52,
       trackStats: [{ venue: 'Small', totalStarts: 2 }, { venue: 'Randwick', totalStarts: 428, wins: 111 }], conditionStats: [], isAmbiguous: false, recentStats: null }),
-    '/v1/stats/runner/340236': () => reply(200, { runner: { runnerId: 340236, name: 'Bellarata' }, career: { totalStarts: 10, wins: 3 }, distanceStats: [], recentStats: null }),
+    '/v1/stats/runner/340236': () => reply(200, { runner: { runnerId: 340236, name: 'Bellarata', country: 'AUS' }, career: { totalStarts: 10, wins: 3 }, distanceStats: [], recentStats: null }),
     '/v1/stats/track-bias/ballina': () => reply(200, { venue: 'Ballina', totalRaces: 385, strongestBarrier: 6, weakestBarrier: 9, biasStrength: 'none',
       barrierStats: [{ barrierNumber: 1, totalStarts: 341, winRate: 0.15, advantage: 0.03 }], distanceStats: [] }),
   };
@@ -164,21 +171,13 @@ test('a race FormFav has no form for is a 404; FormFav trouble is a friendly 503
   await json('/meetings?from=' + iso(-8) + '&race_codes=gallops&timezones=America/New_York', 400);
 });
 
-test('stats: search, jockey, runner and track bias', async () => {
-  const jockeys = await json('/search?kind=jockey&q=mcd&race_code=greyhounds');
-  assert.deepEqual(jockeys.results, [{ name: 'James McDonald', totalStarts: 3874, ambiguous: false }]);
-  assert.deepEqual(calls[0].params, { q: 'mcd' }, 'jockey stats have no greyhound code');
+// Jockeys, trainers and track bias (US/Canada index only) are covered in formfav_index.test.cjs.
+test('runners: US and Canada only, in search and career stats', async () => {
   const runners = await json('/search?kind=runner&q=bel');
-  assert.equal(runners.results[0].id, 340236);
-  const jockey = await json('/jockey/' + encodeURIComponent('James McDonald') + '?window=30');
-  assert.equal(jockey.name, 'James McDonald');
-  assert.equal(jockey.tracks[0].venue, 'Randwick', 'tracks sorted by starts');
+  assert.deepEqual(runners.results.map((r) => [r.id, r.country]), [[400001, 'USA'], [400002, 'CAN']], 'AUS and HKG dropped');
+  assert.equal((await json('/runner/400001?window=30')).career.wins, 3);
   assert.equal(calls.at(-1).params.window, '30');
-  assert.equal((await json('/runner/340236')).career.wins, 3);
-  const bias = await json('/track-bias/ballina?country=us&distance=1000-1400');
-  assert.equal(bias.strongestBarrier, 6);
-  assert.equal(bias.barriers[0].barrierNumber, 1);
-  assert.equal((await json('/trainer/' + encodeURIComponent('Nobody Here'), 404)).error, 'Not found.');
+  assert.equal((await json('/runner/340236', 404)).error, 'Not found.', 'an Australian runner');
 });
 
 test('bad requests are 400 and never reach FormFav', async () => {

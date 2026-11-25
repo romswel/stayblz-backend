@@ -4,7 +4,21 @@ import { asyncRoute } from "../middleware/asyncRoute";
 import { isUuid, type StableRequest } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { canSeeHorse, loadCommunityHorse, loadStats, ownerContext, type OwnerContext } from "../lib/communityHorses";
-import { VirtualInputError, virtualEntryInput, virtualHorseInput } from "../lib/virtualInput";
+import { VirtualInputError, entryNotesInput, virtualEntryInput, virtualHorseInput } from "../lib/virtualInput";
+import * as ff from "../lib/formFav";
+import * as idx from "../lib/formFavIndex";
+import {
+  LOCKED_COLUMNS,
+  LinkError,
+  breedFor,
+  bustFollowerCounts,
+  followerCounts,
+  linkColumns,
+  linkView,
+  liveRaceData,
+  resolveRacingHorse,
+} from "../lib/formFavLink";
+import { syncLinkedHorse } from "../lib/formFavSync";
 
 /**
  * Virtual Stayblz: horses someone tracks without owning them, plus what they log about them.
@@ -17,16 +31,23 @@ import { VirtualInputError, virtualEntryInput, virtualHorseInput } from "../lib/
  *
  * Live data is read per request and per viewer: community horses go through the same visibility check as their
  * profile page, so a list shared with a team never shows a teammate more than they could already see.
+ *
+ * Race data (FormFav, lib/formFavLink.ts + lib/formFavSync.ts): horses added from the "Racing horses" tab
+ * (source 'formfav') live in that tab, not in the list; a horse typed in by hand can be linked to one. Linked horses
+ * keep trainer/sire/dam/sex/foaling year/breed from race data (locked here), get every final result in their log
+ * (rows with formfav_ref: notes only, removable once unlinked) and send alerts; each person can mute a horse.
  */
 
 export const MAX_VIRTUAL_HORSES = 300;
 export const MAX_VIRTUAL_ENTRIES = 2000;
+/** Horses from the Racing horses tab have their own allowance, so they never crowd out the list. */
+export const MAX_RACING_HORSES = 300;
 
 type Mode = "personal" | "stable";
 const HORSE_COLS =
-  "id,user_id,stable_id,added_by,source,community_horse_id,racing_horse_id,name,breed,sex,foaled_year,color,sire,dam,trainer,owner_name,location,notes,created_at,updated_at";
+  "id,user_id,stable_id,added_by,source,community_horse_id,racing_horse_id,name,breed,sex,foaled_year,color,sire,dam,trainer,owner_name,location,notes,created_at,updated_at,formfav_name,formfav_code,formfav_key,formfav_runner_id,formfav_linked_at,formfav_synced_at";
 const ENTRY_COLS =
-  "id,virtual_horse_id,author_id,kind,entry_date,title,track,distance,surface,time_text,finish,field_size,result,hip_number,amount_cents,notes,created_at,updated_at";
+  "id,virtual_horse_id,author_id,kind,entry_date,title,track,distance,surface,time_text,finish,field_size,result,hip_number,amount_cents,notes,created_at,updated_at,formfav_ref";
 
 /** Dates as YYYY-MM-DD whatever the driver hands back. */
 const day = (v: unknown) => (v ? String(v).slice(0, 10) : null);
@@ -55,6 +76,8 @@ export function virtualRouter(mode: Mode) {
   const notFound = (res: Response, what = "That horse") => res.status(404).json({ error: `${what} isn't in this Virtual Stayblz.` });
   const bad = (res: Response, error: unknown) =>
     res.status(400).json({ error: error instanceof VirtualInputError ? error.message : "Check the form and try again." });
+  const linkFailed = (res: Response, error: LinkError) =>
+    res.status(error.status).json({ error: error.message, ...(error.code ? { code: error.code } : {}) });
 
   router.use((req, res, next) => {
     const user = me(req);
@@ -98,12 +121,14 @@ export function virtualRouter(mode: Mode) {
     notes: h.notes,
     addedBy: h.added_by,
     canRemove: canManage(req, h.added_by),
+    formfav: linkView(h),
     createdAt: h.created_at,
     updatedAt: h.updated_at,
     ...extra,
   });
 
-  const entryView = (req: Request, e: any, authors: Map<string, string>) => ({
+  /** Rows from race data (formfav_ref) change notes only, by whoever may manage the horse, and go once unlinked. */
+  const entryView = (req: Request, e: any, authors: Map<string, string>, horse?: any) => ({
     id: e.id,
     kind: e.kind,
     entryDate: day(e.entry_date),
@@ -119,7 +144,9 @@ export function virtualRouter(mode: Mode) {
     amountCents: e.amount_cents === null || e.amount_cents === undefined ? null : Number(e.amount_cents),
     notes: e.notes,
     author: e.author_id ? { id: e.author_id, name: authors.get(e.author_id) ?? "Stayblz member" } : null,
-    canEdit: canManage(req, e.author_id),
+    fromRaceData: !!e.formfav_ref,
+    canEdit: e.formfav_ref ? canManage(req, horse?.added_by ?? null) : canManage(req, e.author_id),
+    canRemove: e.formfav_ref ? !horse?.formfav_key && canManage(req, horse?.added_by ?? null) : canManage(req, e.author_id),
     createdAt: e.created_at,
     updatedAt: e.updated_at,
   });
@@ -130,9 +157,10 @@ export function virtualRouter(mode: Mode) {
     "/",
     asyncRoute(async (req, res) => {
       const viewer = me(req).id;
+      // Everything in the list, racing horses (source 'formfav') included: the app shows them in their own section.
       const { data, error } = await scoped(supabase.from("virtual_horses").select(HORSE_COLS), req)
         .order("created_at", { ascending: false })
-        .limit(MAX_VIRTUAL_HORSES);
+        .limit(MAX_VIRTUAL_HORSES + MAX_RACING_HORSES);
       if (error) return unavailable(res, error);
       const rows = (data ?? []) as any[];
       const ids = rows.map((r) => r.id);
@@ -183,9 +211,12 @@ export function virtualRouter(mode: Mode) {
                     earningsCents: live.showEarnings ? Number(s?.earnings_cents ?? 0) : null,
                   }
                 : null,
+              // Linked to race data: what the index has on it now (no FormFav call; null outside the window).
+              race: r.formfav_key ? raceSummary(r) : null,
             });
           }),
           limit: MAX_VIRTUAL_HORSES,
+          racingLimit: MAX_RACING_HORSES,
         });
       } catch (err) {
         unavailable(res, err as DbError);
@@ -193,14 +224,120 @@ export function virtualRouter(mode: Mode) {
     }),
   );
 
-  /** Is this community / racing horse already in this list? Drives the "Add to Virtual Stayblz" buttons. */
+  /* ------------------------------ Racing horses (race data) ------------------------------ */
+
+  /**
+   * GET /racing-horses?offset&limit&q&codes&countries&tracking=1 — race-data horses (US/Canada, last 30 days … next
+   * 2 days), most followed first, then A–Z. Each carries `followers` (distinct people tracking it on Stayblz) and
+   * `trackingId` (this list's horse for it, or null). tracking=1: only this list's, including ones with no runs in
+   * the window right now (`noRecentRuns`).
+   */
+  router.get(
+    "/racing-horses",
+    asyncRoute(async (req, res) => {
+      const viewer = me(req).id;
+      const one = (name: string) => {
+        const v = req.query[name];
+        return typeof v === "string" && v !== "" ? v : undefined;
+      };
+      const int = (v: string | undefined, min: number, max: number, fallback: number) => {
+        if (v === undefined) return fallback;
+        if (!/^\d{1,6}$/.test(v) || Number(v) < min || Number(v) > max) return NaN;
+        return Number(v);
+      };
+      const some = <T extends string>(v: string | undefined, allowed: readonly T[]) => {
+        if (v === undefined) return [...allowed];
+        const picked = [...new Set(v.split(","))];
+        return picked.every((p) => (allowed as readonly string[]).includes(p)) ? (picked as T[]) : null;
+      };
+      const offset = int(one("offset"), 0, 100_000, 0);
+      const limit = int(one("limit"), 1, 50, 20);
+      const codes = some(one("codes"), idx.INDEX_CODES);
+      const countries = some(one("countries"), ff.COUNTRIES);
+      const q = one("q")?.trim().slice(0, 60) || undefined;
+      const tracking = one("tracking") === "1";
+      if (Number.isNaN(offset) || Number.isNaN(limit) || !codes?.length || !countries?.length)
+        return res.status(400).json({ error: "Those filters aren't valid." });
+      if (!ff.formFavKey()) return res.status(503).json({ error: "Race data isn't available right now." });
+      if (!ff.formFavAllowed(viewer)) return res.status(429).json({ error: "That's a lot of lookups. Wait a moment.", retryAfterSeconds: 60 });
+
+      let rank: Map<string, number>;
+      let rows: any[];
+      try {
+        const listed = await scoped(supabase.from("virtual_horses").select("id,source,formfav_key,formfav_name,formfav_code"), req).limit(
+          MAX_VIRTUAL_HORSES + MAX_RACING_HORSES,
+        );
+        if (listed.error) return unavailable(res, listed.error);
+        rows = (listed.data ?? []).filter((r: any) => r.formfav_key);
+        rank = await followerCounts();
+      } catch (err) {
+        return unavailable(res, err as DbError);
+      }
+      idx.ensureIndex();
+      const mine = new Map(rows.map((r) => [r.formfav_key as string, r]));
+      const withTracking = (r: any) => ({ ...r, trackingId: mine.get(idx.horseKey(r.name, r.code))?.id ?? null });
+      res.set("Cache-Control", "no-store");
+      if (!tracking) {
+        const page = idx.listHorses({ offset, limit, q, codes, countries }, { rank });
+        return void res.json({ ...page, records: page.records.map(withTracking) });
+      }
+      // This list's horses: the ones in the window (with their numbers), then the ones with no runs in it now.
+      const inWindow = idx.listHorses({ offset: 0, limit: 1000, q, codes, countries }, { rank, only: new Set(mine.keys()) });
+      const shown = new Set(inWindow.records.map((r) => idx.horseKey(r.name, r.code)));
+      const needle = q?.toLowerCase();
+      const quiet = rows
+        .filter((r) => !shown.has(r.formfav_key) && (codes as string[]).includes(r.formfav_code) && (!needle || r.formfav_name.toLowerCase().includes(needle)))
+        .map((r) => ({
+          name: r.formfav_name,
+          code: r.formfav_code,
+          countries: [],
+          starts: 0,
+          wins: 0,
+          places: 0,
+          lastStart: null,
+          nextEntry: null,
+          jockey: null,
+          trainer: null,
+          followers: rank.get(r.formfav_key) ?? 0,
+          noRecentRuns: true,
+        }))
+        .sort((a, b) => b.followers - a.followers || a.name.localeCompare(b.name));
+      const all = [...inWindow.records, ...quiet];
+      const { records: _r, nextOffset: _n, total: _t, ...status } = inWindow;
+      res.json({
+        ...status,
+        records: all.slice(offset, offset + limit).map(withTracking),
+        nextOffset: offset + limit < all.length ? offset + limit : null,
+        total: all.length,
+      });
+    }),
+  );
+
+  /** A linked horse's numbers from the race-data index, for the list (null when it has no runs in the window). */
+  function raceSummary(r: any) {
+    const h = idx.getHorse(r.formfav_name, r.formfav_code);
+    if (!h) return null;
+    return { starts: h.starts, wins: h.wins, places: h.places, lastStart: h.lastStart, nextEntry: h.nextEntry, trainer: h.trainer };
+  }
+
+  /** Is this community / racing / race-data horse already in this list? Drives the "Add to Virtual Stayblz" buttons. */
   router.get(
     "/state",
     asyncRoute(async (req, res) => {
-      const { communityHorseId, racingHorseId } = req.query;
-      const column = isUuid(communityHorseId) ? "community_horse_id" : isUuid(racingHorseId) ? "racing_horse_id" : null;
+      const { communityHorseId, racingHorseId, formfavName, formfavCode } = req.query;
+      const raceKey =
+        typeof formfavName === "string" && formfavName.trim() && formfavName.length <= 100 && (idx.INDEX_CODES as readonly unknown[]).includes(formfavCode)
+          ? idx.horseKey(formfavName, formfavCode as string)
+          : null;
+      const column = isUuid(communityHorseId)
+        ? "community_horse_id"
+        : isUuid(racingHorseId)
+          ? "racing_horse_id"
+          : raceKey
+            ? "formfav_key"
+            : null;
       if (!column) return res.status(400).json({ error: "Choose a horse." });
-      const target = (column === "community_horse_id" ? communityHorseId : racingHorseId) as string;
+      const target = (column === "community_horse_id" ? communityHorseId : column === "racing_horse_id" ? racingHorseId : raceKey) as string;
       const { data, error } = await scoped(supabase.from("virtual_horses").select("id").eq(column, target), req).maybeSingle();
       if (error) return unavailable(res, error);
       res.set("Cache-Control", "no-store");
@@ -246,11 +383,14 @@ export function virtualRouter(mode: Mode) {
           if (!isUuid(body.racingHorseId)) return res.status(400).json({ error: "Choose a horse." });
           const { data: h, error } = await supabase
             .from("racing_horses")
-            .select("id,name,breed,sex,foaled_year,color,sire,dam")
+            .select("id,name,breed,sex,foaled_year,color,sire,dam,country")
             .eq("id", body.racingHorseId)
             .maybeSingle();
           if (error) return unavailable(res, error);
           if (!h) return res.status(404).json({ error: "That horse isn't on Stayblz racing pages." });
+          // Virtual Stayblz tracks United States and Canada horses only (ones already tracked stay).
+          if (!ff.isNorthAmerica(h.country))
+            return res.status(400).json({ error: "Only US and Canada horses can be tracked.", code: "not_north_america" });
           const year = Number.isInteger(h.foaled_year) && h.foaled_year >= 1900 && h.foaled_year <= 2100 ? h.foaled_year : null;
           fields = {
             source: "racing",
@@ -269,6 +409,22 @@ export function virtualRouter(mode: Mode) {
           } catch (error) {
             return bad(res, error);
           }
+        } else if (body.source === "formfav") {
+          let target;
+          try {
+            target = resolveRacingHorse({ name: body.formfavName, code: body.formfavCode });
+          } catch (error) {
+            if (error instanceof LinkError) return linkFailed(res, error);
+            throw error;
+          }
+          fields = {
+            source: "formfav",
+            name: target.name.slice(0, 80),
+            breed: breedFor(target.code),
+            trainer: (target.horse.trainer ?? "").slice(0, 80),
+            ...linkColumns(target),
+            formfav_linked_by: viewer,
+          };
         } else {
           return res.status(400).json({ error: "Choose a Stayblz horse, a racing horse, or enter one by hand." });
         }
@@ -276,13 +432,16 @@ export function virtualRouter(mode: Mode) {
         return unavailable(res, err as DbError);
       }
 
-      const { count, error: countError } = await scoped(
-        supabase.from("virtual_horses").select("id", { count: "exact", head: true }),
-        req,
-      );
+      const racing = fields.source === "formfav";
+      const counted = scoped(supabase.from("virtual_horses").select("id", { count: "exact", head: true }), req);
+      const { count, error: countError } = await (racing ? counted.eq("source", "formfav") : counted.neq("source", "formfav"));
       if (countError) return unavailable(res, countError);
-      if ((count ?? 0) >= MAX_VIRTUAL_HORSES)
-        return res.status(409).json({ error: `Virtual Stayblz holds up to ${MAX_VIRTUAL_HORSES} horses. Remove some first.` });
+      if ((count ?? 0) >= (racing ? MAX_RACING_HORSES : MAX_VIRTUAL_HORSES))
+        return res.status(409).json({
+          error: racing
+            ? `Racing horses holds up to ${MAX_RACING_HORSES} horses. Remove some first.`
+            : `Virtual Stayblz holds up to ${MAX_VIRTUAL_HORSES} horses. Remove some first.`,
+        });
 
       const { data, error } = await supabase
         .from("virtual_horses")
@@ -291,8 +450,8 @@ export function virtualRouter(mode: Mode) {
         .single();
       if (error) {
         if (error.code === "23505") {
-          const column = fields.source === "community" ? "community_horse_id" : "racing_horse_id";
-          const target = (fields.community_horse_id ?? fields.racing_horse_id) as string;
+          const column = fields.source === "community" ? "community_horse_id" : racing ? "formfav_key" : "racing_horse_id";
+          const target = (fields.community_horse_id ?? fields.racing_horse_id ?? fields.formfav_key) as string;
           const { data: existing } = await scoped(supabase.from("virtual_horses").select("id").eq(column, target), req).maybeSingle();
           return res
             .status(409)
@@ -300,7 +459,12 @@ export function virtualRouter(mode: Mode) {
         }
         return unavailable(res, error);
       }
-      res.status(201).json({ horse: horseView(req, data) });
+      if (!racing) return void res.status(201).json({ horse: horseView(req, data) });
+      // Details and the window's results straight away; the next refresh takes it from there.
+      bustFollowerCounts();
+      await syncLinkedHorse("virtual", (data as any).id, { name: fields.formfav_name as string, code: fields.formfav_code as string });
+      const fresh = await loadHorse(req, (data as any).id).catch(() => null);
+      res.status(201).json({ horse: horseView(req, fresh ?? data) });
     }),
   );
 
@@ -329,14 +493,36 @@ export function virtualRouter(mode: Mode) {
         const racingLive = racing.error ? null : (racing.data ?? null);
         const authors = await names([...(entries.data ?? []).map((e: any) => e.author_id), horse.added_by]);
         const live = community ? { community } : racingLive ? { racing: racingLive } : null;
+        // Race data: what the index has on it now (no FormFav call), who follows it, and the viewer's alerts.
+        let raceData = null;
+        const link = linkView(horse);
+        if (link) {
+          const [rank, muted] = await Promise.all([
+            followerCounts().catch(() => new Map<string, number>()),
+            supabase.from("virtual_horse_mutes").select("user_id").eq("horse_id", horse.id).eq("user_id", viewer).maybeSingle(),
+          ]);
+          if (muted.error) return unavailable(res, muted.error);
+          const now = liveRaceData(link);
+          raceData = {
+            ...link,
+            available: !!ff.formFavKey(),
+            building: now.building,
+            coverage: now.coverage,
+            updatedAt: now.updatedAt,
+            horse: now.horse,
+            followers: rank.get(horse.formfav_key) ?? 0,
+            alertsOn: !muted.data,
+          };
+        }
         res.set("Cache-Control", "no-store");
         res.json({
           horse: horseView(req, horse, {
             addedByName: horse.added_by ? (authors.get(horse.added_by) ?? "Stayblz member") : null,
           }),
-          entries: (entries.data ?? []).map((e: any) => entryView(req, e, authors)),
+          entries: (entries.data ?? []).map((e: any) => entryView(req, e, authors, horse)),
           live,
-          liveUnavailable: horse.source !== "manual" && !live,
+          liveUnavailable: (horse.source === "community" || horse.source === "racing") && !live,
+          raceData,
         });
       } catch (err) {
         unavailable(res, err as DbError);
@@ -362,6 +548,8 @@ export function virtualRouter(mode: Mode) {
       }
       // Linked horses keep the details copied from their source; only the notes are theirs to change.
       if (horse.source !== "manual") input = input.notes === undefined ? {} : { notes: input.notes };
+      // A hand-typed horse linked to race data: what race data keeps up to date stays as it is.
+      else if (horse.formfav_key) for (const column of LOCKED_COLUMNS) delete input[column];
       else if (Object.keys(input).some((k) => k !== "notes") && !canManage(req, horse.added_by))
         return res.status(403).json({ error: "Only the person who added this horse, or a stable manager, can change its details." });
       if (!Object.keys(input).length) return res.status(400).json({ error: "Nothing to change." });
@@ -391,7 +579,100 @@ export function virtualRouter(mode: Mode) {
         return res.status(403).json({ error: "Only the person who added this horse, or a stable manager, can remove it." });
       const { error } = await scoped(supabase.from("virtual_horses").delete().eq("id", horse.id), req);
       if (error) return unavailable(res, error);
+      if (horse.formfav_key) bustFollowerCounts();
       res.json({ ok: true });
+    }),
+  );
+
+  /* ------------------------------ Race-data link and alerts ------------------------------ */
+
+  /** POST /:id/formfav {name, code} — link a horse typed in by hand to a race-data horse. */
+  router.post(
+    "/:id/formfav",
+    asyncRoute(async (req, res) => {
+      let horse;
+      try {
+        horse = await loadHorse(req, req.params.id);
+      } catch (err) {
+        return unavailable(res, err as DbError);
+      }
+      if (!horse) return notFound(res);
+      if (horse.source !== "manual")
+        return res.status(400).json({ error: "Only a horse typed in by hand can be linked to race data." });
+      if (!canManage(req, horse.added_by))
+        return res.status(403).json({ error: "Only the person who added this horse, or a stable manager, can link it." });
+      if (horse.formfav_key)
+        return res.status(409).json({ error: "This horse is already linked. Unlink it first.", code: "already_linked" });
+      let target;
+      try {
+        target = resolveRacingHorse({ name: req.body?.name, code: req.body?.code });
+      } catch (error) {
+        if (error instanceof LinkError) return linkFailed(res, error);
+        throw error;
+      }
+      const { error } = await scoped(
+        supabase
+          .from("virtual_horses")
+          .update({ ...linkColumns(target), formfav_linked_by: me(req).id, updated_at: new Date().toISOString() })
+          .eq("id", horse.id),
+        req,
+      );
+      if (error) {
+        if (error.code === "23505")
+          return res.status(409).json({ error: "That racing horse is already in this Virtual Stayblz.", code: "already_added" });
+        return unavailable(res, error);
+      }
+      bustFollowerCounts();
+      await syncLinkedHorse("virtual", horse.id, target);
+      const fresh = await loadHorse(req, horse.id).catch(() => null);
+      res.json({ horse: horseView(req, fresh ?? horse) });
+    }),
+  );
+
+  /** POST /:id/formfav/remove — unlink: the details stay, race-data log rows become ordinary rows. */
+  router.post(
+    "/:id/formfav/remove",
+    asyncRoute(async (req, res) => {
+      let horse;
+      try {
+        horse = await loadHorse(req, req.params.id);
+      } catch (err) {
+        return unavailable(res, err as DbError);
+      }
+      if (!horse) return notFound(res);
+      if (!horse.formfav_key) return res.status(400).json({ error: "This horse isn't linked to race data." });
+      if (horse.source === "formfav")
+        return res.status(400).json({ error: "A horse added from Racing horses can't be unlinked. Remove it instead." });
+      if (!canManage(req, horse.added_by))
+        return res.status(403).json({ error: "Only the person who added this horse, or a stable manager, can unlink it." });
+      const { error } = await supabase.rpc("formfav_unlink", { p_kind: "virtual", p_id: horse.id });
+      if (error) return unavailable(res, error);
+      bustFollowerCounts();
+      const fresh = await loadHorse(req, horse.id).catch(() => null);
+      res.json({ horse: horseView(req, fresh ?? horse) });
+    }),
+  );
+
+  /** POST /:id/alerts {on} — the viewer's own alerts for a linked horse (everyone in a stable decides for themselves). */
+  router.post(
+    "/:id/alerts",
+    asyncRoute(async (req, res) => {
+      const on = req.body?.on;
+      if (typeof on !== "boolean") return res.status(400).json({ error: "Choose on or off." });
+      let horse;
+      try {
+        horse = await loadHorse(req, req.params.id);
+      } catch (err) {
+        return unavailable(res, err as DbError);
+      }
+      if (!horse) return notFound(res);
+      if (!horse.formfav_key) return res.status(400).json({ error: "Alerts are for horses linked to race data." });
+      const viewer = me(req).id;
+      const { error } = on
+        ? await supabase.from("virtual_horse_mutes").delete().eq("horse_id", horse.id).eq("user_id", viewer)
+        : await supabase.from("virtual_horse_mutes").insert({ horse_id: horse.id, user_id: viewer });
+      if (error && error.code !== "23505") return unavailable(res, error);
+      res.json({ alertsOn: on });
     }),
   );
 
@@ -434,31 +715,34 @@ export function virtualRouter(mode: Mode) {
   );
 
   /** An entry together with its horse, only when that horse is in this list. */
-  async function loadEntry(req: Request, id: string) {
+  async function loadEntry(req: Request, id: string): Promise<{ entry: any; horse: any } | null> {
     const { data: entry, error } = await supabase.from("virtual_horse_entries").select(ENTRY_COLS).eq("id", id).maybeSingle();
     if (error) throw error;
     if (!entry) return null;
     const horse = await loadHorse(req, (entry as any).virtual_horse_id);
-    return horse ? (entry as any) : null;
+    return horse ? { entry, horse } : null;
   }
 
   router.patch(
     "/entries/:entry",
     asyncRoute(async (req, res) => {
-      let fields;
+      let found;
       try {
-        fields = virtualEntryInput(req.body ?? {});
-      } catch (error) {
-        return bad(res, error);
-      }
-      let entry;
-      try {
-        entry = await loadEntry(req, req.params.entry);
+        found = await loadEntry(req, req.params.entry);
       } catch (err) {
         return unavailable(res, err as DbError);
       }
-      if (!entry) return notFound(res, "That entry");
-      if (!canManage(req, entry.author_id))
+      if (!found) return notFound(res, "That entry");
+      const { entry, horse } = found;
+      // A race from race data keeps its race details; its notes are the list's.
+      const fromRace = !!entry.formfav_ref;
+      let fields;
+      try {
+        fields = fromRace ? entryNotesInput(req.body ?? {}) : virtualEntryInput(req.body ?? {});
+      } catch (error) {
+        return bad(res, error);
+      }
+      if (!canManage(req, fromRace ? horse.added_by : entry.author_id))
         return res.status(403).json({ error: "Only the person who logged this entry, or a stable manager, can change it." });
       const { data, error } = await supabase
         .from("virtual_horse_entries")
@@ -469,21 +753,26 @@ export function virtualRouter(mode: Mode) {
       if (error) return unavailable(res, error);
       if (!data) return notFound(res, "That entry");
       const authors = await names([(data as any).author_id]).catch(() => new Map<string, string>());
-      res.json({ entry: entryView(req, data, authors) });
+      res.json({ entry: entryView(req, data, authors, horse) });
     }),
   );
 
   router.post(
     "/entries/:entry/remove",
     asyncRoute(async (req, res) => {
-      let entry;
+      let found;
       try {
-        entry = await loadEntry(req, req.params.entry);
+        found = await loadEntry(req, req.params.entry);
       } catch (err) {
         return unavailable(res, err as DbError);
       }
-      if (!entry) return notFound(res, "That entry");
-      if (!canManage(req, entry.author_id))
+      if (!found) return notFound(res, "That entry");
+      const { entry, horse } = found;
+      if (entry.formfav_ref && horse.formfav_key)
+        return res
+          .status(409)
+          .json({ error: "This race comes from race data. Unlink the horse to remove it.", code: "from_race_data" });
+      if (!canManage(req, entry.formfav_ref ? horse.added_by : entry.author_id))
         return res.status(403).json({ error: "Only the person who logged this entry, or a stable manager, can remove it." });
       const { error } = await supabase.from("virtual_horse_entries").delete().eq("id", entry.id);
       if (error) return unavailable(res, error);

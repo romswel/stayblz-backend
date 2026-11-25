@@ -9,19 +9,28 @@ import { authLimit } from "../middleware/authLimits";
 import { isUuid } from "../middleware/stable";
 import { supabase } from "../lib/supabase";
 import { roleRank } from "../lib/accounts";
+import { LOCKED_COLUMNS, LinkError, bustFollowerCounts, linkColumns, resolveRacingHorse } from "../lib/formFavLink";
+import { syncLinkedHorse } from "../lib/formFavSync";
 import {
   HORSE_COLUMNS,
   IMAGE_COLUMNS,
   accountActive,
   canSeeHorse,
+  coOwnedIds,
+  coOwnerCounts,
+  horseRole,
   horseView,
   imageView,
   loadCommunityHorse,
+  loadOwners,
   loadStats,
   ownerContext,
+  ownerIds,
   recordView,
+  type HorseRole,
   type OwnerContext,
 } from "../lib/communityHorses";
+import { horseAlert } from "../lib/horseAlerts";
 import {
   InputError,
   commentInput,
@@ -94,6 +103,8 @@ router.use((req, res, next) => (req.method === "GET" ? next() : writeLimit(req, 
 
 router.param("id", (req, res, next, id) => (isUuid(id) ? next() : notFound(res)));
 router.param("image", (req, res, next, id) => (isUuid(id) ? next() : notFound(res, "That photo")));
+router.param("account", (req, res, next, id) => (isUuid(id) ? next() : notFound(res, "That member")));
+router.param("change", (req, res, next, id) => (isUuid(id) ? next() : notFound(res, "That change")));
 
 /* ============================== Shapes sent to the browser ============================== */
 
@@ -140,11 +151,56 @@ function postView(r: any) {
   };
 }
 
+/** A horse this member is the lead owner of (only the lead deletes it, manages owners and links race data). */
 async function ownHorse(horseId: string, owner: string) {
   const { data, error } = await supabase.from("owner_horses").select(HORSE_COLUMNS).eq("id", horseId).eq("owner_id", owner).maybeSingle();
   if (error) throw error;
   return data;
 }
+
+/** A horse this member may edit: its lead owner or an accepted co-owner, with their role. */
+async function editableHorse(horseId: string, viewer: string): Promise<{ horse: any; role: HorseRole } | null> {
+  const { data, error } = await supabase.from("owner_horses").select(HORSE_COLUMNS).eq("id", horseId).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const role = await horseRole(data, viewer);
+  return role ? { horse: data, role } : null;
+}
+
+/** Edit access, or the right answer: 404 for strangers. Answers 503 itself on database errors. */
+async function editable(req: Request, res: Response, horseId = req.params.id) {
+  try {
+    const found = await editableHorse(horseId, me(req).id);
+    if (!found) notFound(res, "That horse");
+    return found;
+  } catch (err) {
+    unavailable(res, err as DbError);
+    return null;
+  }
+}
+
+/** Lead-owner access: co-owners hear why they can't (403), strangers get 404. */
+async function leadOnly(req: Request, res: Response, what: string) {
+  const found = await editable(req, res);
+  if (!found) return null;
+  if (found.role !== "lead") {
+    res.status(403).json({ error: `Only the lead owner can ${what}.`, code: "lead_only" });
+    return null;
+  }
+  return found.horse;
+}
+
+const horseLink = (id: string, tab?: string) => `/account/horses?edit=${id}${tab ? `&tab=${tab}` : ""}`;
+
+/** Tell the horse's other owners (fire and forget; never throws). */
+function tellOwners(horse: { id: string; owner_id: string; name: string }, actor: string, title: string, body: string, link?: string, collapse = false) {
+  ownerIds(horse)
+    .then((ids) => horseAlert(ids, actor, horse.id, { title, body, link: link ?? `/community/horses/${horse.id}` }, collapse))
+    .catch(() => undefined);
+}
+
+const clipName = (name: string) => (name.length > 60 ? name.slice(0, 59) + "…" : name);
+
 
 /** One post as the viewer sees it (null when it doesn't exist or isn't visible to them). */
 async function visiblePost(viewer: string, postId: string) {
@@ -371,6 +427,13 @@ router.get(
     const owner = req.params.id;
     if (!(await accountActive(owner))) return notFound(res, "That member");
     const ctx = await ownerContext(viewer, owner);
+    const self = viewer === owner;
+    let coOwned: Set<string>;
+    try {
+      coOwned = new Set(await coOwnedIds(viewer));
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
     const { data, error } = await supabase
       .from("owner_horses")
       .select(HORSE_COLUMNS)
@@ -378,22 +441,53 @@ router.get(
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) return unavailable(res, error);
-    const horses = (data ?? []).filter((h) => canSeeHorse(viewer, h, ctx));
+    const horses = (data ?? []).filter((h) => canSeeHorse(viewer, h, ctx, coOwned.has(h.id)));
+    // My horses: the horses I co-own with other members are mine too.
+    if (self && coOwned.size) {
+      const shared = await supabase.from("owner_horses").select(HORSE_COLUMNS).in("id", [...coOwned]).neq("owner_id", viewer);
+      if (shared.error) return unavailable(res, shared.error);
+      const active = await Promise.all((shared.data ?? []).map((h) => accountActive(h.owner_id)));
+      horses.push(...(shared.data ?? []).filter((_, i) => active[i]));
+      horses.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+    }
     const ids = horses.map((h) => h.id);
-    const [stats, images] = await Promise.all([
+    let coCounts: Map<string, number>;
+    try {
+      coCounts = await coOwnerCounts(ids);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    const [stats, images, changes] = await Promise.all([
       loadStats(ids),
       ids.length
         ? supabase.from("owner_horse_images").select("horse_id").in("horse_id", ids)
         : Promise.resolve({ data: [] as { horse_id: string }[], error: null }),
+      self && ids.length
+        ? supabase.from("owner_horse_changes").select("horse_id").in("horse_id", ids).eq("status", "pending")
+        : Promise.resolve({ data: [] as { horse_id: string }[], error: null }),
     ]);
-    if (images.error) return unavailable(res, images.error);
+    if (images.error || changes.error) return unavailable(res, images.error, changes.error);
     const counts = new Map<string, number>();
     for (const i of images.data ?? []) counts.set(i.horse_id, (counts.get(i.horse_id) ?? 0) + 1);
-    const mine = viewer === owner;
+    const waiting = new Map<string, number>();
+    for (const c of changes.data ?? []) waiting.set(c.horse_id, (waiting.get(c.horse_id) ?? 0) + 1);
     res.json({
-      horses: horses.map((h) => horseView(h, stats.get(h.id), { mine, showEarnings: ctx.showEarnings, imageCount: counts.get(h.id) ?? 0 })),
+      horses: horses.map((h) => {
+        const role: HorseRole | null = h.owner_id === viewer ? "lead" : coOwned.has(h.id) ? "coowner" : null;
+        const mine = role !== null;
+        return {
+          ...horseView(h, stats.get(h.id), {
+            mine,
+            role,
+            coOwners: coCounts.get(h.id) ?? 0,
+            showEarnings: ctx.showEarnings,
+            imageCount: counts.get(h.id) ?? 0,
+          }),
+          pendingChanges: mine ? (waiting.get(h.id) ?? 0) : undefined,
+        };
+      }),
       // Tells the page whether horses are missing because of privacy rather than because there are none.
-      restricted: !mine && (data ?? []).length > horses.length,
+      restricted: !self && (data ?? []).length > horses.length,
     });
   }),
 );
@@ -516,17 +610,18 @@ router.get(
       Number.isNaN(yearTo)
     )
       return res.status(400).json({ error: "Those filters aren't valid." });
-    let before: { name: string; id: string } | null = null;
+    // Most followed first (distinct people tracking it in Virtual Stayblz), then A–Z; the cursor holds all three.
+    let before: { followers: number; name: string; id: string } | null = null;
     if (typeof req.query.before === "string" && req.query.before) {
       try {
         const c = JSON.parse(Buffer.from(req.query.before, "base64url").toString("utf8"));
-        if (typeof c?.name !== "string" || !isUuid(c?.id)) throw new Error("bad");
-        before = { name: c.name, id: c.id };
+        if (typeof c?.name !== "string" || !isUuid(c?.id) || !Number.isInteger(c?.f) || c.f < 0) throw new Error("bad");
+        before = { followers: c.f, name: c.name, id: c.id };
       } catch {
         return res.status(400).json({ error: "That page link isn't valid." });
       }
     }
-    const { data, error } = await supabase.rpc("community_public_horses", {
+    const { data, error } = await supabase.rpc("community_public_horses_v2", {
       p_viewer: viewer,
       p_query: q,
       p_breed: breed || null,
@@ -535,6 +630,7 @@ router.get(
       p_year_from: yearFrom,
       p_year_to: yearTo,
       p_raced: req.query.raced === "1" || req.query.raced === "true",
+      p_before_followers: before?.followers ?? null,
       p_before_name: before?.name ?? null,
       p_before_id: before?.id ?? null,
       p_limit: PUBLIC_PAGE + 1,
@@ -567,10 +663,11 @@ router.get(
       horses: rows.map((h) => ({
         ...horseView(h, stats.get(h.id), { mine: false, showEarnings: !hidden.has(h.owner_id) }),
         owner: { id: h.owner_id, name: ownerName.get(h.owner_id) ?? "Stayblz member" },
+        followers: Number(h.followers ?? 0),
       })),
       next:
         Array.isArray(data) && data.length > PUBLIC_PAGE && last
-          ? Buffer.from(JSON.stringify({ name: String(last.sort_name), id: last.id })).toString("base64url")
+          ? Buffer.from(JSON.stringify({ f: Number(last.followers ?? 0), name: String(last.sort_name), id: last.id })).toString("base64url")
           : null,
     });
   }),
@@ -641,17 +738,39 @@ router.patch(
     } catch (error) {
       return bad(res, error);
     }
-    const { data, error } = await supabase
-      .from("owner_horses")
-      .update({ ...input, updated_at: new Date().toISOString() })
-      .eq("id", req.params.id)
-      .eq("owner_id", me(req).id)
-      .select(HORSE_COLUMNS)
-      .maybeSingle();
-    if (error) return unavailable(res, error);
-    if (!data) return notFound(res, "That horse");
-    const stats = await loadStats([data.id]);
-    res.json({ horse: horseView(data, stats.get(data.id), { mine: true, showEarnings: true }) });
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse: current, role } = found;
+    const viewer = me(req).id;
+    // Linked to race data: what race data keeps up to date stays as it is.
+    const update: Record<string, unknown> = { ...input };
+    if (current.formfav_key) for (const column of LOCKED_COLUMNS) update[column] = (current as any)[column];
+    // Who can see the horse is the lead owner's choice.
+    if (role !== "lead") update.visibility = current.visibility;
+    const coOwners = (await coOwnerCounts([current.id]).catch(() => new Map<string, number>())).get(current.id) ?? 0;
+    const view = async (row: any) =>
+      horseView(row, (await loadStats([row.id])).get(row.id), { mine: true, showEarnings: true, role, coOwners });
+
+    if (role === "coowner" && current.require_approval) {
+      const fields = changedFields(current, update);
+      if (!Object.keys(fields).length) return res.json({ horse: await view(current) });
+      // One open proposal per owner: a newer edit replaces the earlier one.
+      await supabase
+        .from("owner_horse_changes")
+        .update({ status: "withdrawn", decided_at: new Date().toISOString() })
+        .eq("horse_id", current.id)
+        .eq("proposed_by", viewer)
+        .eq("kind", "details")
+        .eq("status", "pending");
+      const change = await proposeChange(current, viewer, "details", null, { fields });
+      if (!change) return unavailable(res);
+      return res.status(202).json({ horse: await view(current), pending: change });
+    }
+
+    const data = await applyDetails(current, update);
+    if (!data) return unavailable(res);
+    tellOwners(current, viewer, `${clipName(current.name)} was updated`, "Details changed by a co-owner. Tap to see the horse.", undefined, true);
+    res.json({ horse: await view(data) });
   }),
 );
 
@@ -659,14 +778,103 @@ router.post(
   "/horses/:id/remove",
   asyncRoute(async (req, res) => {
     const owner = me(req).id;
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) return notFound(res, "That horse");
+    const horse = await leadOnly(req, res, "remove this horse");
+    if (!horse) return;
     const { data: images, error: imagesError } = await supabase.from("owner_horse_images").select("path,poster_path").eq("horse_id", horse.id);
     if (imagesError) return unavailable(res, imagesError);
+    const owners = await ownerIds(horse).catch(() => [] as string[]);
     const { error } = await supabase.from("owner_horses").delete().eq("id", horse.id).eq("owner_id", owner);
     if (error) return unavailable(res, error);
     await communityStorage.remove((images ?? []).flatMap((i) => [i.path, i.poster_path]).filter(Boolean)).catch(() => undefined);
+    horseAlert(owners, owner, horse.id, {
+      title: `${clipName(horse.name)} was removed`,
+      body: "The lead owner removed this horse from Stayblz.",
+      link: "/account/horses",
+    });
     res.json({ ok: true });
+  }),
+);
+
+/* ----- Race data (lib/formFavLink.ts): link an owned horse to a race-data horse ----- */
+
+/** POST /horses/:id/formfav {name, code} — one owner per race-data horse (409 formfav_claimed). */
+router.post(
+  "/horses/:id/formfav",
+  asyncRoute(async (req, res) => {
+    const owner = me(req).id;
+    const horse = await leadOnly(req, res, "link race data");
+    if (!horse) return;
+    if (horse.formfav_key) return res.status(409).json({ error: "This horse is already linked. Unlink it first.", code: "already_linked" });
+    let target;
+    try {
+      target = resolveRacingHorse({ name: req.body?.name, code: req.body?.code });
+    } catch (error) {
+      if (error instanceof LinkError) return void res.status(error.status).json({ error: error.message });
+      throw error;
+    }
+    const { error } = await supabase
+      .from("owner_horses")
+      .update({ ...linkColumns(target), formfav_alerts: true, updated_at: new Date().toISOString() })
+      .eq("id", horse.id)
+      .eq("owner_id", owner);
+    if (error) {
+      if (error.code === "23505")
+        return res
+          .status(409)
+          .json({ error: "Another member has already linked that racing horse to their horse.", code: "formfav_claimed" });
+      return unavailable(res, error);
+    }
+    bustFollowerCounts();
+    await syncLinkedHorse("owned", horse.id, target);
+    let fresh;
+    try {
+      fresh = await loadCommunityHorse(owner, horse.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    res.json({ horse: fresh });
+  }),
+);
+
+/** POST /horses/:id/formfav/remove — unlink: details stay, race-data records become ordinary records. */
+router.post(
+  "/horses/:id/formfav/remove",
+  asyncRoute(async (req, res) => {
+    const owner = me(req).id;
+    const horse = await leadOnly(req, res, "unlink race data");
+    if (!horse) return;
+    if (!horse.formfav_key) return res.status(400).json({ error: "This horse isn't linked to race data." });
+    const { error } = await supabase.rpc("formfav_unlink", { p_kind: "owned", p_id: horse.id });
+    if (error) return unavailable(res, error);
+    bustFollowerCounts();
+    let fresh;
+    try {
+      fresh = await loadCommunityHorse(owner, horse.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    res.json({ horse: fresh });
+  }),
+);
+
+/** POST /horses/:id/formfav/alerts {on} — the owner's alerts for their linked horse. */
+router.post(
+  "/horses/:id/formfav/alerts",
+  asyncRoute(async (req, res) => {
+    const on = req.body?.on;
+    if (typeof on !== "boolean") return res.status(400).json({ error: "Choose on or off." });
+    const owner = me(req).id;
+    if (!(await leadOnly(req, res, "change race alerts for this horse"))) return;
+    const { data, error } = await supabase
+      .from("owner_horses")
+      .update({ formfav_alerts: on })
+      .eq("id", req.params.id)
+      .eq("owner_id", owner)
+      .select("id,formfav_key")
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!data) return notFound(res, "That horse");
+    res.json({ alertsOn: on });
   }),
 );
 
@@ -677,11 +885,14 @@ router.post(
   uploadLimit,
   readImage,
   asyncRoute(async (req, res) => {
-    const owner = me(req).id;
+    const viewer = me(req).id;
     const image = checkedImage(req, res);
     if (!image) return;
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) return notFound(res, "That horse");
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse } = found;
+    // Files and rows stay under the lead owner, whoever adds them.
+    const owner = horse.owner_id as string;
     const { count, error: countError } = await supabase
       .from("owner_horse_images")
       .select("id", { count: "exact", head: true })
@@ -718,6 +929,7 @@ router.post(
     }
     if (!horse.cover_image_id)
       await supabase.from("owner_horses").update({ cover_image_id: data.id }).eq("id", horse.id).eq("owner_id", owner);
+    tellOwners(horse, viewer, `New photos of ${clipName(horse.name)}`, "A co-owner added photos. Tap to see them.", undefined, true);
     res.status(201).json({ image: imageView(data), coverImageId: horse.cover_image_id ?? data.id });
   }),
 );
@@ -725,9 +937,10 @@ router.post(
 router.post(
   "/horses/:id/images/:image/remove",
   asyncRoute(async (req, res) => {
-    const owner = me(req).id;
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) return notFound(res, "That horse");
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse } = found;
+    const owner = horse.owner_id as string;
     const { data, error } = await supabase
       .from("owner_horse_images")
       .delete()
@@ -761,9 +974,10 @@ router.post(
     const ids = req.body?.ids;
     if (!Array.isArray(ids) || !ids.length || ids.length > MAX_HORSE_IMAGES + MAX_HORSE_VIDEOS || !ids.every(isUuid))
       return res.status(400).json({ error: "That order couldn't be saved." });
-    const owner = me(req).id;
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) return notFound(res, "That horse");
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse } = found;
+    const owner = horse.owner_id as string;
     const results = await Promise.all(
       (ids as string[]).map((id, position) =>
         supabase.from("owner_horse_images").update({ position }).eq("id", id).eq("horse_id", horse.id).eq("owner_id", owner),
@@ -779,7 +993,9 @@ router.post(
   asyncRoute(async (req, res) => {
     const imageId = req.body?.imageId;
     if (!isUuid(imageId)) return res.status(400).json({ error: "Choose one of this horse's photos." });
-    const owner = me(req).id;
+    const found = await editable(req, res);
+    if (!found) return;
+    const owner = found.horse.owner_id as string;
     const { data: image, error: imageError } = await supabase
       .from("owner_horse_images")
       .select("id,kind")
@@ -823,7 +1039,7 @@ router.post(
   "/horses/:id/videos",
   uploadLimit,
   asyncRoute(async (req, res) => {
-    const owner = me(req).id;
+    const viewer = me(req).id;
     const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
     const spec = VIDEO_TYPES[type];
     const drop = () => req.resume();
@@ -846,11 +1062,19 @@ router.post(
       drop();
       return res.status(400).json({ error: "Videos can be up to 3 minutes long.", code: "too_long" });
     }
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) {
+    let found;
+    try {
+      found = await editableHorse(req.params.id, viewer);
+    } catch (err) {
+      drop();
+      return unavailable(res, err as DbError);
+    }
+    if (!found) {
       drop();
       return notFound(res, "That horse");
     }
+    const { horse } = found;
+    const owner = horse.owner_id as string;
     const { count, error: countError } = await supabase
       .from("owner_horse_images")
       .select("id", { count: "exact", head: true })
@@ -928,6 +1152,7 @@ router.post(
       await communityStorage.remove([path]).catch(() => undefined);
       return unavailable(res, error);
     }
+    tellOwners(horse, viewer, `New video of ${clipName(horse.name)}`, "A co-owner added a video. Tap to watch it.", undefined, true);
     res.status(201).json({ image: imageView(data), coverImageId: horse.cover_image_id });
   }),
 );
@@ -939,7 +1164,9 @@ router.post(
   readImage,
   asyncRoute(async (req, res) => {
     if (!isUuid(req.params.image)) return notFound(res, "That video");
-    const owner = me(req).id;
+    const found = await editable(req, res);
+    if (!found) return;
+    const owner = found.horse.owner_id as string;
     const type = String(req.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
     const file = req.body;
     if (type !== "image/jpeg" || !Buffer.isBuffer(file) || !IMAGE_TYPES["image/jpeg"](file))
@@ -994,11 +1221,15 @@ router.post(
     } catch (error) {
       return bad(res, error);
     }
-    const owner = me(req).id;
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) return notFound(res, "That horse");
+    const author = me(req).id;
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse, role } = found;
+    const owner = horse.owner_id as string;
     let audience = await shareAudience(owner, horse.visibility);
     if (!audience) {
+      if (role !== "lead")
+        return res.status(409).json({ error: "Only the owners can see this horse. Ask the lead owner to make it visible to share it.", code: "horse_private" });
       if (!input.makeVisible)
         return res.status(409).json({ error: "Only you can see this horse. Make it visible to share it.", code: "horse_private" });
       const { error } = await supabase
@@ -1012,18 +1243,77 @@ router.post(
     const visibility = audience === "followers" ? "followers" : input.visibility;
     const { data: post, error } = await supabase
       .from("community_posts")
-      .insert({ author_id: owner, kind: "horse_share", body: input.body, horse_id: horse.id, visibility })
+      .insert({ author_id: author, kind: "horse_share", body: input.body, horse_id: horse.id, visibility })
       .select("id")
       .single();
     if (error || !post) return unavailable(res, error);
-    const view = await visiblePost(owner, post.id).catch(() => null);
+    const view = await visiblePost(author, post.id).catch(() => null);
     res.status(201).json({ post: view });
   }),
 );
 
 /* ----- Race records ----- */
 
-const RECORD_COLUMNS = "id,horse_id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes";
+const RECORD_COLUMNS = "id,horse_id,race_date,track,race_name,distance,surface,finish,field_size,earnings_cents,notes,formfav_ref";
+
+/** A race record this member may edit (as an owner of its horse), with its horse and whether it's linked to race data. */
+async function editableRecord(id: string, viewer: string) {
+  const { data, error } = await supabase.from("owner_horse_records").select(RECORD_COLUMNS).eq("id", id).maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const found = await editableHorse(data.horse_id, viewer);
+  if (!found) return null;
+  return { record: data, horse: found.horse, role: found.role, linked: !!found.horse.formfav_key };
+}
+
+async function statsOf(horse: any) {
+  const stats = await loadStats([horse.id]);
+  return horseView(horse, stats.get(horse.id), { mine: true, showEarnings: true }).stats;
+}
+
+/** Adds a race record, and shares it to the Feed when asked. Null on a database error. */
+async function addRecord(horse: any, input: Record<string, unknown>, author: string, share: boolean, shareText: string) {
+  const { data, error } = await supabase
+    .from("owner_horse_records")
+    .insert({ ...input, horse_id: horse.id, owner_id: horse.owner_id })
+    .select(RECORD_COLUMNS)
+    .single();
+  if (error || !data) return null;
+  let shared = false;
+  if (share) {
+    const audience = await shareAudience(horse.owner_id, horse.visibility);
+    if (audience) {
+      const { data: profile } = await supabase.from("community_profiles").select("show_earnings").eq("user_id", horse.owner_id).maybeSingle();
+      const showEarnings = profile?.show_earnings ?? true;
+      await sharePost({
+        author_id: author,
+        kind: data.finish === 1 ? "achievement" : "result",
+        body: shareText.trim().slice(0, 2000),
+        horse_id: horse.id,
+        visibility: audience,
+        result: {
+          raceDate: data.race_date,
+          track: data.track,
+          raceName: data.race_name,
+          distance: data.distance,
+          surface: data.surface,
+          finish: data.finish,
+          fieldSize: data.field_size,
+          ...(showEarnings ? { earningsCents: Number(data.earnings_cents) } : {}),
+        },
+      }).catch(() => undefined);
+      shared = true;
+    }
+  }
+  return { record: data, shared };
+}
+
+/** A race from race data keeps its race details while the horse is linked; its notes and earnings are the owners'. */
+function recordUpdate(record: any, linked: boolean, input: Record<string, unknown>) {
+  return record.formfav_ref && linked ? { notes: input.notes, earnings_cents: input.earnings_cents } : input;
+}
+
+const raceWords = (r: any) => [r.track, r.race_date].filter(Boolean).join(" · ");
 
 router.post(
   "/horses/:id/records",
@@ -1034,91 +1324,595 @@ router.post(
     } catch (error) {
       return bad(res, error);
     }
-    const owner = me(req).id;
-    const horse = await ownHorse(req.params.id, owner);
-    if (!horse) return notFound(res, "That horse");
-    const { data, error } = await supabase
-      .from("owner_horse_records")
-      .insert({ ...input, horse_id: horse.id, owner_id: owner })
-      .select(RECORD_COLUMNS)
-      .single();
-    if (error || !data) return unavailable(res, error);
-    let shared = false;
-    if (req.body?.share === true) {
-      const audience = await shareAudience(owner, horse.visibility);
-      if (audience) {
-        const { data: profile } = await supabase.from("community_profiles").select("show_earnings").eq("user_id", owner).maybeSingle();
-        const showEarnings = profile?.show_earnings ?? true;
-        const note = typeof req.body.shareText === "string" ? req.body.shareText.trim().slice(0, 2000) : "";
-        await sharePost({
-          author_id: owner,
-          kind: data.finish === 1 ? "achievement" : "result",
-          body: note,
-          horse_id: horse.id,
-          visibility: audience,
-          result: {
-            raceDate: data.race_date,
-            track: data.track,
-            raceName: data.race_name,
-            distance: data.distance,
-            surface: data.surface,
-            finish: data.finish,
-            fieldSize: data.field_size,
-            ...(showEarnings ? { earningsCents: Number(data.earnings_cents) } : {}),
-          },
-        }).catch(() => undefined);
-        shared = true;
-      }
+    const viewer = me(req).id;
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse, role } = found;
+    const share = req.body?.share === true;
+    const shareText = typeof req.body?.shareText === "string" ? req.body.shareText : "";
+    if (role === "coowner" && horse.require_approval) {
+      const change = await proposeChange(horse, viewer, "record_add", null, { input, share, shareText });
+      if (!change) return unavailable(res);
+      return res.status(202).json({ pending: change });
     }
-    const stats = await loadStats([horse.id]);
-    res.status(201).json({ record: recordView(data, true), stats: horseView(horse, stats.get(horse.id), { mine: true, showEarnings: true }).stats, shared });
+    const added = await addRecord(horse, input, viewer, share, shareText);
+    if (!added) return unavailable(res);
+    tellOwners(horse, viewer, `New race for ${clipName(horse.name)}`, raceWords(added.record) || "A race was added.");
+    res.status(201).json({ record: recordView(added.record, true), stats: await statsOf(horse), shared: added.shared });
   }),
 );
 
 router.patch(
   "/records/:id",
   asyncRoute(async (req, res) => {
-    let input;
+    const viewer = me(req).id;
+    let found;
+    try {
+      found = await editableRecord(req.params.id, viewer);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!found) return notFound(res, "That race record");
+    let input: Record<string, unknown>;
     try {
       input = recordInput(req.body ?? {});
     } catch (error) {
       return bad(res, error);
     }
-    const owner = me(req).id;
+    const update = recordUpdate(found.record, found.linked, input);
+    if (found.role === "coowner" && found.horse.require_approval) {
+      await supabase
+        .from("owner_horse_changes")
+        .update({ status: "withdrawn", decided_at: new Date().toISOString() })
+        .eq("horse_id", found.horse.id)
+        .eq("proposed_by", viewer)
+        .eq("kind", "record_update")
+        .eq("target_id", found.record.id)
+        .eq("status", "pending");
+      const change = await proposeChange(found.horse, viewer, "record_update", found.record.id, { input: update });
+      if (!change) return unavailable(res);
+      return res.status(202).json({ pending: change });
+    }
     const { data, error } = await supabase
       .from("owner_horse_records")
-      .update({ ...input, updated_at: new Date().toISOString() })
+      .update({ ...update, updated_at: new Date().toISOString() })
       .eq("id", req.params.id)
-      .eq("owner_id", owner)
+      .eq("horse_id", found.horse.id)
       .select(RECORD_COLUMNS)
       .maybeSingle();
     if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That race record");
-    const horse = await ownHorse(data.horse_id, owner);
-    const stats = await loadStats([data.horse_id]);
-    res.json({
-      record: recordView(data, true),
-      stats: horse ? horseView(horse, stats.get(data.horse_id), { mine: true, showEarnings: true }).stats : null,
-    });
+    tellOwners(found.horse, viewer, `${clipName(found.horse.name)}: race updated`, raceWords(data) || "A race record was changed.", undefined, true);
+    res.json({ record: recordView(data, true), stats: await statsOf(found.horse) });
   }),
 );
 
 router.post(
   "/records/:id/remove",
   asyncRoute(async (req, res) => {
-    const owner = me(req).id;
+    const viewer = me(req).id;
+    let found;
+    try {
+      found = await editableRecord(req.params.id, viewer);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!found) return notFound(res, "That race record");
+    if (found.record.formfav_ref && found.linked)
+      return res.status(409).json({ error: "This race comes from race data. Unlink the horse to remove it.", code: "from_race_data" });
+    if (found.role === "coowner" && found.horse.require_approval) {
+      const change = await proposeChange(found.horse, viewer, "record_remove", found.record.id, {});
+      if (!change) return unavailable(res);
+      return res.status(202).json({ pending: change });
+    }
     const { data, error } = await supabase
       .from("owner_horse_records")
       .delete()
       .eq("id", req.params.id)
-      .eq("owner_id", owner)
+      .eq("horse_id", found.horse.id)
       .select("horse_id")
       .maybeSingle();
     if (error) return unavailable(res, error);
     if (!data) return notFound(res, "That race record");
-    const horse = await ownHorse(data.horse_id, owner);
-    const stats = await loadStats([data.horse_id]);
-    res.json({ ok: true, stats: horse ? horseView(horse, stats.get(data.horse_id), { mine: true, showEarnings: true }).stats : null });
+    tellOwners(found.horse, viewer, `${clipName(found.horse.name)}: race removed`, raceWords(found.record) || "A race record was removed.");
+    res.json({ ok: true, stats: await statsOf(found.horse) });
+  }),
+);
+
+/* ============================== Co-owners (My racing → My horses) ============================== */
+
+/**
+ * A horse has one lead owner (who added it) and any number of co-owners, invited from My horses. Every owner sees
+ * and edits the same horse, so changes and race-data updates reach them all. With "changes need approval" on, a
+ * co-owner's edits to details and race records wait (owner_horse_changes) until another owner accepts them.
+ * Migration 202611250001_horse_coowners.sql.
+ */
+const MAX_COOWNERS = 20;
+
+/** Horse columns a co-owner can propose changes to, with the name the browser uses. */
+const DETAIL_FIELDS: Record<string, string> = {
+  name: "name",
+  breed: "breed",
+  sex: "sex",
+  foaled_year: "foaledYear",
+  color: "color",
+  sire: "sire",
+  dam: "dam",
+  status: "status",
+  trainer: "trainer",
+  location: "location",
+  description: "description",
+};
+
+/** The detail columns `update` would change. */
+function changedFields(current: any, update: Record<string, unknown>) {
+  const out: Record<string, unknown> = {};
+  for (const column of Object.keys(DETAIL_FIELDS))
+    if (column in update && (update[column] ?? null) !== (current[column] ?? null)) out[column] = update[column];
+  return out;
+}
+
+/** Writes horse details (race-data columns stay while linked). The saved row, or null on a database error. */
+async function applyDetails(horse: any, fields: Record<string, unknown>) {
+  const update: Record<string, unknown> = { ...fields };
+  if (horse.formfav_key) for (const column of LOCKED_COLUMNS) delete update[column];
+  const { data, error } = await supabase
+    .from("owner_horses")
+    .update({ ...update, updated_at: new Date().toISOString() })
+    .eq("id", horse.id)
+    .select(HORSE_COLUMNS)
+    .maybeSingle();
+  if (error) console.error("[community] horse update failed:", error.code, error.message);
+  return error ? null : data;
+}
+
+const CHANGE_WORDS: Record<string, string> = {
+  details: "Details",
+  record_add: "New race",
+  record_update: "Race change",
+  record_remove: "Remove a race",
+};
+
+/** Saves a co-owner's change for approval and tells the other owners. */
+async function proposeChange(horse: any, proposer: string, kind: string, targetId: string | null, payload: Record<string, unknown>) {
+  const { data, error } = await supabase
+    .from("owner_horse_changes")
+    .insert({ horse_id: horse.id, proposed_by: proposer, kind, target_id: targetId, payload })
+    .select("id,kind,created_at")
+    .single();
+  if (error || !data) return null;
+  tellOwners(
+    horse,
+    proposer,
+    `${clipName(horse.name)}: change to approve`,
+    `${CHANGE_WORDS[kind] ?? "A change"} is waiting for your OK.`,
+    horseLink(horse.id, "owners"),
+  );
+  return { id: data.id, kind: data.kind, createdAt: data.created_at };
+}
+
+async function changeViews(horse: any, rows: any[], viewer: string) {
+  const people = [...new Set(rows.map((r) => r.proposed_by as string))];
+  const targets = [...new Set(rows.map((r) => r.target_id).filter(Boolean) as string[])];
+  const [accounts, records] = await Promise.all([
+    people.length ? supabase.from("accounts").select("id,first_name,last_name").in("id", people) : Promise.resolve({ data: [], error: null }),
+    targets.length
+      ? supabase.from("owner_horse_records").select(RECORD_COLUMNS).in("id", targets)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (accounts.error || records.error) throw accounts.error ?? records.error;
+  const names = new Map((accounts.data ?? []).map((a: any) => [a.id, `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || "Stayblz member"]));
+  const byId = new Map((records.data ?? []).map((r: any) => [r.id, r]));
+  return rows.map((r) => {
+    const target = r.target_id ? byId.get(r.target_id) : null;
+    return {
+      id: r.id,
+      kind: r.kind,
+      createdAt: r.created_at,
+      mine: r.proposed_by === viewer,
+      proposedBy: { id: r.proposed_by, name: names.get(r.proposed_by) ?? "Stayblz member" },
+      fields:
+        r.kind === "details"
+          ? Object.entries((r.payload?.fields ?? {}) as Record<string, unknown>)
+              .filter(([column]) => column in DETAIL_FIELDS)
+              .map(([column, to]) => ({ field: DETAIL_FIELDS[column], from: horse[column] ?? null, to: to ?? null }))
+          : undefined,
+      record: target ? recordView(target, true) : null,
+      proposed: r.payload?.input ? recordView(r.payload.input, true) : null,
+    };
+  });
+}
+
+async function ownersView(horse: any, viewer: string) {
+  return (await loadOwners(horse)).map((o) => ({ ...o, me: o.id === viewer }));
+}
+
+function shareInput(v: unknown): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v !== "number" || !Number.isInteger(v) || v < 1 || v > 10000) throw new InputError("Enter a share between 0.01% and 100%.");
+  return v;
+}
+
+/** GET /horses/:id/owners — the lead owner, co-owners and invites (owners only). */
+router.get(
+  "/horses/:id/owners",
+  asyncRoute(async (req, res) => {
+    const found = await editable(req, res);
+    if (!found) return;
+    try {
+      res.json({ owners: await ownersView(found.horse, me(req).id), role: found.role, requireApproval: !!found.horse.require_approval });
+    } catch (err) {
+      unavailable(res, err as DbError);
+    }
+  }),
+);
+
+/** POST /horses/:id/owners {accountId, shareBps?} — the lead owner invites a member to co-own the horse. */
+router.post(
+  "/horses/:id/owners",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const accountId = req.body?.accountId;
+    if (!isUuid(accountId)) return res.status(400).json({ error: "Choose a member to invite." });
+    let shareBps;
+    try {
+      shareBps = shareInput(req.body?.shareBps);
+    } catch (error) {
+      return bad(res, error);
+    }
+    const horse = await leadOnly(req, res, "invite co-owners");
+    if (!horse) return;
+    if (accountId === viewer) return res.status(400).json({ error: "You already own this horse." });
+    if (!(await accountActive(accountId))) return notFound(res, "That member");
+    const { count, error: countError } = await supabase
+      .from("owner_horse_members")
+      .select("account_id", { count: "exact", head: true })
+      .eq("horse_id", horse.id);
+    if (countError) return unavailable(res, countError);
+    if ((count ?? 0) >= MAX_COOWNERS) return res.status(409).json({ error: `A horse can have up to ${MAX_COOWNERS} co-owners.` });
+    const { error } = await supabase
+      .from("owner_horse_members")
+      .insert({ horse_id: horse.id, account_id: accountId, status: "pending", share_bps: shareBps, invited_by: viewer });
+    if (error) {
+      if (error.code === "23505") return res.status(409).json({ error: "That member already owns this horse or has been invited." });
+      return unavailable(res, error);
+    }
+    horseAlert([accountId], viewer, horse.id, {
+      title: `Co-own ${clipName(horse.name)}?`,
+      body: "You've been invited to co-own this horse. Accept or decline in My horses.",
+      link: "/account/horses#invites",
+    });
+    try {
+      res.status(201).json({ owners: await ownersView(horse, viewer) });
+    } catch (err) {
+      unavailable(res, err as DbError);
+    }
+  }),
+);
+
+/** PATCH /horses/:id/owners/:account {shareBps} — the lead owner sets an owner's share (only owners see shares). */
+router.patch(
+  "/horses/:id/owners/:account",
+  asyncRoute(async (req, res) => {
+    let shareBps;
+    try {
+      shareBps = shareInput(req.body?.shareBps);
+    } catch (error) {
+      return bad(res, error);
+    }
+    const horse = await leadOnly(req, res, "change ownership shares");
+    if (!horse) return;
+    const account = req.params.account;
+    let owners;
+    try {
+      owners = await loadOwners(horse);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!owners.some((o) => o.id === account)) return notFound(res, "That owner");
+    const others = owners.filter((o) => o.id !== account).reduce((sum, o) => sum + (o.shareBps ?? 0), 0);
+    if (others + (shareBps ?? 0) > 10000) return res.status(400).json({ error: "Shares can't add up to more than 100%." });
+    const { error } =
+      account === horse.owner_id
+        ? await supabase.from("owner_horses").update({ owner_share_bps: shareBps }).eq("id", horse.id)
+        : await supabase.from("owner_horse_members").update({ share_bps: shareBps }).eq("horse_id", horse.id).eq("account_id", account);
+    if (error) return unavailable(res, error);
+    try {
+      res.json({ owners: await ownersView({ ...horse, owner_share_bps: account === horse.owner_id ? shareBps : horse.owner_share_bps }, me(req).id) });
+    } catch (err) {
+      unavailable(res, err as DbError);
+    }
+  }),
+);
+
+/** POST /horses/:id/owners/:account/remove — the lead owner removes a co-owner (or cancels an invite); a co-owner leaves. */
+router.post(
+  "/horses/:id/owners/:account/remove",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const account = req.params.account;
+    const found = await editable(req, res);
+    if (!found) return;
+    const { horse, role } = found;
+    if (account === horse.owner_id) return res.status(400).json({ error: "The lead owner can't be removed." });
+    const leaving = account === viewer;
+    if (!leaving && role !== "lead") return res.status(403).json({ error: "Only the lead owner can remove co-owners.", code: "lead_only" });
+    const { data, error } = await supabase
+      .from("owner_horse_members")
+      .delete()
+      .eq("horse_id", horse.id)
+      .eq("account_id", account)
+      .select("status")
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!data) return notFound(res, "That owner");
+    await supabase
+      .from("owner_horse_changes")
+      .update({ status: "withdrawn", decided_at: new Date().toISOString() })
+      .eq("horse_id", horse.id)
+      .eq("proposed_by", account)
+      .eq("status", "pending");
+    if (leaving) tellOwners(horse, viewer, `${clipName(horse.name)}: a co-owner left`, "They no longer co-own this horse.", horseLink(horse.id, "owners"));
+    else if (data.status === "accepted")
+      horseAlert([account], viewer, horse.id, {
+        title: `${clipName(horse.name)}`,
+        body: "You're no longer a co-owner of this horse.",
+        link: "/account/horses",
+      });
+    if (leaving) return res.json({ ok: true });
+    try {
+      res.json({ owners: await ownersView(horse, viewer) });
+    } catch (err) {
+      unavailable(res, err as DbError);
+    }
+  }),
+);
+
+/** PATCH /horses/:id/approval {requireApproval} — the lead owner chooses whether co-owners' edits need approval. */
+router.patch(
+  "/horses/:id/approval",
+  asyncRoute(async (req, res) => {
+    const on = req.body?.requireApproval;
+    if (typeof on !== "boolean") return res.status(400).json({ error: "Choose on or off." });
+    const horse = await leadOnly(req, res, "change who approves edits");
+    if (!horse) return;
+    const { error } = await supabase.from("owner_horses").update({ require_approval: on }).eq("id", horse.id);
+    if (error) return unavailable(res, error);
+    if (on !== !!horse.require_approval)
+      tellOwners(
+        horse,
+        me(req).id,
+        `${clipName(horse.name)}: ${on ? "edits need approval" : "edits go straight in"}`,
+        on ? "Co-owners' changes now wait for another owner to accept them." : "Co-owners' changes now show straight away.",
+        horseLink(horse.id, "owners"),
+      );
+    res.json({ requireApproval: on });
+  }),
+);
+
+/** GET /horse-invites — horses this member has been invited to co-own. */
+router.get(
+  "/horse-invites",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const { data: rows, error } = await supabase
+      .from("owner_horse_members")
+      .select("horse_id,share_bps,invited_by,invited_at")
+      .eq("account_id", viewer)
+      .eq("status", "pending")
+      .order("invited_at", { ascending: false })
+      .limit(50);
+    if (error) return unavailable(res, error);
+    const ids = (rows ?? []).map((r) => r.horse_id as string);
+    if (!ids.length) return res.json({ invites: [] });
+    const { data: horses, error: horsesError } = await supabase.from("owner_horses").select("id,name,breed,owner_id,cover_image_id").in("id", ids);
+    if (horsesError) return unavailable(res, horsesError);
+    const leads = [...new Set((horses ?? []).map((h) => h.owner_id as string))];
+    const { data: accounts, error: accountsError } = await supabase
+      .from("accounts")
+      .select("id,first_name,last_name,status")
+      .in("id", leads);
+    if (accountsError) return unavailable(res, accountsError);
+    const lead = new Map((accounts ?? []).map((a) => [a.id, a]));
+    const byId = new Map((horses ?? []).map((h) => [h.id, h]));
+    res.json({
+      invites: (rows ?? []).flatMap((r) => {
+        const h = byId.get(r.horse_id);
+        const a = h && lead.get(h.owner_id);
+        if (!h || !a || a.status !== "active") return [];
+        return [
+          {
+            horse: { id: h.id, name: h.name, breed: h.breed, coverImageId: h.cover_image_id },
+            invitedBy: { id: a.id, name: `${a.first_name ?? ""} ${a.last_name ?? ""}`.trim() || "Stayblz member" },
+            invitedAt: r.invited_at,
+            shareBps: r.share_bps ?? null,
+          },
+        ];
+      }),
+    });
+  }),
+);
+
+/** POST /horse-invites/:id/accept — become a co-owner (`:id` is the horse). */
+router.post(
+  "/horse-invites/:id/accept",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const { data, error } = await supabase
+      .from("owner_horse_members")
+      .update({ status: "accepted", accepted_at: new Date().toISOString() })
+      .eq("horse_id", req.params.id)
+      .eq("account_id", viewer)
+      .eq("status", "pending")
+      .select("horse_id")
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!data) return notFound(res, "That invitation");
+    let horse;
+    try {
+      horse = await loadCommunityHorse(viewer, req.params.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    if (!horse) return notFound(res, "That horse");
+    tellOwners(
+      { id: horse.id, owner_id: horse.ownerId, name: horse.name },
+      viewer,
+      `New co-owner of ${clipName(horse.name)}`,
+      "An invitation to co-own this horse was accepted.",
+      horseLink(horse.id, "owners"),
+    );
+    res.json({ horse });
+  }),
+);
+
+/** POST /horse-invites/:id/decline */
+router.post(
+  "/horse-invites/:id/decline",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const { data, error } = await supabase
+      .from("owner_horse_members")
+      .delete()
+      .eq("horse_id", req.params.id)
+      .eq("account_id", viewer)
+      .eq("status", "pending")
+      .select("horse_id,invited_by")
+      .maybeSingle();
+    if (error) return unavailable(res, error);
+    if (!data) return notFound(res, "That invitation");
+    const { data: horse } = await supabase.from("owner_horses").select("id,name,owner_id").eq("id", req.params.id).maybeSingle();
+    if (horse)
+      horseAlert([horse.owner_id], viewer, horse.id, {
+        title: `${clipName(horse.name)}: invitation declined`,
+        body: "Your invitation to co-own this horse was declined.",
+        link: horseLink(horse.id, "owners"),
+      });
+    res.json({ ok: true });
+  }),
+);
+
+/** GET /horses/:id/changes — co-owners' changes waiting for approval (owners only). */
+router.get(
+  "/horses/:id/changes",
+  asyncRoute(async (req, res) => {
+    const found = await editable(req, res);
+    if (!found) return;
+    const { data, error } = await supabase
+      .from("owner_horse_changes")
+      .select("id,kind,target_id,payload,proposed_by,created_at")
+      .eq("horse_id", found.horse.id)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) return unavailable(res, error);
+    try {
+      res.json({ changes: await changeViews(found.horse, data ?? [], me(req).id) });
+    } catch (err) {
+      unavailable(res, err as DbError);
+    }
+  }),
+);
+
+/** A pending change and the viewer's access to its horse (answers 404/409 itself otherwise). */
+async function openChange(req: Request, res: Response) {
+  const viewer = me(req).id;
+  const { data: change, error } = await supabase.from("owner_horse_changes").select("*").eq("id", req.params.change).maybeSingle();
+  if (error) return void unavailable(res, error);
+  const found = change ? await editableHorse(change.horse_id, viewer).catch(() => null) : null;
+  if (!change || !found) return void notFound(res, "That change");
+  if (change.status !== "pending") return void res.status(409).json({ error: "This change has already been answered.", code: "answered" });
+  return { change, horse: found.horse };
+}
+
+/** Marks a change answered, once: false when someone else answered it first. */
+async function claimChange(id: string, status: string, viewer: string) {
+  const { data } = await supabase
+    .from("owner_horse_changes")
+    .update({ status, decided_by: viewer, decided_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+  return !!data;
+}
+
+/** POST /changes/:change/accept — another owner accepts a co-owner's change, which is then made. */
+router.post(
+  "/changes/:change/accept",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const open = await openChange(req, res);
+    if (!open) return;
+    const { change, horse } = open;
+    if (change.proposed_by === viewer) return res.status(403).json({ error: "Another owner needs to accept your change." });
+    if (!(await claimChange(change.id, "accepted", viewer)))
+      return res.status(409).json({ error: "This change has already been answered.", code: "answered" });
+    const payload = change.payload ?? {};
+    const gone = async () => {
+      await supabase.from("owner_horse_changes").update({ status: "withdrawn" }).eq("id", change.id);
+      res.status(409).json({ error: "That race record no longer exists, so the change couldn't be made.", code: "gone" });
+    };
+    if (change.kind === "details") {
+      if (!(await applyDetails(horse, payload.fields ?? {}))) return unavailable(res);
+    } else if (change.kind === "record_add") {
+      if (!(await addRecord(horse, payload.input ?? {}, change.proposed_by, payload.share === true, String(payload.shareText ?? ""))))
+        return unavailable(res);
+    } else {
+      const { data: record, error } = await supabase
+        .from("owner_horse_records")
+        .select(RECORD_COLUMNS)
+        .eq("id", change.target_id)
+        .eq("horse_id", horse.id)
+        .maybeSingle();
+      if (error) return unavailable(res, error);
+      if (!record) return gone();
+      const linked = !!horse.formfav_key;
+      if (change.kind === "record_update") {
+        const { error: saveError } = await supabase
+          .from("owner_horse_records")
+          .update({ ...recordUpdate(record, linked, payload.input ?? {}), updated_at: new Date().toISOString() })
+          .eq("id", record.id);
+        if (saveError) return unavailable(res, saveError);
+      } else {
+        if (record.formfav_ref && linked) return gone();
+        const { error: removeError } = await supabase.from("owner_horse_records").delete().eq("id", record.id);
+        if (removeError) return unavailable(res, removeError);
+      }
+    }
+    horseAlert([change.proposed_by], viewer, horse.id, {
+      title: `${clipName(horse.name)}: change accepted`,
+      body: `${CHANGE_WORDS[change.kind] ?? "Your change"} is now on the horse's profile.`,
+      link: `/community/horses/${horse.id}`,
+    });
+    let fresh;
+    try {
+      fresh = await loadCommunityHorse(viewer, horse.id);
+    } catch (err) {
+      return unavailable(res, err as DbError);
+    }
+    res.json({ ok: true, horse: fresh });
+  }),
+);
+
+/** POST /changes/:change/decline — another owner declines it; the co-owner who proposed it withdraws it. */
+router.post(
+  "/changes/:change/decline",
+  asyncRoute(async (req, res) => {
+    const viewer = me(req).id;
+    const open = await openChange(req, res);
+    if (!open) return;
+    const { change, horse } = open;
+    const withdraw = change.proposed_by === viewer;
+    if (!(await claimChange(change.id, withdraw ? "withdrawn" : "declined", viewer)))
+      return res.status(409).json({ error: "This change has already been answered.", code: "answered" });
+    if (!withdraw)
+      horseAlert([change.proposed_by], viewer, horse.id, {
+        title: `${clipName(horse.name)}: change declined`,
+        body: `${CHANGE_WORDS[change.kind] ?? "Your change"} wasn't accepted.`,
+        link: horseLink(horse.id, "owners"),
+      });
+    res.json({ ok: true });
   }),
 );
 
@@ -1136,7 +1930,7 @@ router.get(
     const tables = [
       "community_profiles", "owner_horses", "owner_horse_images", "owner_horse_records",
       "community_follows", "community_posts", "community_post_images", "community_likes",
-      "community_comments", "owner_horse_stats",
+      "community_comments", "owner_horse_stats", "owner_horse_members", "owner_horse_changes",
     ];
     const describe = (error: DbError) => (error ? `${error.code ?? "?"} ${error.message ?? ""}`.trim() : "ok");
     const checks: { name: string; ok: boolean; detail: string }[] = [];
@@ -1340,7 +2134,7 @@ router.post(
     const user = me(req);
     if (input.kind === "announcement" && roleRank(user.role) < roleRank("admin"))
       return res.status(403).json({ error: "Only Stayblz staff can post announcements." });
-    if (input.horse_id && !(await ownHorse(input.horse_id, user.id)))
+    if (input.horse_id && !(await editableHorse(input.horse_id, user.id)))
       return res.status(400).json({ error: "You can only tag your own horses." });
     if (input.imageIds.length) {
       const { data: pending, error } = await supabase
@@ -1558,8 +2352,8 @@ async function visibleHorseMedia(req: Request, res: Response) {
   if (!horse) return void notFound(res, "That photo");
   if (viewer !== horse.owner_id) {
     if (!(await accountActive(horse.owner_id))) return void notFound(res, "That photo");
-    const ctx = await ownerContext(viewer, horse.owner_id);
-    if (!canSeeHorse(viewer, horse, ctx)) return void notFound(res, "That photo");
+    const [ctx, role] = await Promise.all([ownerContext(viewer, horse.owner_id), horseRole({ id: image.horse_id, owner_id: horse.owner_id }, viewer)]);
+    if (!canSeeHorse(viewer, horse, ctx, role === "coowner")) return void notFound(res, "That photo");
   }
   return image;
 }

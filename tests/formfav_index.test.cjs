@@ -53,6 +53,15 @@ function fakeFormFav(url) {
     else if (p.track === 'mohawk') placings = [runner('Pacer Uno', 'Doug McNair', 'Richard Moreau', 1)];
     return reply(200, { date: p.date, track: p.track, races: [{ raceNumber: 1, raceName: 'R1 ' + p.track, startTime: p.date + 'T20:00:00Z', resultStatus: status, abandoned: false, placings }] });
   }
+  // Stats for people and tracks (FormFav's are worldwide; Stayblz shows only those in the US/Canada window).
+  const path = decodeURIComponent(u.pathname);
+  if (path === '/v1/stats/jockey/search')
+    return reply(200, { query: p.q, results: [{ name: 'Joel Rosario', totalStarts: 900 }, { name: 'James McDonald', totalStarts: 3874 }] });
+  if (path === '/v1/stats/jockey/Joel Rosario' || path === '/v1/stats/jockey/James McDonald')
+    return reply(200, { jockeyName: path.split('/').pop(), totalStarts: 900, totalWins: 200, trackStats: [{ venue: 'Del Mar', totalStarts: 80 }], conditionStats: [] });
+  if (path === '/v1/stats/trainer/Bob Baffert') return reply(200, { trainerName: 'Bob Baffert', totalStarts: 500, trackStats: [], conditionStats: [] });
+  if (path === '/v1/stats/track-bias/del-mar' || path === '/v1/stats/track-bias/ballina')
+    return reply(200, { venue: path.split('/').pop(), totalRaces: 100, strongestBarrier: 1, barrierStats: [], distanceStats: [] });
   return reply(404, { detail: 'Not Found' });
 }
 
@@ -161,7 +170,7 @@ test('one horse: every start and entry, newest first; unknown horse is 404', asy
   assert.equal(h.history.length, WINDOW.length);
   assert.equal(h.history[0].date, '2026-11-26');
   assert.equal(h.history.at(-1).date, '2026-10-26');
-  assert.deepEqual(Object.keys(h.history[0]).sort(), ['code', 'country', 'date', 'jockey', 'position', 'raceName', 'raceNumber', 'scratched', 'slug', 'startTime', 'status', 'timezone', 'track', 'trainer']);
+  assert.deepEqual(Object.keys(h.history[0]).sort(), ['code', 'country', 'date', 'distance', 'fieldSize', 'jockey', 'position', 'raceName', 'raceNumber', 'scratched', 'slug', 'startTime', 'status', 'timezone', 'track', 'trainer']);
   assert.equal((await json('/horse?name=Nobody&code=gallops', 404)).error, 'Not found.');
   assert.equal((await json('/horse?name=Pacer%20Uno&code=gallops', 404)).error, 'Not found.');
 });
@@ -232,4 +241,17 @@ test('bad list requests are 400', async () => {
   for (const p of ['/horses?limit=0', '/horses?limit=51', '/horses?offset=-1', '/horses?offset=abc', '/horses?codes=greyhounds', '/horses?countries=au',
     '/horses?q=a&q=b', '/people', '/people?kind=owner', '/horse?name=Zephyr', '/horse?code=gallops', '/horse?name=Zephyr&code=camels'])
     assert.equal((await json(p, 400)).error, 'Invalid FormFav request.', p);
+});
+
+test('jockey, trainer and track stats only for people and tracks in the US/Canada window', async () => {
+  assert.equal((await json('/jockey/' + encodeURIComponent('Joel Rosario'), 503)).error, "FormFav data isn't available right now.", 'while the first build runs');
+  await index.indexSettled();
+  assert.equal((await json('/jockey/' + encodeURIComponent('Joel Rosario'))).name, 'Joel Rosario');
+  assert.equal((await json('/jockey/' + encodeURIComponent('James McDonald'), 404)).error, 'Not found.', 'rides outside North America only');
+  assert.equal((await json('/trainer/' + encodeURIComponent('Bob Baffert'))).name, 'Bob Baffert');
+  assert.deepEqual((await json('/search?kind=jockey&q=jam')).results.map((r) => r.name), ['Joel Rosario']);
+  assert.equal((await json('/track-bias/del-mar')).venue, 'del-mar');
+  const bias = calls.find((c) => c.startsWith('/v1/stats/track-bias/del-mar'));
+  assert.ok(bias, 'asked FormFav');
+  assert.equal((await json('/track-bias/ballina', 404)).error, 'Not found.', 'an Australian track');
 });

@@ -28,6 +28,21 @@ export function setFormFavFetch(fn: Fetcher | null) {
   inflight.clear();
 }
 
+/**
+ * The FormFav quota is shared by every member, so each person gets 60 FormFav-backed requests a minute (cached answers
+ * count too), across Stayblz Data and Virtual Stayblz's Racing horses.
+ */
+const recent = new Map<string, number[]>();
+export function formFavAllowed(id: string) {
+  const now = Date.now();
+  const hits = (recent.get(id) ?? []).filter((t) => now - t < 60_000);
+  if (hits.length >= 60) return false;
+  hits.push(now);
+  recent.set(id, hits);
+  if (recent.size > 5000) recent.delete(recent.keys().next().value as string);
+  return true;
+}
+
 export function formFavKey() {
   if (process.env.NODE_ENV === "test" && !fetcher) return null;
   const key = process.env.FORMFAV_API_KEY?.trim();
@@ -172,6 +187,11 @@ function meetingsOn(w: Where) {
 
 /** Stayblz Data shows North American racing only, by New York or Los Angeles days. */
 export const COUNTRIES = ["us", "ca"] as const;
+/**
+ * Stayblz only shows United States and Canada racing. FormFav writes countries as "us"/"ca" on meetings and as
+ * "USA"/"CAN" on runners; both count, any case.
+ */
+export const isNorthAmerica = (country: unknown) => typeof country === "string" && ["us", "ca", "usa", "can"].includes(country.trim().toLowerCase());
 export const TIMEZONES = ["America/New_York", "America/Los_Angeles"] as const;
 export const RACE_CODES = ["gallops", "harness", "greyhounds"] as const;
 /** Longest range of days one request may cover (days × codes × zones FormFav calls). */
@@ -305,6 +325,9 @@ function results(w: RaceWhere) {
   }));
 }
 
+/** The race card alone (cached like the rest): what lib/formFavSync.ts reads a horse's sex, age and pedigree from. */
+export const raceCard = (w: RaceWhere) => form(w);
+
 /** One race: form (required) plus predictions and results when FormFav has them (else null). */
 export async function race(w: RaceWhere) {
   const [f, p, r] = await Promise.allSettled([form(w), predictions(w), results(w)]);
@@ -326,7 +349,7 @@ export function search(kind: SearchKind, q: string, raceCode?: RaceCode) {
       kind === "runner"
         ? { id: num(x?.runnerId), name: str(x?.name), country: str(x?.country), totalStarts: num(x?.totalStarts), lastRaceDate: str(x?.lastRaceDate), sire: str(x?.sire), dam: str(x?.dam) }
         : { name: str(x?.name), totalStarts: num(x?.totalStarts), ambiguous: bool(x?.isAmbiguous) },
-    ),
+    ).filter((x: any) => kind !== "runner" || isNorthAmerica(x.country)), // FormFav's runner search is worldwide
   }));
 }
 
@@ -354,7 +377,13 @@ function person(kind: "jockey" | "trainer", name: string, raceCode?: RaceCode, w
 export const jockey = (name: string, raceCode?: RaceCode, window?: number) => person("jockey", name, raceCode, window);
 export const trainer = (name: string, raceCode?: RaceCode, window?: number) => person("trainer", name, raceCode, window);
 
-export function runner(id: number, window?: number) {
+/** One runner's career stats; a runner from outside the US and Canada is "not found" here. */
+export async function runner(id: number, window?: number) {
+  const stats = await runnerStats(id, window);
+  if (!isNorthAmerica((stats.runner as any)?.country)) throw new FormFavError(404);
+  return stats;
+}
+function runnerStats(id: number, window?: number) {
   return call(`/stats/runner/${id}`, { window }, 60 * MIN, (b) => ({
     runner: block(b?.runner, 1),
     career: block(b?.career, 1),

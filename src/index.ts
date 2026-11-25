@@ -4,6 +4,7 @@ import { app } from './app';
 import { startRacingSchedule } from './lib/racingFeed/pull';
 import { startBillingSchedule } from './lib/billing/schedule';
 import { startFormFavIndex } from './lib/formFavIndex';
+import { startFormFavSync } from './lib/formFavSync';
 
 const port = Number(process.env.PORT ?? 4000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
@@ -16,5 +17,9 @@ app.listen(port, '0.0.0.0', () => {
   // Renewals, retries, bank clearing and autopay (Stayblz Billing), every minute while awake.
   if (startBillingSchedule()) console.log('Billing schedule on.');
   // Stayblz Data's A–Z horses / jockeys / trainers from FormFav (needs FORMFAV_API_KEY), every 30 min while awake.
-  if (startFormFavIndex()) console.log('FormFav index schedule on.');
+  if (startFormFavIndex()) {
+    console.log('FormFav index schedule on.');
+    // After each refresh: linked horses' details, race logs and alerts (Virtual Stayblz / owned horses).
+    startFormFavSync();
+  }
 });

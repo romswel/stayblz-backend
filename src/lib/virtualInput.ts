@@ -112,3 +112,8 @@ export function virtualEntryInput(body: any) {
   }
   return fields;
 }
+
+/** A race-data log row (formfav_ref) only takes notes; everything else comes from the race. */
+export function entryNotesInput(body: any) {
+  return { notes: opt(body?.notes, 2000, "notes") };
+}

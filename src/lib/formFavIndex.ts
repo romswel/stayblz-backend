@@ -37,6 +37,7 @@ interface Runner {
 interface Race {
   number: number | null;
   name: string | null;
+  distance: string | null;
   startTime: string | null;
   status: string | null;
   abandoned: boolean;
@@ -132,6 +133,7 @@ function toRace(r: any): Race {
   return {
     number: num(r?.raceNumber),
     name: str(r?.raceName),
+    distance: str(r?.distance),
     startTime: str(r?.startTime),
     status: str(r?.resultStatus),
     abandoned: bool(r?.abandoned),
@@ -195,6 +197,7 @@ function parseSaved(body: string, date: string, code: IndexCode): Day | null {
         races: list(m?.races, 30).map((r) => ({
           number: num(r?.number),
           name: str(r?.name),
+          distance: str(r?.distance),
           startTime: str(r?.startTime),
           status: str(r?.status),
           abandoned: bool(r?.abandoned),
@@ -255,10 +258,24 @@ export function refreshIndex(): Promise<void> {
     updatedAt = clock().toISOString();
     run.finishedAt = updatedAt;
     rebuild();
+    for (const fn of [...listeners]) {
+      try {
+        fn();
+      } catch {
+        // a listener's problem never fails the refresh
+      }
+    }
   })().finally(() => {
     running = null;
   });
   return running;
+}
+
+const listeners = new Set<() => void>();
+/** Runs `fn` after every finished refresh (lib/formFavSync.ts). Returns a function that stops it. */
+export function onIndexRefreshed(fn: () => void) {
+  listeners.add(fn);
+  return () => void listeners.delete(fn);
 }
 
 /** For tests and the CLI: wait for the refresh in progress, if any. */
@@ -295,9 +312,13 @@ export interface Start {
   country: string;
   raceNumber: number | null;
   raceName: string | null;
+  /** As FormFav writes it, e.g. "1308m" (null in days saved before it was kept). */
+  distance: string | null;
   startTime: string | null;
   status: string | null;
   position: number | null;
+  /** Runners not scratched. */
+  fieldSize: number | null;
   scratched: boolean;
   jockey: string | null;
   trainer: string | null;
@@ -320,6 +341,8 @@ function emptyDerived() {
 let derived = emptyDerived();
 
 const fold = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
+/** How a race-data horse is keyed everywhere outside this file (virtual_horses.formfav_key, follower counts). */
+export const horseKey = (name: string, code: string) => `${code}|${fold(name)}`;
 const collator = new Intl.Collator("en", { sensitivity: "base", numeric: true });
 const SUFFIX = /^\(?(jr|jnr|sr|snr|ii|iii|iv)\.?\)?$/i;
 /** "Joel Rosario" → "Rosario, Joel"; "Robert Medina Jr." / "Andres Adame (Jnr)" → "Medina, Robert Jr." (for sorting only). */
@@ -355,7 +378,8 @@ function rebuild() {
   };
   for (const day of days.values())
     for (const m of day.meetings)
-      for (const r of m.races)
+      for (const r of m.races) {
+        const fieldSize = r.runners.filter((x) => !x.scratched).length || null;
         for (const p of r.runners) {
           const s: Start = {
             date: day.date,
@@ -366,9 +390,11 @@ function rebuild() {
             country: m.country,
             raceNumber: r.number,
             raceName: r.name,
+            distance: r.distance ?? null,
             startTime: r.startTime,
             status: r.abandoned ? "abandoned" : r.status,
             position: p.position,
+            fieldSize,
             scratched: p.scratched,
             jockey: p.jockey,
             trainer: p.trainer,
@@ -382,6 +408,7 @@ function rebuild() {
             person("trainer", p.trainer, s);
           }
         }
+      }
   const byTime = (a: Start, b: Start) => (b.date + (b.startTime ?? "")).localeCompare(a.date + (a.startTime ?? ""));
   for (const h of horseByKey.values()) h.starts.sort(byTime);
   const horses = [...horseByKey.values()].sort((a, b) => collator.compare(a.name, b.name) || a.code.localeCompare(b.code));
@@ -430,15 +457,52 @@ function horseSummary(h: HorseEntry, today: string) {
   };
 }
 
-export function listHorses(q: ListQuery) {
+/**
+ * Horses A–Z (Stayblz Data), or with `rank` (follower counts by horseKey) the most followed first, then A–Z
+ * (Virtual Stayblz → Racing horses). `only` keeps just those keys. Records carry `followers` when ranked.
+ */
+export function listHorses(q: ListQuery, opts: { rank?: Map<string, number>; only?: Set<string> } = {}) {
   const { today } = span();
   const needle = q.q ? fold(q.q) : "";
-  const rows = derived.horses.filter(
-    (h) => q.codes.includes(h.code) && h.starts.some((s) => q.countries.includes(s.country)) && (!needle || fold(h.name).includes(needle)),
+  let rows = derived.horses.filter(
+    (h) =>
+      q.codes.includes(h.code) &&
+      h.starts.some((s) => q.countries.includes(s.country)) &&
+      (!needle || fold(h.name).includes(needle)) &&
+      (!opts.only || opts.only.has(horseKey(h.name, h.code))),
   );
+  const rank = opts.rank;
+  if (rank) {
+    // Followed horses (few) by count, the rest keep their A–Z order; ties stay A–Z (stable sort).
+    const followed = rows.filter((h) => (rank.get(horseKey(h.name, h.code)) ?? 0) > 0);
+    followed.sort((a, b) => (rank.get(horseKey(b.name, b.code)) ?? 0) - (rank.get(horseKey(a.name, a.code)) ?? 0));
+    rows = [...followed, ...rows.filter((h) => !((rank.get(horseKey(h.name, h.code)) ?? 0) > 0))];
+  }
   const p = page(rows, q.offset, q.limit);
-  return { ...p, records: p.records.map((h) => horseSummary(h, today)), ...indexStatus(), lastRun: undefined };
+  return {
+    ...p,
+    records: p.records.map((h) => ({
+      ...horseSummary(h, today),
+      ...(rank ? { followers: rank.get(horseKey(h.name, h.code)) ?? 0 } : {}),
+    })),
+    ...indexStatus(),
+    lastRun: undefined,
+  };
 }
+
+/** Did this jockey/driver or trainer ride or train in the US/Canada window? (Their FormFav stats are shown only then.) */
+export function knownPerson(kind: "jockey" | "trainer", name: string) {
+  const needle = fold(name);
+  return (kind === "jockey" ? derived.jockeys : derived.trainers).some((p) => fold(p.name) === needle);
+}
+/** Is this a US/Canada track in the window (by FormFav slug)? */
+export function knownTrack(slug: string) {
+  for (const day of days.values()) if (day.meetings.some((m) => m.slug === slug)) return true;
+  return false;
+}
+
+/** New York "today" as the index sees it (its clock can be moved in tests). */
+export const indexToday = () => span().today;
 
 export function getHorse(name: string, code: IndexCode) {
   const h = derived.horseByKey.get(`${fold(name)}|${code}`);
