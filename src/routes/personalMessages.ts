@@ -6,7 +6,7 @@ import { asyncRoute } from "../middleware/asyncRoute";
 import { supabase } from "../lib/supabase";
 import { text } from "../lib/workspace";
 import { presenceParam, touch } from "../lib/presence";
-import { bumpChat, deliveredTo, liveParams, personVersion, waitForPerson } from "../lib/chatLive";
+import { bumpChat, bumpPeople, deliveredTo, liveParams, personVersion, waitForPerson } from "../lib/chatLive";
 import { chatError, chatRoutes, loadThread } from "./chat";
 import chatPeople from "./chatPeople";
 import { notifyPerson } from "../lib/chatAlerts";
@@ -296,6 +296,7 @@ router.post(
     if (error) return chatError(res, error);
     res.json({ ok: true });
     bumpChat("personal", req.params.id);
+    bumpPeople([me]); // one request fewer on your badge, on every device
     // One-to-one: tell the person who wrote first that their request was accepted.
     const others: string[] = Array.isArray(chat?.member_ids) ? chat.member_ids.filter((id: string) => id !== me) : [];
     if (chat?.kind === "direct" && others.length === 1 && (chat.requested_ids ?? []).includes(me))
