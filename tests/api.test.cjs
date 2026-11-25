@@ -57,7 +57,7 @@ test('the whole API has a per-client request ceiling', async () => {
 test('malformed and oversized JSON return safe JSON errors', async () => {
   let res = await fetch(origin + '/api/auth/login', { ...post({}), body: '{' });
   assert.equal(res.status, 400);
-  assert.equal((await res.json()).error, 'Invalid JSON body.');
+  assert.equal((await res.json()).code, 'bad_request');
   res = await fetch(origin + '/api/auth/login', post({ password: 'a'.repeat(40000) }));
   assert.equal(res.status, 413);
 });

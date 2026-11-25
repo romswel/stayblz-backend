@@ -11,6 +11,7 @@ import { chatError, chatRoutes, loadThread } from "./chat";
 import chatPeople from "./chatPeople";
 import { notifyPerson } from "../lib/chatAlerts";
 import chatFolders from "./chatFolders";
+import chatSchedule from "./chatSchedule";
 const router = Router();
 router.use(requireAuth);
 router.use((req, res, next) => {
@@ -303,6 +304,8 @@ router.post(
       void notifyPerson(me, others[0], "request_accepted", req.params.id);
   }),
 );
+// Before chatRoutes: "/scheduled" isn't a chat id.
+router.use("/scheduled", chatSchedule);
 router.use("/people", chatPeople);
 router.use("/folders", chatFolders);
 router.use(chatRoutes("personal"));

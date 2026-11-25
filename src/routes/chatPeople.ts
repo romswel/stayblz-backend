@@ -7,6 +7,7 @@ import { isActive, presenceOf, presenceParam, seenAt, touch } from "../lib/prese
 import { chatError, loadThread } from "./chat";
 import { notifyPerson } from "../lib/chatAlerts";
 import { chatLimits } from "../lib/chatStorage";
+import { hasScheduleAccess } from "../lib/chatSchedule";
 
 /**
  * Stayblz Chat people: find members by name, friends + requests, blocking, and your chat privacy
@@ -221,7 +222,9 @@ router.get(
     const { data, error } = await supabase.rpc("chat_profile_get", { p_user: me(req).id });
     if (error) return fail(res, error);
     // The real file limits right now: 4 MB / 50 MB on Supabase Storage, 25 MB / 500 MB when R2 is set up.
-    res.json({ profile: data, limits: chatLimits() });
+    // `scheduledUpdates` only appears for the few accounts allowed to schedule updates (routes/chatSchedule.ts).
+    const scheduled = await hasScheduleAccess(me(req).id).catch(() => false);
+    res.json({ profile: data, limits: chatLimits(), ...(scheduled ? { scheduledUpdates: true } : {}) });
   }),
 );
 router.post(

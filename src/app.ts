@@ -132,6 +132,44 @@ app.get("/api/db-health", async (_req: Request, res: Response) => {
   }
 });
 
+/**
+ * The /status page: is the API answering, can it reach the database, how long since it started, and an optional
+ * notice from the team (`STATUS_NOTICE`, plain words, e.g. a planned move). The database is checked at most every 10 s.
+ */
+let statusCache: { at: number; database: "ok" | "slow" | "down"; databaseMs: number | null } | null = null;
+app.get("/api/status", async (_req: Request, res: Response) => {
+  res.set("Cache-Control", "no-store");
+  if (!statusCache || Date.now() - statusCache.at > 10_000) {
+    const started = Date.now();
+    let database: "ok" | "slow" | "down" = "down";
+    let databaseMs: number | null = null;
+    try {
+      const check = Promise.resolve(supabase.from("accounts").select("id", { count: "exact", head: true }));
+      const result = await Promise.race([
+        check,
+        new Promise<"timeout">((resolve) => setTimeout(() => resolve("timeout"), 5_000).unref()),
+      ]);
+      if (result !== "timeout" && !result.error) {
+        databaseMs = Date.now() - started;
+        database = databaseMs > 2_000 ? "slow" : "ok";
+      }
+    } catch {
+      /* down */
+    }
+    statusCache = { at: Date.now(), database, databaseMs };
+  }
+  const notice = (process.env.STATUS_NOTICE ?? "").trim().slice(0, 400);
+  res.json({
+    ok: true,
+    server: "up",
+    database: statusCache.database,
+    databaseMs: statusCache.databaseMs,
+    uptimeSeconds: Math.round(process.uptime()),
+    notice: notice || null,
+    time: new Date().toISOString(),
+  });
+});
+
 app.use("/api/auth", authRoutes);
 // Stayblz Stallions: the public directory and pages (before the other public routes), and the signed-in side.
 app.use("/api/public/stallions", publicStallionRoutes);
@@ -178,7 +216,7 @@ app.use("/api/admin/storage", storageRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: "Route not found." });
+  res.status(404).json({ error: "Route not found.", code: "route_not_found" });
 });
 
 const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
@@ -188,13 +226,15 @@ const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
       : error?.type === "entity.parse.failed"
         ? 400
         : 500;
+  if (status === 500 && process.env.NODE_ENV !== "test") console.error("Unhandled API error", error);
   res.status(status).json({
     error:
       status === 413
-        ? "Request body is too large."
+        ? "That's too much to send at once. Try something shorter or smaller."
         : status === 400
-          ? "Invalid JSON body."
-          : "Something went wrong. Please try again.",
+          ? "That request couldn't be read. Reload the page and try again."
+          : "Something went wrong on our side. Please try again.",
+    code: status === 413 ? "too_large" : status === 400 ? "bad_request" : "server_error",
   });
 };
 app.use(errorHandler);
