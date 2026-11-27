@@ -163,6 +163,13 @@ test("a stable list is shared with members only; authors or managers remove thin
   // A horse the owner added can't be removed by a member.
   const bensHorse = (await call(ben, team, { team: stable, body: { source: "manual", name: "Owner Pick" } })).data.horse.id;
   assert.equal((await call(cat, `${team}/${bensHorse}/remove`, { team: stable, body: {} })).status, 403);
+  // Nor its details changed, also once it's linked to race data (only its notes are everyone's).
+  assert.equal((await call(cat, `${team}/${bensHorse}`, { team: stable, method: "PATCH", body: { name: "Renamed" } })).status, 403);
+  await db.query("update virtual_horses set formfav_name='Owner Pick', formfav_code='gallops', formfav_key='gallops|owner pick', formfav_linked_at=now() where id=$1", [bensHorse]);
+  const linkedEdit = await call(cat, `${team}/${bensHorse}`, { team: stable, method: "PATCH", body: { name: "Renamed", location: "Barn 4" } });
+  assert.equal(linkedEdit.status, 403, JSON.stringify(linkedEdit.data));
+  assert.equal((await call(cat, `${team}/${bensHorse}`, { team: stable, method: "PATCH", body: { notes: "Looks fit" } })).status, 200);
+  assert.equal((await call(ben, `${team}/${bensHorse}`, { team: stable, method: "PATCH", body: { location: "Barn 4" } })).status, 200);
   assert.equal((await call(ben, `${team}/${id}/remove`, { team: stable, body: {} })).status, 200);
 });
 

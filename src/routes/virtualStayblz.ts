@@ -548,10 +548,13 @@ export function virtualRouter(mode: Mode) {
       }
       // Linked horses keep the details copied from their source; only the notes are theirs to change.
       if (horse.source !== "manual") input = input.notes === undefined ? {} : { notes: input.notes };
-      // A hand-typed horse linked to race data: what race data keeps up to date stays as it is.
-      else if (horse.formfav_key) for (const column of LOCKED_COLUMNS) delete input[column];
-      else if (Object.keys(input).some((k) => k !== "notes") && !canManage(req, horse.added_by))
-        return res.status(403).json({ error: "Only the person who added this horse, or a stable manager, can change its details." });
+      else {
+        // A hand-typed horse linked to race data: what race data keeps up to date stays as it is.
+        if (horse.formfav_key) for (const column of LOCKED_COLUMNS) delete input[column];
+        // Linked or not, only the person who added it (or a manager) changes more than the notes.
+        if (Object.keys(input).some((k) => k !== "notes") && !canManage(req, horse.added_by))
+          return res.status(403).json({ error: "Only the person who added this horse, or a stable manager, can change its details." });
+      }
       if (!Object.keys(input).length) return res.status(400).json({ error: "Nothing to change." });
       const { data, error } = await scoped(
         supabase.from("virtual_horses").update({ ...input, updated_at: new Date().toISOString() }).eq("id", horse.id),

@@ -769,7 +769,7 @@ router.patch(
 
     const data = await applyDetails(current, update);
     if (!data) return unavailable(res);
-    tellOwners(current, viewer, `${clipName(current.name)} was updated`, "Details changed by a co-owner. Tap to see the horse.", undefined, true);
+    tellOwners(current, viewer, `${clipName(current.name)} was updated`, "Another owner changed its details. Tap to see the horse.", undefined, true);
     res.json({ horse: await view(data) });
   }),
 );
@@ -929,7 +929,7 @@ router.post(
     }
     if (!horse.cover_image_id)
       await supabase.from("owner_horses").update({ cover_image_id: data.id }).eq("id", horse.id).eq("owner_id", owner);
-    tellOwners(horse, viewer, `New photos of ${clipName(horse.name)}`, "A co-owner added photos. Tap to see them.", undefined, true);
+    tellOwners(horse, viewer, `New photos of ${clipName(horse.name)}`, "Another owner added photos. Tap to see them.", undefined, true);
     res.status(201).json({ image: imageView(data), coverImageId: horse.cover_image_id ?? data.id });
   }),
 );
@@ -1152,7 +1152,7 @@ router.post(
       await communityStorage.remove([path]).catch(() => undefined);
       return unavailable(res, error);
     }
-    tellOwners(horse, viewer, `New video of ${clipName(horse.name)}`, "A co-owner added a video. Tap to watch it.", undefined, true);
+    tellOwners(horse, viewer, `New video of ${clipName(horse.name)}`, "Another owner added a video. Tap to watch it.", undefined, true);
     res.status(201).json({ image: imageView(data), coverImageId: horse.cover_image_id });
   }),
 );
@@ -1849,15 +1849,24 @@ router.post(
     if (!(await claimChange(change.id, "accepted", viewer)))
       return res.status(409).json({ error: "This change has already been answered.", code: "answered" });
     const payload = change.payload ?? {};
+    // The change couldn't be made (database error): it waits again instead of showing as accepted.
+    const failed = async (err?: DbError) => {
+      await supabase
+        .from("owner_horse_changes")
+        .update({ status: "pending", decided_by: null, decided_at: null })
+        .eq("id", change.id)
+        .then(undefined, () => undefined);
+      unavailable(res, err);
+    };
     const gone = async () => {
       await supabase.from("owner_horse_changes").update({ status: "withdrawn" }).eq("id", change.id);
       res.status(409).json({ error: "That race record no longer exists, so the change couldn't be made.", code: "gone" });
     };
     if (change.kind === "details") {
-      if (!(await applyDetails(horse, payload.fields ?? {}))) return unavailable(res);
+      if (!(await applyDetails(horse, payload.fields ?? {}))) return failed();
     } else if (change.kind === "record_add") {
       if (!(await addRecord(horse, payload.input ?? {}, change.proposed_by, payload.share === true, String(payload.shareText ?? ""))))
-        return unavailable(res);
+        return failed();
     } else {
       const { data: record, error } = await supabase
         .from("owner_horse_records")
@@ -1865,7 +1874,7 @@ router.post(
         .eq("id", change.target_id)
         .eq("horse_id", horse.id)
         .maybeSingle();
-      if (error) return unavailable(res, error);
+      if (error) return failed(error);
       if (!record) return gone();
       const linked = !!horse.formfav_key;
       if (change.kind === "record_update") {
@@ -1873,11 +1882,11 @@ router.post(
           .from("owner_horse_records")
           .update({ ...recordUpdate(record, linked, payload.input ?? {}), updated_at: new Date().toISOString() })
           .eq("id", record.id);
-        if (saveError) return unavailable(res, saveError);
+        if (saveError) return failed(saveError);
       } else {
         if (record.formfav_ref && linked) return gone();
         const { error: removeError } = await supabase.from("owner_horse_records").delete().eq("id", record.id);
-        if (removeError) return unavailable(res, removeError);
+        if (removeError) return failed(removeError);
       }
     }
     horseAlert([change.proposed_by], viewer, horse.id, {
