@@ -244,6 +244,22 @@ router.get(
   }),
 );
 
+/** GET /overview?codes&countries&track — the dashboard's race data, from the index (no FormFav calls). */
+router.get(
+  "/overview",
+  handle((req) => {
+    const q = {
+      codes: someOf(one(req, "codes"), idx.INDEX_CODES),
+      countries: someOf(one(req, "countries"), ff.COUNTRIES),
+      track: match(one(req, "track"), SLUG),
+    };
+    return async () => {
+      idx.ensureIndex();
+      return idx.overview(q);
+    };
+  }),
+);
+
 router.get(
   "/people",
   handle((req) => {
