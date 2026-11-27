@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabase";
 import { text } from "../lib/workspace";
 import { accountActive, coOwnedIds } from "../lib/communityHorses";
 import * as idx from "../lib/formFavIndex";
+import { historyHorse } from "../lib/formFavHistory";
 const router = Router();
 router.use(requireAuth);
 router.use((req, res, next) => {
@@ -74,6 +75,40 @@ type WatchList =
   | { kind: "personal"; id: string; source: string }
   | { kind: "stable"; id: string; source: string; stableId: string; stableName: string }
   | { kind: "owned"; id: string; role: "lead" | "coowner" };
+/**
+ * A linked horse's race status: the 30-day window, and when it hasn't run there, its latest runs from the Stayblz
+ * race history (lastStart and up to 3 finishes; starts/wins/places stay the window's, i.e. 0).
+ */
+async function raceWithHistory(name: string, code: string) {
+  const now = idx.raceStatus(name, code);
+  if (now?.lastStart) return now;
+  const older = await historyHorse(idx.horseKey(name, code), null).catch(() => null);
+  const runs = older?.starts ?? [];
+  if (!runs.length) return now;
+  const last = runs[0];
+  return {
+    starts: now?.starts ?? 0,
+    wins: now?.wins ?? 0,
+    places: now?.places ?? 0,
+    nextEntry: now?.nextEntry ?? null,
+    trainer: now?.trainer ?? last.trainer,
+    jockey: now?.jockey ?? last.jockey,
+    lastStart: {
+      date: last.date,
+      track: last.track,
+      slug: last.slug,
+      position: last.position,
+      raceNumber: last.raceNumber,
+      code: last.code,
+      country: last.country,
+      timezone: "America/New_York",
+      fieldSize: last.fieldSize,
+    },
+    recent: runs.slice(0, 3).map((x) => ({ date: x.date, position: x.position, track: x.track, fieldSize: x.fieldSize })),
+    fromHistory: true,
+  };
+}
+
 router.get(
   "/race-watch",
   asyncRoute(async (req, res) => {
@@ -148,11 +183,13 @@ router.get(
         if (h.formfav_key) add(h, { kind: "stable", id: h.id, source: h.source, stableId: h.stable_id, stableName: stables.get(h.stable_id) ?? "Stable" });
 
       const order = { owned: 0, personal: 1, stable: 2 } as const;
-      const horses = [...rows.values()].map((r) => ({
-        ...r,
-        lists: r.lists.sort((a, b) => order[a.kind] - order[b.kind]),
-        race: r.raceData ? idx.raceStatus(r.raceData.name, r.raceData.code) : null,
-      }));
+      const horses = await Promise.all(
+        [...rows.values()].map(async (r) => ({
+          ...r,
+          lists: r.lists.sort((a, b) => order[a.kind] - order[b.kind]),
+          race: r.raceData ? await raceWithHistory(r.raceData.name, r.raceData.code) : null,
+        })),
+      );
       const nextAt = (h: (typeof horses)[number]) => {
         const n = h.race?.nextEntry;
         return n ? n.date + (n.startTime ?? "~") : null;

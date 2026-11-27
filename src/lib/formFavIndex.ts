@@ -51,7 +51,7 @@ interface Meeting {
   country: string;
   races: Race[];
 }
-interface Day {
+export interface Day {
   v: 1;
   date: string;
   code: IndexCode;
@@ -192,7 +192,7 @@ async function readDay(date: string, code: IndexCode, count: () => void): Promis
   return { v: 1, date, code, complete, meetings };
 }
 
-function parseSaved(body: string, date: string, code: IndexCode): Day | null {
+export function parseSaved(body: string, date: string, code: IndexCode): Day | null {
   try {
     const d = JSON.parse(body);
     if (d?.v !== 1 || d.date !== date || d.code !== code || !Array.isArray(d.meetings)) return null;
@@ -355,6 +355,8 @@ let derived = emptyDerived();
 const fold = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
 /** How a race-data horse is keyed everywhere outside this file (virtual_horses.formfav_key, follower counts). */
 export const horseKey = (name: string, code: string) => `${code}|${fold(name)}`;
+/** A person's name for comparing (FormFav writes "J. Acosta" one day and "J Acosta" the next). */
+export const personKey = (name: string | null | undefined) => (name ? fold(name.replace(/\./g, " ")) : "");
 const collator = new Intl.Collator("en", { sensitivity: "base", numeric: true });
 const SUFFIX = /^\(?(jr|jnr|sr|snr|ii|iii|iv)\.?\)?$/i;
 /** "Joel Rosario" → "Rosario, Joel"; "Robert Medina Jr." / "Andres Adame (Jnr)" → "Medina, Robert Jr." (for sorting only). */
@@ -525,6 +527,17 @@ export function knownTrack(slug: string) {
 
 /** New York "today" as the index sees it (its clock can be moved in tests). */
 export const indexToday = () => span().today;
+/** The first day of the window (New York). */
+export const windowStart = () => span().from;
+/** YYYY-MM-DD `n` days from `iso`. */
+export const shiftDay = shift;
+/** Finished days in memory that won't change any more (complete and before yesterday): what the history keeps. */
+export function finishedDays(): Day[] {
+  const yesterday = shift(span().today, -1);
+  return [...days.values()].filter((d) => d.complete && d.date < yesterday).sort((a, b) => a.date.localeCompare(b.date));
+}
+/** Where finished days are saved (R2 in production), or null. */
+export const savedDayStore = () => store();
 
 export function getHorse(name: string, code: IndexCode) {
   const h = derived.horseByKey.get(`${fold(name)}|${code}`);

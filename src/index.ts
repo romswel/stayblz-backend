@@ -5,6 +5,7 @@ import { startRacingSchedule } from './lib/racingFeed/pull';
 import { startBillingSchedule } from './lib/billing/schedule';
 import { startFormFavIndex } from './lib/formFavIndex';
 import { startFormFavSync } from './lib/formFavSync';
+import { startFormFavHistory } from './lib/formFavHistory';
 
 const port = Number(process.env.PORT ?? 4000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
@@ -21,5 +22,7 @@ app.listen(port, '0.0.0.0', () => {
     console.log('FormFav index schedule on.');
     // After each refresh: linked horses' details, race logs and alerts (Virtual Stayblz / owned horses).
     startFormFavSync();
+    // After each refresh: finished days into the year-long race history (production, or FORMFAV_HISTORY=on).
+    if (startFormFavHistory()) console.log('FormFav race history on.');
   }
 });

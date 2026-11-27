@@ -412,7 +412,7 @@ export function virtualRouter(mode: Mode) {
         } else if (body.source === "formfav") {
           let target;
           try {
-            target = resolveRacingHorse({ name: body.formfavName, code: body.formfavCode });
+            target = await resolveRacingHorse({ name: body.formfavName, code: body.formfavCode, runnerId: body.formfavRunnerId });
           } catch (error) {
             if (error instanceof LinkError) return linkFailed(res, error);
             throw error;
@@ -421,7 +421,7 @@ export function virtualRouter(mode: Mode) {
             source: "formfav",
             name: target.name.slice(0, 80),
             breed: breedFor(target.code),
-            trainer: (target.horse.trainer ?? "").slice(0, 80),
+            trainer: (target.trainer ?? "").slice(0, 80),
             ...linkColumns(target),
             formfav_linked_by: viewer,
           };
@@ -605,7 +605,7 @@ export function virtualRouter(mode: Mode) {
         return res.status(409).json({ error: "This horse is already linked. Unlink it first.", code: "already_linked" });
       let target;
       try {
-        target = resolveRacingHorse({ name: req.body?.name, code: req.body?.code });
+        target = await resolveRacingHorse({ name: req.body?.name, code: req.body?.code, runnerId: req.body?.runnerId });
       } catch (error) {
         if (error instanceof LinkError) return linkFailed(res, error);
         throw error;
