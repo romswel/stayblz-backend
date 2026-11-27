@@ -5,11 +5,8 @@ import { startRacingSchedule } from './lib/racingFeed/pull';
 import { startBillingSchedule } from './lib/billing/schedule';
 import { startFormFavIndex } from './lib/formFavIndex';
 import { startFormFavSync } from './lib/formFavSync';
-<<<<<<< HEAD
 import { startFormFavHistory } from './lib/formFavHistory';
-=======
 import { startChatSchedule } from './lib/chatSchedule';
->>>>>>> main
 
 const port = Number(process.env.PORT ?? 4000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
