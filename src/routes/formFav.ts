@@ -3,11 +3,13 @@ import { requireAuth, type AuthenticatedRequest } from "../middleware/auth";
 import { asyncRoute } from "../middleware/asyncRoute";
 import * as ff from "../lib/formFav";
 import * as idx from "../lib/formFavIndex";
+import * as hist from "../lib/formFavHistory";
 
 /**
  * Stayblz Data → FormFav (signed in): racing form, results, predictions and stats from FormFav, through our server.
  * GET /status, /meetings, /race, /search, /jockey/:name, /trainer/:name, /runner/:id, /track-bias/:track,
- * and the A–Z lists built by lib/formFavIndex.ts: /horses, /horse, /people.
+ * and the A–Z lists built by lib/formFavIndex.ts: /horses, /horse, /people, plus /overview (dashboard) and /older
+ * (horses and people outside the 30-day window: the Stayblz race history, lib/formFavHistory.ts, then FormFav's search).
  */
 const router = Router();
 router.use(requireAuth);
@@ -166,6 +168,11 @@ router.get(
   }),
 );
 
+/**
+ * Jockey/trainer stats. Shown for people in the US/Canada window or in the Stayblz race history (both US/Canada); with
+ * ?older=1 also for anyone FormFav's search found, marked countryConfirmed: false (FormFav gives no country for
+ * people). `history` is their record in the Stayblz race history; `noStats` when FormFav has no stats for them.
+ */
 for (const kind of ["jockey", "trainer"] as const) {
   router.get(
     `/${kind}/:name`,
@@ -173,9 +180,38 @@ for (const kind of ["jockey", "trainer"] as const) {
       const name = need(match(String(req.params.name).trim(), NAME));
       const code = raceCode(one(req, "race_code"));
       const window = int(one(req, "window"), 14, 365);
+      const older = one(req, "older") === "1";
       return async () => {
-        northAmerican(() => idx.knownPerson(kind, name));
-        return kind === "jockey" ? ff.jockey(name, code, window) : ff.trainer(name, code, window);
+        northAmerican(() => true);
+        const inWindow = idx.knownPerson(kind, name);
+        const history = await hist.historyPerson(kind, name);
+        if (!inWindow && !history && !older) throw new ff.FormFavError(404);
+        let stats: Record<string, unknown> | null = null;
+        try {
+          stats = (await (kind === "jockey" ? ff.jockey(name, code, window) : ff.trainer(name, code, window))) as Record<string, unknown>;
+        } catch (e) {
+          // FormFav has nothing for them: still answer when we know them (history) or they were asked for as older.
+          if (!(e instanceof ff.FormFavError && e.status === 404) || inWindow) throw e;
+        }
+        return {
+          ...(stats ?? {
+            kind,
+            name: history?.name ?? name,
+            raceCode: null,
+            totalStarts: null,
+            totalWins: null,
+            winRate: null,
+            placeRate: null,
+            ambiguous: false,
+            bestCondition: null,
+            worstCondition: null,
+            tracks: null,
+            conditions: null,
+          }),
+          noStats: !stats,
+          countryConfirmed: inWindow || !!history,
+          history,
+        };
       };
     }),
   );
@@ -238,8 +274,167 @@ router.get(
     return async () => {
       idx.ensureIndex();
       const horse = idx.getHorse(name, code);
-      if (!horse) throw new ff.FormFavError(404);
-      return horse;
+      // Older runs from the Stayblz race history (before the window, or all of them for a horse not in it).
+      const stored = await hist.historyHorse(idx.horseKey(name, code), horse ? idx.windowStart() : null);
+      const older = stored && stored.starts.length ? stored : null;
+      if (!horse && !older) throw new ff.FormFavError(404);
+      return withHistory(horse, older, code);
+    };
+  }),
+);
+
+/** GET /overview?codes&countries&track — the dashboard's race data, from the index (no FormFav calls). */
+router.get(
+  "/overview",
+  handle((req) => {
+    const q = {
+      codes: someOf(one(req, "codes"), idx.INDEX_CODES),
+      countries: someOf(one(req, "countries"), ff.COUNTRIES),
+      track: match(one(req, "track"), SLUG),
+    };
+    return async () => {
+      idx.ensureIndex();
+      return idx.overview(q);
+    };
+  }),
+);
+
+type Window = NonNullable<ReturnType<typeof idx.getHorse>>;
+const TZ = "America/New_York";
+/** A history run in the index's start shape (always a final run; scratchings aren't stored). */
+const asStart = (s: hist.HistoryStart): idx.Start => ({
+  date: s.date,
+  code: s.code,
+  timezone: TZ,
+  track: s.track,
+  slug: s.slug,
+  country: s.country,
+  raceNumber: s.raceNumber,
+  raceName: s.raceName,
+  distance: s.distance,
+  startTime: s.startTime,
+  status: "final",
+  position: s.position,
+  fieldSize: s.fieldSize,
+  scratched: false,
+  jockey: s.jockey,
+  trainer: s.trainer,
+});
+/**
+ * The window's horse with its older runs appended, or (not in the window) the history's. `inWindow` says which;
+ * `archive` = the Stayblz record since the history began (window + older final runs), null without history.
+ */
+function withHistory(horse: Window | null, older: hist.HistoryHorse | null, code: idx.IndexCode) {
+  const olderStarts = (older?.starts ?? []).map(asStart);
+  const history = [...(horse?.history ?? []), ...olderStarts];
+  const runs = history.filter((s) => !s.scratched && s.status === "final");
+  const archive = older
+    ? {
+        since: hist.historySince(),
+        starts: runs.length,
+        wins: runs.filter((s) => s.position === 1).length,
+        places: runs.filter((s) => s.position !== null && s.position <= 3).length,
+      }
+    : null;
+  const last = runs[0] ?? null;
+  const lastStart = last && {
+    date: last.date,
+    track: last.track,
+    slug: last.slug,
+    position: last.position,
+    raceNumber: last.raceNumber,
+    code: last.code,
+    country: last.country,
+    timezone: last.timezone,
+    fieldSize: last.fieldSize,
+  };
+  // In the window only as an entry or a scratching: its last run is an older one.
+  if (horse) return { ...horse, lastStart: horse.lastStart ?? lastStart, history, inWindow: true, archive };
+  return {
+    name: older!.name,
+    code,
+    countries: [...new Set(olderStarts.map((s) => s.country))].sort(),
+    starts: 0,
+    wins: 0,
+    places: 0,
+    lastStart,
+    nextEntry: null,
+    jockey: last?.jockey ?? null,
+    trainer: last?.trainer ?? null,
+    history,
+    inWindow: false,
+    archive,
+  };
+}
+
+/**
+ * GET /older?kind=horse|jockey|trainer&q&codes — names (3+ letters) not in the 30-day window: first the Stayblz race
+ * history (US/Canada, with their record), then FormFav's search (horses: US/Canada only, with last race date and
+ * pedigree; people: countryConfirmed false). At most 20.
+ */
+const OLDER_MAX = 20;
+router.get(
+  "/older",
+  handle((req) => {
+    const kind = need(oneOf(one(req, "kind"), ["horse", "jockey", "trainer"] as const));
+    const q = need(one(req, "q")).trim();
+    if (q.length < 3 || q.length > 60) throw new Invalid();
+    const codes = someOf(one(req, "codes"), idx.INDEX_CODES);
+    return async () => {
+      northAmerican(() => true);
+      const fold = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
+      if (kind === "horse") {
+        const fromHistory = (await hist.historySearch("horse", q, codes, OLDER_MAX * 2))
+          .filter((h) => h.kind === "horse" && !idx.getHorse(h.name, h.code))
+          .slice(0, OLDER_MAX)
+          .map((h) => ({ ...h, source: "history" as const, countryConfirmed: true }));
+        const seen = new Set(fromHistory.map((h) => h.key));
+        const fromFormFav: Record<string, unknown>[] = [];
+        for (const code of codes) {
+          let found;
+          try {
+            found = await ff.search("runner", q, code);
+          } catch {
+            continue; // FormFav's search is extra; the history answer still stands
+          }
+          for (const r of found.results as any[]) {
+            if (!r.name || r.id === null) continue;
+            const key = idx.horseKey(r.name, code);
+            if (seen.has(key) || idx.getHorse(r.name, code)) continue;
+            seen.add(key);
+            fromFormFav.push({
+              kind: "horse",
+              key,
+              name: r.name,
+              code,
+              lastDate: r.lastRaceDate ?? null,
+              starts: r.totalStarts ?? null,
+              runnerId: r.id,
+              country: r.country ?? null,
+              sire: r.sire ?? null,
+              dam: r.dam ?? null,
+              source: "formfav",
+              countryConfirmed: true,
+            });
+          }
+        }
+        return { query: q, records: [...fromHistory, ...fromFormFav].slice(0, OLDER_MAX) };
+      }
+      const fromHistory = (await hist.historySearch(kind, q, [], OLDER_MAX * 2))
+        .filter((p) => !idx.knownPerson(kind, p.name))
+        .slice(0, OLDER_MAX)
+        .map((p) => ({ ...p, source: "history" as const, countryConfirmed: true }));
+      const seen = new Set(fromHistory.map((p) => p.key));
+      let found: { results: any[] } = { results: [] };
+      try {
+        found = (await ff.search(kind, q)) as { results: any[] };
+      } catch {
+        // as above
+      }
+      const fromFormFav = found.results
+        .filter((p) => p.name && !idx.knownPerson(kind, p.name) && !seen.has(idx.personKey(p.name)) && fold(p.name).length > 1)
+        .map((p) => ({ kind, key: idx.personKey(p.name), name: p.name, lastDate: null, rides: p.totalStarts ?? null, source: "formfav" as const, countryConfirmed: false }));
+      return { query: q, records: [...fromHistory, ...fromFormFav].slice(0, OLDER_MAX) };
     };
   }),
 );

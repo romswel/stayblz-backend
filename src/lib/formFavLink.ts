@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { supabase } from "./supabase";
-import { formFavKey } from "./formFav";
+import { FormFavError, formFavKey, isNorthAmerica, search } from "./formFav";
 import * as idx from "./formFavIndex";
+import { historyHorse } from "./formFavHistory";
 
 /**
  * Linking a Stayblz horse to a race-data horse (FormFav, through the A–Z index in lib/formFavIndex.ts): Virtual
@@ -27,8 +28,8 @@ export class LinkError extends Error {
 export const LOCKED_COLUMNS = ["trainer", "sire", "dam", "sex", "foaled_year", "breed"] as const;
 
 const fold = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
-/** A person's name for comparing (FormFav writes "J. Acosta" one day and "J Acosta" the next). */
-export const personKey = (name: string | null | undefined) => (name ? fold(name.replace(/\./g, " ")) : "");
+/** A person's name for comparing (shared with the index and the race history). */
+export const personKey = idx.personKey;
 
 /** The same UUID for the same text every time (SHA-1, version 5 layout): one per race start or event. */
 export function refFor(text: string) {
@@ -80,31 +81,66 @@ export function distanceLabel(d: string | null | undefined) {
   return `${furlongs}f (${metres.toLocaleString("en-US")} m)`;
 }
 
+export interface RacingTarget {
+  /** Race data's own spelling. */
+  name: string;
+  code: idx.IndexCode;
+  key: string;
+  /** In the 30-day window: what the index has on it (null for an older horse). */
+  horse: ReturnType<typeof idx.getHorse>;
+  /** Its latest trainer, from the window or the race history (null when only FormFav's profile is known). */
+  trainer: string | null;
+  /** FormFav's runner id, when the horse was found by FormFav's runner search. */
+  runnerId: number | null;
+}
+
 /**
- * What a member picked ({name, code}) as the index knows it. Only horses that raced or were entered in the US/Canada
- * window can be picked; the stored name is FormFav's own spelling.
+ * What a member picked ({name, code, runnerId?}). A US/Canada horse in the 30-day window, or an older one: in the
+ * Stayblz race history, or found by FormFav's runner search (exact name, US or Canada; `runnerId` picks one of
+ * several). Older horses get their race log and alerts as soon as they run again (their key matches the index then).
  */
-export function resolveRacingHorse(body: { name?: unknown; code?: unknown }) {
+export async function resolveRacingHorse(body: { name?: unknown; code?: unknown; runnerId?: unknown }): Promise<RacingTarget> {
   const code = body.code;
   const name = typeof body.name === "string" ? body.name.trim() : "";
   if (!(idx.INDEX_CODES as readonly unknown[]).includes(code) || !name || name.length > 100)
     throw new LinkError(400, "Choose a racing horse.");
+  const c = code as idx.IndexCode;
   if (!formFavKey()) throw new LinkError(503, "Race data isn't available right now.");
   idx.ensureIndex();
   if (idx.indexStatus().building) throw new LinkError(503, "Race data is still loading. Try again in a minute.");
-  const horse = idx.getHorse(name, code as idx.IndexCode);
-  if (!horse) throw new LinkError(404, "That horse isn't in the last 30 days of US and Canada race data.");
-  return { name: horse.name, code: code as idx.IndexCode, key: idx.horseKey(horse.name, code as string), horse };
+  const horse = idx.getHorse(name, c);
+  if (horse) return { name: horse.name, code: c, key: idx.horseKey(horse.name, c), horse, trainer: horse.trainer, runnerId: null };
+
+  const older = await historyHorse(idx.horseKey(name, c), null);
+  if (older)
+    return { name: older.name, code: c, key: idx.horseKey(older.name, c), horse: null, trainer: older.starts[0]?.trainer ?? null, runnerId: null };
+
+  let found;
+  try {
+    found = await search("runner", name.slice(0, 100), c);
+  } catch (e) {
+    if (e instanceof FormFavError && e.status === 404) found = { results: [] as any[] };
+    else throw new LinkError(503, "Race data isn't available right now.");
+  }
+  const wanted = typeof body.runnerId === "number" && Number.isInteger(body.runnerId) ? body.runnerId : null;
+  const exact = (found.results as any[])
+    .filter((r) => r.id !== null && typeof r.name === "string" && fold(r.name) === fold(name) && isNorthAmerica(r.country))
+    .sort((a, b) => String(b.lastRaceDate ?? "").localeCompare(String(a.lastRaceDate ?? "")));
+  const pick = wanted !== null ? exact.find((r) => r.id === wanted) : exact[0];
+  if (!pick) throw new LinkError(404, "FormFav has no US or Canada horse by that name.");
+  return { name: pick.name, code: c, key: idx.horseKey(pick.name, c), horse: null, trainer: null, runnerId: pick.id };
 }
 
 /** The link columns for a newly linked horse. */
-export function linkColumns(target: { name: string; code: string; key: string }) {
+export function linkColumns(target: { name: string; code: string; key: string; runnerId?: number | null }) {
   return {
     formfav_name: target.name.slice(0, 100),
     formfav_code: target.code,
     formfav_key: target.key.slice(0, 120),
     formfav_linked_at: new Date().toISOString(),
     formfav_synced_at: null,
+    // Found by FormFav's runner search (an older horse): its id; otherwise the sync fills it in.
+    ...(target.runnerId ? { formfav_runner_id: target.runnerId } : {}),
   };
 }
 

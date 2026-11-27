@@ -38,6 +38,8 @@ interface Race {
   number: number | null;
   name: string | null;
   distance: string | null;
+  /** FormFav's class for the race ("Stakes", "G1", "Allowance" …); null in days saved before it was kept. */
+  raceClass?: string | null;
   startTime: string | null;
   status: string | null;
   abandoned: boolean;
@@ -49,7 +51,7 @@ interface Meeting {
   country: string;
   races: Race[];
 }
-interface Day {
+export interface Day {
   v: 1;
   date: string;
   code: IndexCode;
@@ -129,11 +131,13 @@ function windowDays() {
 }
 
 // ── reading FormFav ──────────────────────────────────────────────────────────────────────────────────────────────────
-function toRace(r: any): Race {
+function toRace(r: any, classes: Map<number, string>): Race {
+  const number = num(r?.raceNumber);
   return {
-    number: num(r?.raceNumber),
+    number,
     name: str(r?.raceName),
     distance: str(r?.distance),
+    raceClass: str(r?.raceClass) ?? (number !== null ? (classes.get(number) ?? null) : null),
     startTime: str(r?.startTime),
     status: str(r?.resultStatus),
     abandoned: bool(r?.abandoned),
@@ -160,11 +164,18 @@ async function readDay(date: string, code: IndexCode, count: () => void): Promis
   for (const m of wanted) {
     const slug = str(m.slug)!;
     const country = str(m.country)!;
+    // The listing carries each race's class; the results call may not.
+    const classes = new Map<number, string>();
+    for (const lr of list(m?.races, 30)) {
+      const n = num(lr?.raceNumber);
+      const c = str(lr?.raceClass);
+      if (n !== null && c) classes.set(n, c);
+    }
     let races: Race[] = [];
     try {
       count();
       const body = await fetchJson("/results/meeting", { date, track: slug, country, race_code: code, timezone: TZ });
-      races = list(body?.races, 30).map(toRace);
+      races = list(body?.races, 30).map((r) => toRace(r, classes));
     } catch (e) {
       if (!(e instanceof FormFavError && e.status === 404)) throw e;
       complete = false; // nothing for this meeting yet
@@ -181,7 +192,7 @@ async function readDay(date: string, code: IndexCode, count: () => void): Promis
   return { v: 1, date, code, complete, meetings };
 }
 
-function parseSaved(body: string, date: string, code: IndexCode): Day | null {
+export function parseSaved(body: string, date: string, code: IndexCode): Day | null {
   try {
     const d = JSON.parse(body);
     if (d?.v !== 1 || d.date !== date || d.code !== code || !Array.isArray(d.meetings)) return null;
@@ -198,6 +209,7 @@ function parseSaved(body: string, date: string, code: IndexCode): Day | null {
           number: num(r?.number),
           name: str(r?.name),
           distance: str(r?.distance),
+          raceClass: str(r?.raceClass),
           startTime: str(r?.startTime),
           status: str(r?.status),
           abandoned: bool(r?.abandoned),
@@ -343,6 +355,8 @@ let derived = emptyDerived();
 const fold = (s: string) => s.trim().replace(/\s+/g, " ").toLowerCase();
 /** How a race-data horse is keyed everywhere outside this file (virtual_horses.formfav_key, follower counts). */
 export const horseKey = (name: string, code: string) => `${code}|${fold(name)}`;
+/** A person's name for comparing (FormFav writes "J. Acosta" one day and "J Acosta" the next). */
+export const personKey = (name: string | null | undefined) => (name ? fold(name.replace(/\./g, " ")) : "");
 const collator = new Intl.Collator("en", { sensitivity: "base", numeric: true });
 const SUFFIX = /^\(?(jr|jnr|sr|snr|ii|iii|iv)\.?\)?$/i;
 /** "Joel Rosario" → "Rosario, Joel"; "Robert Medina Jr." / "Andres Adame (Jnr)" → "Medina, Robert Jr." (for sorting only). */
@@ -441,7 +455,17 @@ function horseSummary(h: HorseEntry, today: string) {
     starts: rides.length,
     wins: rides.filter((s) => s.position === 1).length,
     places: rides.filter((s) => s.position !== null && s.position <= 3).length,
-    lastStart: last && { date: last.date, track: last.track, slug: last.slug, position: last.position },
+    lastStart: last && {
+      date: last.date,
+      track: last.track,
+      slug: last.slug,
+      position: last.position,
+      raceNumber: last.raceNumber,
+      code: last.code,
+      country: last.country,
+      timezone: last.timezone,
+      fieldSize: last.fieldSize,
+    },
     nextEntry: next && {
       date: next.date,
       track: next.track,
@@ -503,6 +527,17 @@ export function knownTrack(slug: string) {
 
 /** New York "today" as the index sees it (its clock can be moved in tests). */
 export const indexToday = () => span().today;
+/** The first day of the window (New York). */
+export const windowStart = () => span().from;
+/** YYYY-MM-DD `n` days from `iso`. */
+export const shiftDay = shift;
+/** Finished days in memory that won't change any more (complete and before yesterday): what the history keeps. */
+export function finishedDays(): Day[] {
+  const yesterday = shift(span().today, -1);
+  return [...days.values()].filter((d) => d.complete && d.date < yesterday).sort((a, b) => a.date.localeCompare(b.date));
+}
+/** Where finished days are saved (R2 in production), or null. */
+export const savedDayStore = () => store();
 
 export function getHorse(name: string, code: IndexCode) {
   const h = derived.horseByKey.get(`${fold(name)}|${code}`);
@@ -510,13 +545,25 @@ export function getHorse(name: string, code: IndexCode) {
   return { ...horseSummary(h, span().today), history: h.starts };
 }
 
-export function listPeople(kind: "jockey" | "trainer", q: ListQuery) {
+type PersonRow = {
+  kind: "jockey" | "trainer";
+  name: string;
+  rides: number;
+  wins: number;
+  places: number;
+  winRate: number | null;
+  upcoming: number;
+  tracks: number;
+  lastRide: string | null;
+};
+/** Jockeys/drivers or trainers with rides or entries for these codes and countries, A–Z. */
+function personRows(kind: "jockey" | "trainer", q: { q?: string; codes: readonly string[]; countries: readonly string[] }): PersonRow[] {
   const needle = q.q ? fold(q.q) : "";
   const wanted = (bk: string) => {
     const [code, country] = bk.split("|");
-    return (q.codes as string[]).includes(code) && q.countries.includes(country);
+    return q.codes.includes(code) && q.countries.includes(country);
   };
-  const rows = [];
+  const rows: PersonRow[] = [];
   for (const p of kind === "jockey" ? derived.jockeys : derived.trainers) {
     if (needle && !fold(p.name).includes(needle)) continue;
     const picked = [...p.buckets.entries()].filter(([bk]) => wanted(bk)).map(([, b]) => b);
@@ -537,5 +584,201 @@ export function listPeople(kind: "jockey" | "trainer", q: ListQuery) {
       lastRide: picked.reduce<string | null>((d, b) => (b.last && (!d || b.last > d) ? b.last : d), null),
     });
   }
-  return { ...page(rows, q.offset, q.limit), ...indexStatus(), lastRun: undefined };
+  return rows;
+}
+
+export function listPeople(kind: "jockey" | "trainer", q: ListQuery) {
+  return { ...page(personRows(kind, q), q.offset, q.limit), ...indexStatus(), lastRun: undefined };
+}
+
+// ── dashboard overview ───────────────────────────────────────────────────────────────────────────────────────────────
+const STAKES_CLASS = /stake|grade|^\s*g\s*[1-3]\s*$|listed/i;
+const STAKES_NAME = /stakes|\(g[1-3]\)|\bgrade\b|\bderby\b|\boaks\b|futurity|invitational|breeders'? cup/i;
+/** A stakes (or graded / listed) race, by FormFav's class or, failing that, by its name. */
+export function isStakes(r: { raceClass?: string | null; name?: string | null }) {
+  return (!!r.raceClass && STAKES_CLASS.test(r.raceClass)) || (!!r.name && STAKES_NAME.test(r.name));
+}
+
+export interface OverviewQuery {
+  codes: IndexCode[];
+  countries: string[];
+  /** A track slug: only its races in upcoming / results / stakes. */
+  track?: string;
+}
+export interface OverviewRace {
+  date: string;
+  code: IndexCode;
+  timezone: string;
+  track: string | null;
+  slug: string;
+  country: string;
+  raceNumber: number | null;
+  raceName: string | null;
+  raceClass: string | null;
+  distance: string | null;
+  startTime: string | null;
+  /** Runners not scratched. */
+  runners: number;
+  stakes: boolean;
+}
+export interface OverviewResult extends OverviewRace {
+  placings: { position: number; name: string; jockey: string | null; trainer: string | null }[];
+}
+
+const UPCOMING_MAX = 40;
+const RESULTS_MAX = 40;
+const STAKES_MAX = 20;
+const LEADERS_MAX = 10;
+/** A race whose start time passed this long ago with no result still counts as "next up" (results lag). */
+const LATE_MS = 20 * 60_000;
+
+/**
+ * What the dashboard shows, from the index only (no FormFav calls): today's tracks, the next races, the latest
+ * results, stakes races, leaders by wins and horses in form over the window.
+ */
+export function overview(q: OverviewQuery) {
+  const { today } = span();
+  const now = clock().getTime();
+  const upcoming: OverviewRace[] = [];
+  const results: OverviewResult[] = [];
+  const tracks = new Map<string, { slug: string; name: string | null; country: string; codes: IndexCode[] }>();
+  let meetingsToday = 0;
+  let racesToday = 0;
+  let resultsToday = 0;
+  let stakesAhead = 0;
+  for (const day of days.values()) {
+    if (!q.codes.includes(day.code)) continue;
+    for (const m of day.meetings) {
+      if (!q.countries.includes(m.country)) continue;
+      if (day.date === today && m.races.length) {
+        meetingsToday++;
+        const t = tracks.get(m.slug);
+        if (t) t.codes.includes(day.code) || t.codes.push(day.code);
+        else tracks.set(m.slug, { slug: m.slug, name: m.track, country: m.country, codes: [day.code] });
+      }
+      for (const r of m.races) {
+        const final = r.status === "final" && !r.abandoned;
+        const stakes = isStakes(r);
+        const ahead = !r.abandoned && r.status !== "final" && r.status !== "abandoned" && day.date >= today;
+        if (day.date === today && !r.abandoned) racesToday++;
+        if (day.date === today && final) resultsToday++;
+        if (ahead && stakes) stakesAhead++;
+        if (q.track && m.slug !== q.track) continue;
+        const base: OverviewRace = {
+          date: day.date,
+          code: day.code,
+          timezone: TZ,
+          track: m.track,
+          slug: m.slug,
+          country: m.country,
+          raceNumber: r.number,
+          raceName: r.name,
+          raceClass: r.raceClass ?? null,
+          distance: r.distance ?? null,
+          startTime: r.startTime,
+          runners: r.runners.filter((x) => !x.scratched).length,
+          stakes,
+        };
+        if (ahead) {
+          const at = r.startTime ? Date.parse(r.startTime) : NaN;
+          if (Number.isNaN(at) || at >= now - LATE_MS || day.date > today) upcoming.push(base);
+        } else if (final) {
+          const placings = r.runners
+            .filter((x) => !x.scratched && x.position !== null && x.position <= 3)
+            .sort((a, b) => a.position! - b.position!)
+            .map((x) => ({ position: x.position!, name: x.name, jockey: x.jockey, trainer: x.trainer }));
+          if (placings.length) results.push({ ...base, placings });
+        }
+      }
+    }
+  }
+  const when = (r: OverviewRace) => r.date + (r.startTime ?? "~") + String(r.raceNumber ?? 0).padStart(2, "0");
+  upcoming.sort((a, b) => when(a).localeCompare(when(b)) || (a.track ?? "").localeCompare(b.track ?? ""));
+  results.sort((a, b) => when(b).localeCompare(when(a)) || (a.track ?? "").localeCompare(b.track ?? ""));
+
+  // Horses for these codes/countries with their runs there.
+  const horseRows = derived.horses
+    .filter((h) => q.codes.includes(h.code) && h.starts.some((s) => q.countries.includes(s.country)))
+    .map((h) => {
+      const rides = h.starts.filter((s) => isRide(s) && q.countries.includes(s.country));
+      const wins = rides.filter((s) => s.position === 1).length;
+      return { h, rides, wins, places: rides.filter((s) => s.position !== null && s.position <= 3).length };
+    })
+    .filter((x) => x.rides.length > 0);
+  const rate = (wins: number, starts: number) => (starts ? wins / starts : 0);
+  /** Ties go to the horse that ran most recently (rides are newest first). */
+  const latest = (x: (typeof horseRows)[number]) => (x.rides[0] ? x.rides[0].date + (x.rides[0].startTime ?? "") : "");
+  const horseOut = (x: (typeof horseRows)[number]) => ({
+    ...horseSummary(x.h, today),
+    winRate: rate(x.wins, x.rides.length),
+    form: x.rides
+      .slice(0, 5)
+      .map((s) => (s.position === null ? "-" : s.position > 9 ? "0" : String(s.position)))
+      .join("-"),
+  });
+  const topHorses = [...horseRows]
+    .sort(
+      (a, b) =>
+        b.wins - a.wins ||
+        rate(b.wins, b.rides.length) - rate(a.wins, a.rides.length) ||
+        b.rides.length - a.rides.length ||
+        latest(b).localeCompare(latest(a)) ||
+        collator.compare(a.h.name, b.h.name),
+    )
+    .slice(0, LEADERS_MAX)
+    .map(horseOut);
+  const inForm = horseRows
+    .filter((x) => x.rides.length >= 2 && x.places > 0)
+    .sort(
+      (a, b) =>
+        b.wins - a.wins ||
+        rate(b.wins, b.rides.length) - rate(a.wins, a.rides.length) ||
+        rate(b.places, b.rides.length) - rate(a.places, a.rides.length) ||
+        latest(b).localeCompare(latest(a)) ||
+        collator.compare(a.h.name, b.h.name),
+    )
+    .slice(0, LEADERS_MAX)
+    .map(horseOut);
+  const topPeople = (kind: "jockey" | "trainer") =>
+    personRows(kind, q)
+      .filter((p) => p.rides > 0)
+      .sort((a, b) => b.wins - a.wins || (b.winRate ?? 0) - (a.winRate ?? 0) || b.rides - a.rides || collator.compare(a.name, b.name))
+      .slice(0, LEADERS_MAX);
+
+  return {
+    today,
+    tracks: [...tracks.values()].sort((a, b) => collator.compare(a.name ?? a.slug, b.name ?? b.slug)),
+    counts: { meetingsToday, racesToday, resultsToday, stakesAhead },
+    upcoming: upcoming.slice(0, UPCOMING_MAX),
+    results: results.slice(0, RESULTS_MAX),
+    stakes: {
+      upcoming: upcoming.filter((r) => r.stakes).slice(0, STAKES_MAX),
+      results: results.filter((r) => r.stakes).slice(0, STAKES_MAX),
+    },
+    leaders: { horses: topHorses, jockeys: topPeople("jockey"), trainers: topPeople("trainer") },
+    inForm,
+    ...indexStatus(),
+    lastRun: undefined,
+  };
+}
+
+/** A linked horse's numbers for the dashboard: the summary plus its last 3 finishes (null outside the window). */
+export function raceStatus(name: string, code: string) {
+  if (!(INDEX_CODES as readonly string[]).includes(code)) return null;
+  const h = derived.horseByKey.get(`${fold(name)}|${code}`);
+  if (!h) return null;
+  const s = horseSummary(h, span().today);
+  return {
+    starts: s.starts,
+    wins: s.wins,
+    places: s.places,
+    lastStart: s.lastStart,
+    nextEntry: s.nextEntry,
+    trainer: s.trainer,
+    jockey: s.jockey,
+    recent: h.starts
+      .filter(isRide)
+      .slice(0, 3)
+      .map((x) => ({ date: x.date, position: x.position, track: x.track, fieldSize: x.fieldSize })),
+  };
 }

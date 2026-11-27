@@ -807,7 +807,7 @@ router.post(
     if (horse.formfav_key) return res.status(409).json({ error: "This horse is already linked. Unlink it first.", code: "already_linked" });
     let target;
     try {
-      target = resolveRacingHorse({ name: req.body?.name, code: req.body?.code });
+      target = await resolveRacingHorse({ name: req.body?.name, code: req.body?.code, runnerId: req.body?.runnerId });
     } catch (error) {
       if (error instanceof LinkError) return void res.status(error.status).json({ error: error.message });
       throw error;
